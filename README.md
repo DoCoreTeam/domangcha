@@ -30,21 +30,23 @@ One command triggers the full pipeline / 명령 하나로 전체 파이프라인
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docore/main/docore/install.sh | bash
 ```
 
-**EN** — The installer automatically:
-1. Copies 16 agents → `~/.claude/agents/`
-2. Registers `/ceo`, `/ceo-init`, `/ceo-status` → `~/.claude/commands/`
-3. Installs CEO skill → `~/.claude/skills/ceo-system/`
-4. Writes `~/.claude/CLAUDE.md` (auto-loaded on every Claude Code session)
-5. Installs gstack → `~/.claude/skills/gstack/` (skipped if already installed)
+**EN** — The installer automatically sets up everything in one shot:
+1. 16 DOCORE agents → `~/.claude/agents/`
+2. `/ceo`, `/ceo-init`, `/ceo-status` → `~/.claude/commands/`
+3. CEO skill → `~/.claude/skills/ceo-system/`
+4. `~/.claude/CLAUDE.md` (auto-loaded on every Claude Code session)
+5. **ECC (Everything Claude Code)** — 183 skills + 79 commands agents rely on → `~/.claude/skills/` + `~/.claude/commands/`
+6. **gstack** → `~/.claude/skills/gstack/` (skipped if already installed)
 
 Then open any project in Claude Code — CEO mode activates automatically. Run `/ceo-init` to initialize the project.
 
-**KO** — 설치 스크립트가 자동으로:
-1. 에이전트 16개 → `~/.claude/agents/` 복사
-2. `/ceo`, `/ceo-init`, `/ceo-status` → `~/.claude/commands/` 등록
-3. CEO 스킬 → `~/.claude/skills/ceo-system/` 설치
-4. `~/.claude/CLAUDE.md` 작성 (Claude Code 세션마다 자동 로드)
-5. gstack → `~/.claude/skills/gstack/` 설치 (이미 설치된 경우 스킵)
+**KO** — 설치 스크립트가 한 번에 모든 것을 자동 설치합니다:
+1. DOCORE 에이전트 16개 → `~/.claude/agents/`
+2. `/ceo`, `/ceo-init`, `/ceo-status` → `~/.claude/commands/`
+3. CEO 스킬 → `~/.claude/skills/ceo-system/`
+4. `~/.claude/CLAUDE.md` (Claude Code 세션마다 자동 로드)
+5. **ECC (Everything Claude Code)** — 에이전트가 의존하는 스킬 183개 + 커맨드 79개 자동 설치
+6. **gstack** → `~/.claude/skills/gstack/` (이미 설치된 경우 스킵)
 
 설치 후 Claude Code에서 아무 프로젝트나 열면 CEO 모드가 자동 활성화됩니다. `/ceo-init`으로 프로젝트를 초기화하세요.
 
@@ -201,14 +203,14 @@ DOCORE relies on two external skill systems. The installer handles both automati
 
 DOCORE는 두 가지 외부 스킬 시스템에 의존합니다. 설치 스크립트가 자동으로 처리합니다.
 
-| Dependency | What it is | Used by |
-|------------|-----------|---------|
-| **[gstack](https://github.com/garrytan/gstack)** | Garry Tan's 23-tool Claude Code setup (CEO, Designer, Eng Manager, etc.) | CEO — auto-installed on first `/ceo` run |
-| **ECC (Everything Claude Code)** | Extended agent skill library (`ecc:*` prefixed skills) | DC agents reference `ecc:plan-ceo-review`, `ecc:strategic-compact`, etc. |
+| Dependency | Repo | What it provides | Installed to |
+|------------|------|-----------------|-------------|
+| **ECC** | [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code) | 183 skills + 79 commands agents rely on | `~/.claude/skills/` + `~/.claude/commands/` |
+| **gstack** | [garrytan/gstack](https://github.com/garrytan/gstack) | Garry Tan's 23-tool Claude Code setup | `~/.claude/skills/gstack/` |
 
-**EN** — `gstack` is cloned to `~/.claude/skills/gstack` by the installer. ECC skills are resolved at runtime by Claude Code's skill system.
+**EN** — Both are installed automatically by the installer. No manual steps needed.
 
-**KO** — `gstack`은 설치 스크립트가 `~/.claude/skills/gstack`에 자동 설치합니다. ECC 스킬은 Claude Code가 런타임에 해석합니다.
+**KO** — 설치 스크립트가 두 가지 모두 자동 설치합니다. 별도 작업 불필요.
 
 ---
 
