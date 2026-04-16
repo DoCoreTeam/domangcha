@@ -1,274 +1,151 @@
-# 🏢 DOCORE — 16 AI Agents Orchestration for Claude Code
+# 👔 CEO — The AI Chief Executive for Claude Code
 
-> One command. All agents. Full pipeline. Every time.
-
-```bash
-/ceo "Build a todo app with authentication"
-```
-
-This single command activates **16 specialized AI agents** that plan, develop, test, and deploy your project — in the correct development order, with no steps skipped.
-
-> Before executing, CEO always asks clarifying questions first (tech stack, platform, completion criteria). No blind execution.
-> 실행 전 CEO가 먼저 핵심 질문을 합니다. 묻지도 않고 실행하지 않습니다.
-
-## ⚡ Install
+> You are the Founder. CEO runs your entire engineering team.
+> 당신은 창업자입니다. CEO가 당신의 전체 엔지니어링 팀을 운영합니다.
 
 ```bash
-# One-line install
+# Install / 설치
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docore/main/docore/install.sh | bash
 
-# Or manual
-git clone https://github.com/DoCoreTeam/docore.git /tmp/docore && bash /tmp/docore/docore/install.sh
+# Give orders. CEO handles the rest. / 지시만 내려주세요.
+/ceo "Build a SaaS app with auth, payments, and a dashboard"
 ```
 
-Installs automatically: **16 DOCORE agents** + **/ceo commands** + **ECC (183 skills)** + **gstack** + **Superpowers**
-자동 설치: **16개 에이전트** + **/ceo 커맨드** + **ECC (183개 스킬)** + **gstack** + **Superpowers**
+## Why CEO is different / CEO가 다른 이유
 
-## 🎯 How It Works
+**EN** — Every other AI tool starts writing code the moment you press Enter. CEO stops and asks the right questions first. Then 16 specialists build in parallel — planners, developers, QA engineers, security reviewers — all coordinated, all accountable, all running through 5 mandatory quality gates before anything reaches you.
 
-You type one command → CEO asks questions → then orchestrates everything:
+**KO** — 다른 AI 도구는 Enter를 누르는 순간 코드를 씁니다. CEO는 먼저 올바른 질문을 합니다. 그리고 16명의 전문가가 병렬로 빌드합니다 — 기획자, 개발자, QA 엔지니어, 보안 리뷰어 — 모두 조율되고, 모두 책임지며, 모두 5개의 필수 게이트를 통과한 후 당신에게 전달됩니다.
+
+## How it works / 작동 방식
 
 ```
-/ceo "원하는 것"
+/ceo "Build me a SaaS" → /ceo "SaaS 만들어줘"
      │
      ▼
-⓪ Q&A ──── CEO가 3~7개 질문 (기술스택, 플랫폼, 완료기준, 제약)
-     │       답변 후 → [Q&A COMPLETE] → 파이프라인 시작
+⓪ Q&A ── CEO asks before acting / 행동 전 질문
+     │       "Tech stack? Platform? Done criteria? Constraints?"
      ▼
-① PLANNER ──── DC-BIZ (사업판단) + DC-RES (리서치) + DC-OSS (라이브러리)
-     │            → PLAN.md 산출
+① PLANNER ── DC-BIZ + DC-RES + DC-OSS → PLAN.md
      ▼
-② GENERATOR ── DC-DEV-FE + DC-DEV-BE + DC-DEV-DB + DC-DEV-MOB
-     │          DC-DEV-OPS + DC-DEV-INT + DC-WRT + DC-DOC + DC-SEO
-     │            → 병렬 개발
+② GENERATOR (parallel / 병렬)
+     │  DC-DEV-FE + DC-DEV-BE + DC-DEV-DB + DC-DEV-MOB
+     │  DC-DEV-OPS + DC-DEV-INT + DC-WRT + DC-DOC + DC-SEO
      ▼
-③ EVALUATOR ── DC-QA (테스트) + DC-SEC (보안) + DC-REV (리뷰)
-     │            → FAIL이면 ②로 재작업 (최대 3회)
+③ CYCLE ── IMPLEMENT → REVIEW → TEST → (fix if needed, max 3x)
      ▼
-④ GATE 1-5 ── 금지패턴 + 완료조건 + 버전태그 + 역할분리 + 변경감지
-     │
+④ EVALUATOR ── DC-QA + DC-SEC + DC-REV (simultaneously / 동시)
      ▼
-⑤ CEO REPORT ─ 완성된 코드 + 테스트 + 문서 + git commit v0.x.0
+⑤ GATE 1-5 ── All must pass / 전부 통과 필수
+     ▼
+⑥ REPORT ── Code + tests + docs + git commit v0.x.0
 ```
 
-## 📋 Commands
+## Commands / 명령어
 
-### DOCORE (CEO System)
+### CEO Commands / CEO 커맨드
 
-| Command | What it does |
-|---------|-------------|
-| `/ceo "task"` | Q&A → full pipeline with all 16 agents (PLANNER→GENERATOR→EVALUATOR→GATE→REPORT) |
-| `/ceo-init` | Initialize project — registries, harness, CLAUDE.md |
-| `/ceo-status` | Show current project status, gate results, active agents |
+| Command / 커맨드 | What it does (EN) | 설명 (KO) | Tools |
+|-----------------|------------------|-----------|-------|
+| `/ceo "task"` | Q&A → full 16-agent pipeline | Q&A 후 16개 에이전트 전체 파이프라인 | All 16 agents |
+| `/ceo-feature "feature"` | Full feature lifecycle end-to-end | 기능 처음부터 끝까지 | plan+test+review+ship |
+| `/ceo-plan "feature"` | Q&A + BIZ + research + OSS + plan | 기획 전체 오케스트레이터 | DC-BIZ/RES/OSS + ECC + gstack |
+| `/ceo-review` | Security + quality + PR review | 리뷰 전체 오케스트레이터 | ECC + gstack + DC-SEC/REV |
+| `/ceo-test` | TDD + unit + E2E + browser QA | 테스트 전체 오케스트레이터 | ECC + gstack + DC-QA |
+| `/ceo-ship` | Gate + review + build + deploy + QA | 배포 전체 오케스트레이터 | gstack + ECC + DC-DEV-OPS |
+| `/ceo-design "ui"` | Direction + system + components + review | 디자인 전체 오케스트레이터 | gstack × 5 + ECC + DC-DEV-FE |
+| `/ceo-debug "bug"` | Investigate + fix + perf + verify | 디버그 전체 오케스트레이터 | gstack + ECC |
+| `/ceo-quality` | Health + coverage + refactor + security | 품질 전체 오케스트레이터 | gstack + ECC + DC-QA/SEC/REV |
+| `/ceo-security` | Secrets + OWASP + auth + API | 보안 전체 오케스트레이터 | ECC + DC-SEC |
+| `/ceo-doc` | Codemaps + API docs + docs + SEO | 문서 전체 오케스트레이터 | gstack + ECC + DC-DOC/SEO |
+| `/ceo-learn` | Patterns + instincts + retro | 학습 전체 오케스트레이터 | gstack + ECC |
+| `/ceo-init` | Initialize project | 프로젝트 초기화 | — |
+| `/ceo-status` | Show current status | 현재 상태 조회 | — |
 
-### Development (ECC — Everything Claude Code)
+### ECC Commands / ECC 커맨드
 
-| Command | Category | What it does |
-|---------|----------|-------------|
-| `/plan` | Planning | Step-by-step implementation plan, waits for confirm before coding |
-| `/feature-dev` | Planning | Guided feature development with codebase analysis |
-| `/prp-prd` | Planning | Interactive PRD generator — problem-first product spec |
-| `/prp-plan` | Planning | Comprehensive implementation plan with pattern extraction |
-| `/prp-implement` | Planning | Execute PRP plan with validation loops |
-| `/prp-pr` | Planning | Create GitHub PR from current branch |
-| `/prp-commit` | Planning | Smart commit with natural language file targeting |
-| `/multi-plan` | Planning | Multi-model collaborative planning |
-| `/multi-execute` | Planning | Multi-model collaborative execution |
-| `/multi-frontend` | Planning | Frontend-focused multi-model development |
-| `/multi-backend` | Planning | Backend-focused multi-model development |
-| `/multi-workflow` | Planning | Full multi-model collaborative workflow |
-| `/code-review` | Review | Review local changes or GitHub PR |
-| `/review-pr` | Review | Comprehensive PR review with specialized agents |
-| `/security-review` | Review | OWASP Top 10, secrets, injection, auth audit |
-| `/python-review` | Review | Python — PEP 8, type hints, security, idioms |
-| `/go-review` | Review | Go — idiomatic patterns, concurrency, error handling |
-| `/rust-review` | Review | Rust — ownership, lifetimes, unsafe, idioms |
-| `/cpp-review` | Review | C++ — memory safety, modern idioms, concurrency |
-| `/flutter-review` | Review | Flutter/Dart — widgets, state management, performance |
-| `/kotlin-review` | Review | Kotlin — null safety, coroutines, Compose |
-| `/quality-gate` | Quality | Run all quality gates |
-| `/santa-loop` | Quality | Adversarial dual-review — two reviewers must both approve |
-| `/refactor-clean` | Quality | Remove dead code, consolidate duplicates |
-| `/perf-check` | Quality | Performance analysis — bottlenecks, bundle size |
-| `/test-coverage` | Quality | Analyze coverage gaps |
-| `/tdd` | Test | TDD workflow — RED → GREEN → REFACTOR |
-| `/test` | Test | Run tests and report failures |
-| `/e2e` | Test | End-to-end testing with Playwright |
-| `/go-test` | Test | TDD for Go — table-driven, 80%+ coverage |
-| `/rust-test` | Test | TDD for Rust — cargo-llvm-cov |
-| `/cpp-test` | Test | TDD for C++ — GoogleTest |
-| `/flutter-test` | Test | Flutter — unit, widget, golden, integration |
-| `/kotlin-test` | Test | TDD for Kotlin — Kotest + Kover |
-| `/build-fix` | Build | Fix build errors incrementally |
-| `/go-build` | Build | Fix Go build, vet, linter issues |
-| `/rust-build` | Build | Fix Rust build, borrow checker, Cargo |
-| `/cpp-build` | Build | Fix C++ build, CMake, linker |
-| `/flutter-build` | Build | Fix Dart analyzer, Flutter build |
-| `/kotlin-build` | Build | Fix Kotlin/Gradle, compiler warnings |
-| `/gradle-build` | Build | Fix Gradle for Android and KMP |
-| `/debug` | Debug | Diagnose and fix bugs systematically |
-| `/investigate` | Debug | Root cause analysis with evidence |
-| `/design` | Design | Design system and UI generation |
-| `/ui-design` | Design | UI component design |
-| `/save-session` | Session | Save session state for future resume |
-| `/resume-session` | Session | Load last session and resume with full context |
-| `/sessions` | Session | Manage session history and metadata |
-| `/checkpoint` | Session | Save a progress checkpoint |
-| `/context-budget` | Session | Monitor context window usage |
-| `/aside` | Session | Quick side question without losing task context |
-| `/learn` | Learning | Extract reusable patterns from session |
-| `/learn-eval` | Learning | Extract and self-evaluate patterns before saving |
-| `/evolve` | Learning | Analyze instincts and suggest improvements |
-| `/instinct-status` | Learning | Show learned instincts with confidence scores |
-| `/instinct-import` | Learning | Import instincts from file or URL |
-| `/instinct-export` | Learning | Export instincts to file |
-| `/promote` | Learning | Promote project instincts to global scope |
-| `/prune` | Learning | Delete stale instincts older than 30 days |
-| `/hookify` | Hooks | Create hooks from conversation analysis |
-| `/hookify-configure` | Hooks | Enable/disable hookify rules |
-| `/hookify-help` | Hooks | Get help with hookify system |
-| `/hookify-list` | Hooks | List all configured hookify rules |
-| `/pipeline` | DevOps | Set up CI/CD pipeline |
-| `/pm2` | DevOps | Initialize PM2 process manager |
-| `/setup-pm` | DevOps | Configure package manager (npm/pnpm/yarn/bun) |
-| `/devfleet` | DevOps | Claude DevFleet multi-agent deployment |
-| `/docs` | Docs | Documentation lookup via Context7 |
-| `/update-docs` | Docs | Update project documentation |
-| `/update-codemaps` | Docs | Regenerate codebase codemaps |
-| `/report` | Docs | Generate project status report |
-| `/cost-estimate` | Cost | Estimate token cost before operations |
-| `/model-route` | Cost | Route tasks to optimal model |
-| `/prompt-optimize` | Cost | Optimize prompts for cost and accuracy |
-| `/loop-start` | Loop | Start a recurring agent loop |
-| `/loop-status` | Loop | Show status of running loops |
-| `/orchestrate` | Loop | Multi-agent orchestration |
-| `/jira` | Misc | Retrieve Jira ticket, update status |
-| `/skill-create` | Misc | Generate SKILL.md from git history |
-| `/skill-health` | Misc | Skill portfolio health dashboard |
-| `/rules-distill` | Misc | Distill rules from codebase patterns |
-| `/agent-sort` | Misc | Sort and prioritize agents |
-| `/evaluate-oss` | Misc | Evaluate open source library fit |
-| `/spec` | Misc | Generate technical specification |
+79 commands from [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code)
 
-### gstack Commands
+| Category / 카테고리 | Commands / 커맨드 |
+|--------------------|------------------|
+| Planning / 기획 | `/plan` `/feature-dev` `/implement` `/spec` `/prp-prd` `/prp-plan` `/prp-implement` `/prp-commit` `/prp-pr` `/multi-plan` `/multi-execute` `/multi-frontend` `/multi-backend` `/multi-workflow` |
+| Review / 리뷰 | `/code-review` `/review-pr` `/security-review` `/quality-gate` `/santa-loop` `/refactor-clean` `/perf-check` `/test-coverage` `/python-review` `/go-review` `/rust-review` `/cpp-review` `/flutter-review` `/kotlin-review` |
+| Test / 테스트 | `/tdd` `/test` `/e2e` `/go-test` `/rust-test` `/cpp-test` `/flutter-test` `/kotlin-test` |
+| Build / 빌드 | `/build-fix` `/go-build` `/rust-build` `/cpp-build` `/flutter-build` `/kotlin-build` `/gradle-build` |
+| Session / 세션 | `/save-session` `/resume-session` `/sessions` `/checkpoint` `/context-budget` `/aside` |
+| Learning / 학습 | `/learn` `/learn-eval` `/evolve` `/instinct-status` `/instinct-import` `/instinct-export` `/promote` `/prune` `/projects` |
+| Hooks / 훅 | `/hookify` `/hookify-configure` `/hookify-help` `/hookify-list` |
+| DevOps | `/pipeline` `/pm2` `/setup-pm` `/devfleet` |
+| Docs / 문서 | `/docs` `/update-docs` `/update-codemaps` `/report` |
+| Cost / 비용 | `/cost-estimate` `/model-route` `/prompt-optimize` |
+| Loop / 루프 | `/loop-start` `/loop-status` `/orchestrate` |
+| Misc / 기타 | `/debug` `/design` `/ui-design` `/jira` `/skill-create` `/skill-health` `/agent-sort` `/rules-distill` `/evaluate-oss` |
 
-| Command | What it does |
-|---------|-------------|
-| `/ship` | Full ship workflow — test, build, review, deploy |
-| `/qa` | QA the running app — browser, flows, screenshots |
-| `/qa-only` | QA without shipping |
-| `/investigate` | Diagnose bugs and errors with root cause |
-| `/review` | Code review for current diff |
-| `/health` | Project health — quality, coverage, security |
-| `/plan` | Plan a feature with interactive Q&A |
-| `/design` | Design system, brand, component guidance |
-| `/design-review` | Visual design review and polish |
-| `/design-consultation` | Design direction consultation |
-| `/design-html` | Generate HTML/CSS from design specs |
-| `/design-shotgun` | Rapid multi-direction design exploration |
-| `/docs` | Update or generate documentation |
-| `/document-release` | Update docs after shipping |
-| `/learn` | Extract and save session learnings |
-| `/retro` | Weekly retrospective |
-| `/checkpoint` | Save a progress checkpoint |
-| `/freeze` | Freeze a file/module — stop all changes |
-| `/unfreeze` | Unfreeze a frozen file or module |
-| `/canary` | Deploy a canary release |
-| `/guard` | Add guards against regressions |
-| `/careful` | Enable extra-careful mode for sensitive changes |
-| `/browse` | Open and inspect a URL in the browser |
-| `/connect-chrome` | Connect to a running Chrome instance |
-| `/setup-deploy` | Set up deployment configuration |
-| `/setup-browser-cookies` | Configure browser session cookies |
-| `/benchmark` | Run performance benchmarks |
-| `/autoplan` | Auto-generate implementation plan from context |
-| `/office-hours` | Brainstorm, product ideas, feasibility check |
-| `/land-and-deploy` | Land changes and deploy to production |
-| `/codex` | Code exploration and understanding |
-| `/cso` | Chief of Staff — communication triage |
-| `/plan-ceo-review` | CEO-level plan review |
-| `/plan-eng-review` | Engineering architecture review |
-| `/plan-design-review` | Design review at plan stage |
-| `/test` | Run tests |
-| `/gstack-upgrade` | Upgrade gstack to the latest version |
+### gstack Commands / gstack 커맨드
 
-## 🤖 16 Agents
+35+ commands from [garrytan/gstack](https://github.com/garrytan/gstack)
 
-### PLANNER (기획)
-| Agent | Role | Model |
-|-------|------|-------|
-| DC-BIZ | Business Judge | Opus |
-| DC-RES | Researcher | Haiku |
-| DC-OSS | Open Source Scout | Opus |
+| Category / 카테고리 | Commands / 커맨드 |
+|--------------------|------------------|
+| Ship / 배포 | `/ship` `/land-and-deploy` `/canary` `/setup-deploy` |
+| QA / 테스트 | `/qa` `/qa-only` `/test` `/benchmark` |
+| Review / 리뷰 | `/review` `/health` `/investigate` |
+| Planning / 기획 | `/plan` `/autoplan` `/plan-ceo-review` `/plan-eng-review` `/plan-design-review` `/office-hours` |
+| Design / 디자인 | `/design` `/design-review` `/design-consultation` `/design-html` `/design-shotgun` |
+| Docs / 문서 | `/docs` `/document-release` |
+| Learning / 학습 | `/learn` `/retro` `/checkpoint` |
+| Safety / 안전 | `/freeze` `/unfreeze` `/guard` `/careful` |
+| Browser / 브라우저 | `/browse` `/connect-chrome` `/setup-browser-cookies` |
+| Misc / 기타 | `/codex` `/cso` `/gstack-upgrade` |
 
-### GENERATOR (개발)
-| Agent | Role | Model |
-|-------|------|-------|
-| DC-DEV-FE | Frontend Developer | Sonnet |
-| DC-DEV-BE | Backend Developer | Sonnet |
-| DC-DEV-DB | Database Engineer | Sonnet |
-| DC-DEV-MOB | Mobile Developer | Sonnet |
-| DC-DEV-OPS | DevOps Engineer | Sonnet |
-| DC-DEV-INT | Integration Engineer | Sonnet |
-| DC-WRT | Writer/Copywriter | Sonnet |
-| DC-DOC | Documentation Writer | Haiku |
-| DC-SEO | SEO/AEO/GEO Specialist | Haiku |
+## 16 Agents / 16개 에이전트
 
-### EVALUATOR (검증)
-| Agent | Role | Model |
-|-------|------|-------|
-| DC-QA | QA Engineer | Haiku |
-| DC-SEC | Security Reviewer | Opus |
-| DC-REV | Code/Content Reviewer | Opus |
+| Phase | Agent | Role (EN) | 역할 (KO) | Model |
+|-------|-------|-----------|-----------|-------|
+| PLANNER | DC-BIZ | Business Judge | 사업 타당성 판단 | Opus |
+| PLANNER | DC-RES | Researcher | 리서처 | Haiku |
+| PLANNER | DC-OSS | Open Source Scout | 오픈소스 탐색 | Opus |
+| GENERATOR | DC-DEV-FE | Frontend Developer | 프론트엔드 개발자 | Sonnet |
+| GENERATOR | DC-DEV-BE | Backend Developer | 백엔드 개발자 | Sonnet |
+| GENERATOR | DC-DEV-DB | Database Engineer | DB 엔지니어 | Sonnet |
+| GENERATOR | DC-DEV-MOB | Mobile Developer | 모바일 개발자 | Sonnet |
+| GENERATOR | DC-DEV-OPS | DevOps Engineer | DevOps 엔지니어 | Sonnet |
+| GENERATOR | DC-DEV-INT | Integration Engineer | 통합 엔지니어 | Sonnet |
+| GENERATOR | DC-WRT | Writer / Copywriter | 카피라이터 | Sonnet |
+| GENERATOR | DC-DOC | Documentation Writer | 기술 문서 작가 | Haiku |
+| GENERATOR | DC-SEO | SEO / AEO / GEO | SEO 전문가 | Haiku |
+| EVALUATOR | DC-QA | QA Engineer | QA 엔지니어 | Haiku |
+| EVALUATOR | DC-SEC | Security Reviewer | 보안 리뷰어 | Opus |
+| EVALUATOR | DC-REV | Code Reviewer | 코드 리뷰어 | Opus |
+| SUPPORT | DC-TOK | Token Optimizer | 토큰 최적화 | Haiku |
 
-### SUPPORT (지원)
-| Agent | Role | Model |
-|-------|------|-------|
-| DC-TOK | Token Optimizer | Haiku |
+## Quality Gates / 품질 게이트
 
-## 🔧 Quality Gates
+| Gate | Check (EN) | 검사 항목 (KO) |
+|------|------------|---------------|
+| GATE 1 | Error patterns + **300-line limit** (auto-blocked) | 오류 패턴 + **300줄 초과 자동 차단** |
+| GATE 2 | All completion criteria met | 완료 조건 충족 |
+| GATE 3 | Version tag `v0.0.0` present | 버전 태그 존재 |
+| GATE 4 | Builder ≠ Reviewer (enforced) | 빌더 ≠ 리뷰어 강제 |
+| GATE 5 | No breaking changes without approval | 승인 없는 브레이킹 체인지 차단 |
 
-Every output passes through 5 gates before delivery:
-
-- **GATE 1**: Error registry pattern scan
-- **GATE 2**: Completion criteria verification
-- **GATE 3**: Version tag (v0.0.0) check
-- **GATE 4**: Builder ≠ Reviewer separation
-- **GATE 5**: Breaking change detection
-
-## 📁 Structure
+## Structure / 구조
 
 ```
 docore/
-├── CLAUDE.md                    ← Entry point (auto-loaded)
-├── install.sh                   ← One-line installer
-├── skills/ceo-system/SKILL.md   ← CEO brain (full system)
-├── agents/                      ← 16 agent definitions
-│   ├── dc-biz.md ... dc-tok.md
-├── commands/                    ← Slash commands
-│   ├── ceo.md                   ← /ceo "task"
-│   ├── ceo-init.md              ← /ceo-init
-│   └── ceo-status.md            ← /ceo-status
-└── templates/                   ← Registry templates
-    ├── error-registry.md
-    ├── skill-registry.md
-    ├── project-registry.md
-    └── decision-log.md
+├── CLAUDE.md                    ← CEO brain entry point / CEO 두뇌 진입점
+├── install.sh                   ← One-line installer / 원라인 설치 스크립트
+├── agents/                      ← 16 agent definitions / 16개 에이전트 정의
+│   └── dc-biz.md ... dc-tok.md
+├── commands/                    ← 14 CEO commands / 14개 CEO 커맨드
+│   ├── ceo.md ceo-feature.md ceo-plan.md ceo-review.md
+│   ├── ceo-test.md ceo-ship.md ceo-design.md ceo-debug.md
+│   ├── ceo-quality.md ceo-security.md ceo-doc.md ceo-learn.md
+│   ├── ceo-init.md ceo-status.md
+├── skills/ceo-system/SKILL.md   ← Full orchestration system / 전체 오케스트레이션
+└── templates/                   ← error-registry, skill-registry, project-registry, decision-log
 ```
 
-## 🛡️ Security Built-in
-
-- OWASP Top 10 review on every sprint
-- JWT httpOnly cookies only (no localStorage)
-- AES-256-GCM for PII encryption
-- Rate limiting on all endpoints
-- Input validation with Zod
-- RLS (Row Level Security) enforcement
-
-## 📄 License
+## License / 라이선스
 
 MIT
-
-## 🙋 Author
-
-Built by **Docore** — CEO of KDC (Korea Digital Certification)

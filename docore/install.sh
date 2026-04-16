@@ -7,8 +7,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  🏢 DOCORE ADK Installer v1.0.0${NC}"
-echo -e "${GREEN}  16 AI Agents Orchestration for Claude Code${NC}"
+echo -e "${GREEN}  👔 CEO Installer v1.0.0${NC}"
+echo -e "${GREEN}  The AI Chief Executive for Claude Code${NC}"
+echo -e "${GREEN}  16 Agents. 14 Commands. Full Pipeline.${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -197,7 +198,7 @@ fi
 # ── Done ─────────────────────────────────────────
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  ✅ DOCORE ADK installed/updated successfully!${NC}"
+echo -e "${GREEN}  ✅ CEO installed/updated successfully!${NC}"
 echo ""
 echo -e "  Updated:"
 echo -e "    ${YELLOW}~/.claude/agents/dc-*.md${NC}          ← 16 DOCORE agents"
