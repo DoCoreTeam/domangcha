@@ -5,7 +5,7 @@
 
 ```bash
 # Install / 설치
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docore/main/docore/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.sh | bash
 
 # Give orders. CEO handles the rest. / 지시만 내려주세요.
 /ceo "Build a SaaS app with auth, payments, and a dashboard"

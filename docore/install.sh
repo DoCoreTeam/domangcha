@@ -18,7 +18,7 @@ AGENTS_DIR="${CLAUDE_DIR}/agents"
 COMMANDS_DIR="${CLAUDE_DIR}/commands"
 SKILLS_DIR="${CLAUDE_DIR}/skills"
 
-DOCORE_REPO="https://github.com/DoCoreTeam/docore.git"
+DOCORE_REPO="https://github.com/DoCoreTeam/ceo.git"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
 ECC_REPO="https://github.com/affaan-m/everything-claude-code.git"
 
