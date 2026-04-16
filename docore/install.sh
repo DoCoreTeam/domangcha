@@ -114,10 +114,12 @@ for file in error-registry skill-registry project-registry decision-log; do
     fi
 done
 
-# ── 7. ECC (Everything Claude Code) — always update
+# ── 7. ECC (Everything Claude Code) — skills only, no commands
+# ECC commands are NOT installed to avoid cluttering the command list.
+# CEO-* orchestrators call ECC internally via skills.
 echo ""
 echo -e "${BLUE}[Extra] Updating ECC (Everything Claude Code)...${NC}"
-echo -e "        183 skills + 79 commands"
+echo -e "        183 skills (commands excluded — use CEO-* instead)"
 
 ECC_TMP="${TMP_DIR}/ecc"
 git clone --depth 1 "$ECC_REPO" "$ECC_TMP" --quiet
@@ -137,29 +139,16 @@ for skill_dir in "${ECC_TMP}/skills"/*/; do
     cp -r "${skill_dir}"* "$dest/" 2>/dev/null || true
 done
 echo -e "${GREEN}  ✅ Skills: ${NEW_SKILLS} new, ${UPDATED_SKILLS} updated${NC}"
-
-UPDATED_CMDS=0
-NEW_CMDS=0
-for cmd_file in "${ECC_TMP}/commands/"*.md; do
-    cmd_name=$(basename "$cmd_file")
-    dest="${COMMANDS_DIR}/${cmd_name}"
-    if [ -f "$dest" ]; then
-        UPDATED_CMDS=$((UPDATED_CMDS + 1))
-    else
-        NEW_CMDS=$((NEW_CMDS + 1))
-    fi
-    cp "$cmd_file" "$dest"
-done
-echo -e "${GREEN}  ✅ Commands: ${NEW_CMDS} new, ${UPDATED_CMDS} updated${NC}"
+echo -e "${YELLOW}  ℹ️  ECC commands skipped — access via /ceo-* orchestrators${NC}"
 
 # ── 8. gstack — always update ────────────────────
 echo ""
 echo -e "${BLUE}[Extra] Updating gstack...${NC}"
 git_update_or_clone "$GSTACK_REPO" "${SKILLS_DIR}/gstack" "gstack"
 
-# ── 9. Superpowers — always update ───────────────
+# ── 9. Superpowers — REQUIRED ────────────────────
 echo ""
-echo -e "${BLUE}[Extra] Updating Superpowers...${NC}"
+echo -e "${BLUE}[Extra] Installing Superpowers (required)...${NC}"
 SUPERPOWERS_INSTALLED=false
 
 # Method 1: Claude Code plugin CLI
@@ -168,8 +157,7 @@ if command -v claude &>/dev/null; then
         echo -e "${YELLOW}  ⟳ superpowers-marketplace already registered${NC}"
     else
         claude plugin marketplace add obra/superpowers-marketplace 2>/dev/null && \
-            echo -e "${GREEN}  ✅ Marketplace registered: obra/superpowers-marketplace${NC}" || \
-            echo -e "${YELLOW}  ⚠️  Marketplace registration skipped (check Claude version)${NC}"
+            echo -e "${GREEN}  ✅ Marketplace registered: obra/superpowers-marketplace${NC}" || true
     fi
 
     if claude plugin list 2>/dev/null | grep -q "superpowers"; then
@@ -180,19 +168,29 @@ if command -v claude &>/dev/null; then
     else
         claude plugin install superpowers@superpowers-marketplace 2>/dev/null && \
             SUPERPOWERS_INSTALLED=true && \
-            echo -e "${GREEN}  ✅ superpowers installed via plugin${NC}" || \
-            echo -e "${YELLOW}  ⚠️  Plugin install unavailable, trying fallback...${NC}"
+            echo -e "${GREEN}  ✅ superpowers installed via plugin${NC}" || true
     fi
 fi
 
 # Method 2: GitHub fallback
 if [ "$SUPERPOWERS_INSTALLED" = false ]; then
     SUPERPOWERS_REPO="https://github.com/obra/superpowers.git"
-    git_update_or_clone "$SUPERPOWERS_REPO" "${SKILLS_DIR}/superpowers" "superpowers" 2>/dev/null || {
-        echo -e "${YELLOW}  ⚠️  superpowers unavailable — install manually in Claude Code:${NC}"
-        echo -e "      ${YELLOW}/plugin marketplace add obra/superpowers-marketplace${NC}"
-        echo -e "      ${YELLOW}/plugin install superpowers@superpowers-marketplace${NC}"
-    }
+    git_update_or_clone "$SUPERPOWERS_REPO" "${SKILLS_DIR}/superpowers" "superpowers" 2>/dev/null && \
+        SUPERPOWERS_INSTALLED=true || true
+fi
+
+# REQUIRED — fail loudly if not installed
+if [ "$SUPERPOWERS_INSTALLED" = false ]; then
+    echo ""
+    echo -e "\033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    echo -e "\033[0;31m  ❌ SUPERPOWERS INSTALLATION FAILED\033[0m"
+    echo -e "\033[0;31m  Superpowers is required for CEO to function.\033[0m"
+    echo ""
+    echo -e "  Install manually inside Claude Code:"
+    echo -e "    \033[1;33m/plugin marketplace add obra/superpowers-marketplace\033[0m"
+    echo -e "    \033[1;33m/plugin install superpowers@superpowers-marketplace\033[0m"
+    echo -e "\033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    exit 1
 fi
 
 # ── Done ─────────────────────────────────────────
@@ -204,8 +202,7 @@ echo -e "  Updated:"
 echo -e "    ${YELLOW}~/.claude/agents/dc-*.md${NC}          ← 16 DOCORE agents"
 echo -e "    ${YELLOW}~/.claude/commands/ceo*.md${NC}        ← /ceo /ceo-init /ceo-status"
 echo -e "    ${YELLOW}~/.claude/skills/ceo-system/${NC}      ← CEO orchestration brain"
-echo -e "    ${YELLOW}~/.claude/skills/ecc:*/  ${NC}         ← 183 ECC skills"
-echo -e "    ${YELLOW}~/.claude/commands/ecc:* ${NC}         ← 79 ECC commands"
+echo -e "    ${YELLOW}~/.claude/skills/ecc:*/  ${NC}         ← 183 ECC skills (no commands — use /ceo-*)"
 echo -e "    ${YELLOW}~/.claude/skills/gstack/ ${NC}         ← gstack tools"
 echo -e "    ${YELLOW}~/.claude/skills/superpowers/${NC}     ← superpowers (or via plugin)"
 echo -e "    ${YELLOW}~/.claude/CLAUDE.md${NC}               ← auto-loaded by Claude Code"
