@@ -7,7 +7,7 @@
 ## 실행 / Execution
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docrew/main/docore/install.sh | bash
 ```
 
 ## 업데이트 항목 / What Gets Updated

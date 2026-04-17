@@ -23,7 +23,7 @@ docrew는 이 16명 전부를 제공합니다 — 단 하나의 명령으로, �
 
 ```bash
 # Install once. Runs everywhere. / 한 번 설치. 어디서나 실행.
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docrew/main/docore/install.sh | bash
 ```
 
 ```bash
@@ -79,7 +79,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.s
 ## Quick Install / 빠른 설치
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docrew/main/docore/install.sh | bash
 ```
 
 **EN** — One command installs everything. Re-running always updates to the latest version.
@@ -93,7 +93,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.s
 /ceo-update
 
 # Terminal / 터미널에서
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/ceo/main/docore/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/DoCoreTeam/docrew/main/docore/install.sh | bash
 ```
 
 | What gets updated | Behavior |
