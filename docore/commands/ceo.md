@@ -90,6 +90,22 @@ Q2. [타겟 플랫폼] 어느 플랫폼이 대상인가요?
 
 ---
 
+---
+
+## DC Agent 실행 규칙 (CRITICAL)
+
+DC-* 에이전트를 실행할 때는 반드시 **`Agent` 도구**를 사용하여 서브에이전트로 스폰합니다.
+에이전트 파일을 읽고 인라인으로 시뮬레이션하는 것은 **절대 금지**입니다.
+이렇게 해야만 Claude Code UI에서 서브에이전트가 실행 중으로 표시됩니다.
+
+```
+Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="...")
+Agent(subagent_type="dc-res", description="DC-RES: Researcher", prompt="...")
+# 병렬 실행: 한 메시지에서 여러 Agent 호출을 동시에 선언
+```
+
+---
+
 ### PHASE 1: PLANNER (기획)
 
 CEO가 아래를 순서대로 수행:
