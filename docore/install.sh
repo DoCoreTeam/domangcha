@@ -80,16 +80,16 @@ echo -e "${GREEN}  ✅ ceo-system/SKILL.md${NC}"
 echo ""
 echo -e "${BLUE}[5/5] Updating CLAUDE.md...${NC}"
 if [ -f "${CLAUDE_DIR}/CLAUDE.md" ]; then
-    if grep -q "DOCORE v" "${CLAUDE_DIR}/CLAUDE.md" 2>/dev/null; then
-        echo -e "${YELLOW}  ⟳ CLAUDE.md — updating DOCORE section${NC}"
+    if grep -qE "^# (docrew|DOCORE|CEO) v" "${CLAUDE_DIR}/CLAUDE.md" 2>/dev/null; then
+        echo -e "${YELLOW}  ⟳ CLAUDE.md — updating docrew section${NC}"
         python3 - "${CLAUDE_DIR}/CLAUDE.md" "${SRC}/CLAUDE.md" <<'PYEOF'
-import sys
+import sys, re
 existing = open(sys.argv[1]).read()
 docore_new = open(sys.argv[2]).read()
-start_marker = "# DOCORE"
-if start_marker in existing:
-    idx = existing.index(start_marker)
-    existing = existing[:idx].rstrip() + "\n"
+# Match any of the possible section headers
+match = re.search(r'^# (docrew|DOCORE|CEO) v', existing, re.MULTILINE)
+if match:
+    existing = existing[:match.start()].rstrip() + "\n"
 with open(sys.argv[1], 'w') as out:
     out.write(existing.rstrip() + "\n\n" + docore_new)
 PYEOF
