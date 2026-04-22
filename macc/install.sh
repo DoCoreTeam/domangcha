@@ -194,6 +194,63 @@ if [ "$SUPERPOWERS_INSTALLED" = false ]; then
     exit 1
 fi
 
+# ── 10. MACC Hooks — auto-test + auto-fix ────────
+echo ""
+echo -e "${BLUE}[Extra] Installing MACC hooks → ~/.claude/hooks/${NC}"
+mkdir -p "${CLAUDE_DIR}/hooks"
+cp "${SRC}/hooks/macc-post-edit.sh" "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
+cp "${SRC}/hooks/macc-stop.sh"      "${CLAUDE_DIR}/hooks/macc-stop.sh"
+chmod +x "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
+chmod +x "${CLAUDE_DIR}/hooks/macc-stop.sh"
+echo -e "${GREEN}  ✅ macc-post-edit.sh (auto-test + auto-fix)${NC}"
+echo -e "${GREEN}  ✅ macc-stop.sh (CEO quality review)${NC}"
+
+# ── 11. Inject hooks into settings.json ──────────
+echo ""
+echo -e "${BLUE}[Extra] Configuring ~/.claude/settings.json hooks...${NC}"
+python3 - "${CLAUDE_DIR}" <<'PYEOF'
+import sys, json, os
+
+claude_dir = sys.argv[1]
+hooks_dir  = os.path.join(claude_dir, "hooks")
+settings_path = os.path.join(claude_dir, "settings.json")
+
+MACC_POST = {
+    "matcher": "Write|Edit|MultiEdit",
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-post-edit.sh"'}]
+}
+MACC_STOP = {
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-stop.sh"'}]
+}
+
+settings = {}
+if os.path.exists(settings_path):
+    try:
+        with open(settings_path) as f:
+            settings = json.load(f)
+    except Exception:
+        settings = {}
+
+hooks = settings.get("hooks", {})
+
+# PostToolUse — remove old MACC hook, append fresh
+post = hooks.get("PostToolUse", [])
+post = [h for h in post if not any("macc-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
+post.append(MACC_POST)
+hooks["PostToolUse"] = post
+
+# Stop — remove old MACC hook, append fresh
+stop = hooks.get("Stop", [])
+stop = [h for h in stop if not any("macc-stop" in sub.get("command","") for sub in h.get("hooks",[]))]
+stop.append(MACC_STOP)
+hooks["Stop"] = stop
+
+settings["hooks"] = hooks
+with open(settings_path, "w") as f:
+    json.dump(settings, f, indent=2)
+print("  ✅ settings.json hooks injected (merged safely)")
+PYEOF
+
 # ── Done ─────────────────────────────────────────
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -206,6 +263,8 @@ echo -e "    ${YELLOW}~/.claude/skills/ceo-system/${NC}      ← CEO orchestrati
 echo -e "    ${YELLOW}~/.claude/skills/ecc:*/  ${NC}         ← 183 ECC skills (no commands — use /ceo-*)"
 echo -e "    ${YELLOW}~/.claude/skills/gstack/ ${NC}         ← gstack tools"
 echo -e "    ${YELLOW}~/.claude/skills/superpowers/${NC}     ← superpowers (or via plugin)"
+echo -e "    ${YELLOW}~/.claude/hooks/macc-*.sh${NC}         ← auto-test + CEO review hooks"
+echo -e "    ${YELLOW}~/.claude/settings.json${NC}           ← hooks injected (merged)"
 echo -e "    ${YELLOW}~/.claude/CLAUDE.md${NC}               ← auto-loaded by Claude Code"
 echo -e "    ${YELLOW}~/.claude/*-registry.md${NC}           ← preserved (user data)"
 echo ""
@@ -218,4 +277,8 @@ echo -e "  📋 Commands:"
 echo -e "     ${YELLOW}/ceo \"task\"${NC}      Q&A → full pipeline (16 agents)"
 echo -e "     ${YELLOW}/ceo-init${NC}        Project setup + harness"
 echo -e "     ${YELLOW}/ceo-status${NC}      Show current status"
+echo ""
+echo -e "  🔁 ${YELLOW}Auto-hooks active:${NC}"
+echo -e "     PostToolUse(Write/Edit) → test + auto-fix"
+echo -e "     Stop                    → CEO quality review"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

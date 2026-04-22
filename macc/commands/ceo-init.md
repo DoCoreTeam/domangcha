@@ -35,7 +35,58 @@ project-registry.md에 초기 PROJECT 항목 생성
 .claude/agents/ 디렉토리에 모든 Worker 에이전트 파일 존재 확인
 미존재 시 생성
 
-### Step 7: 초기화 보고
+### Step 7: 프로젝트 hooks 설정 (.claude/settings.json)
+
+프로젝트 루트에 `.claude/settings.json`을 생성하여 MACC hooks를 프로젝트 레벨로도 추가:
+
+```bash
+mkdir -p .claude
+python3 - <<'PYEOF'
+import json, os
+
+settings_path = ".claude/settings.json"
+hooks_dir = os.path.expanduser("~/.claude/hooks")
+
+MACC_POST = {
+    "matcher": "Write|Edit|MultiEdit",
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-post-edit.sh"'}]
+}
+MACC_STOP = {
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-stop.sh"'}]
+}
+
+settings = {}
+if os.path.exists(settings_path):
+    try:
+        with open(settings_path) as f:
+            settings = json.load(f)
+    except:
+        settings = {}
+
+hooks = settings.get("hooks", {})
+
+post = hooks.get("PostToolUse", [])
+post = [h for h in post if not any("macc-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
+post.append(MACC_POST)
+hooks["PostToolUse"] = post
+
+stop = hooks.get("Stop", [])
+stop = [h for h in stop if not any("macc-stop" in sub.get("command","") for sub in h.get("hooks",[]))]
+stop.append(MACC_STOP)
+hooks["Stop"] = stop
+
+settings["hooks"] = hooks
+with open(settings_path, "w") as f:
+    json.dump(settings, f, indent=2)
+print("✅ .claude/settings.json hooks configured")
+PYEOF
+```
+
+MACC hooks 동작:
+- `PostToolUse(Write|Edit)` → 관련 테스트 자동 실행 → 실패 시 Claude 자동수정
+- `Stop` → CEO 품질 리뷰 (보안 + 코드품질 + 테스트 + 버전 체크)
+
+### Step 8: 초기화 보고
 
 ```
 [CEO SYSTEM INITIALIZED] v1.0.0
