@@ -251,6 +251,11 @@ with open(settings_path, "w") as f:
 print("  ✅ settings.json hooks injected (merged safely)")
 PYEOF
 
+# ── 12. Playwright MCP — browser testing ─────────
+echo ""
+echo -e "${BLUE}[Extra] Setting up Playwright MCP (browser testing)...${NC}"
+bash "${SRC}/hooks/macc-playwright-setup.sh"
+
 # ── Done ─────────────────────────────────────────
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -265,6 +270,7 @@ echo -e "    ${YELLOW}~/.claude/skills/gstack/ ${NC}         ← gstack tools"
 echo -e "    ${YELLOW}~/.claude/skills/superpowers/${NC}     ← superpowers (or via plugin)"
 echo -e "    ${YELLOW}~/.claude/hooks/macc-*.sh${NC}         ← auto-test + CEO review hooks"
 echo -e "    ${YELLOW}~/.claude/settings.json${NC}           ← hooks injected (merged)"
+echo -e "    ${YELLOW}playwright MCP${NC}                    ← browser testing (headless/headed)"
 echo -e "    ${YELLOW}~/.claude/CLAUDE.md${NC}               ← auto-loaded by Claude Code"
 echo -e "    ${YELLOW}~/.claude/*-registry.md${NC}           ← preserved (user data)"
 echo ""
@@ -281,4 +287,8 @@ echo ""
 echo -e "  🔁 ${YELLOW}Auto-hooks active:${NC}"
 echo -e "     PostToolUse(Write/Edit) → test + auto-fix"
 echo -e "     Stop                    → CEO quality review"
+echo ""
+echo -e "  🌐 ${YELLOW}Browser testing:${NC}"
+echo -e "     Playwright MCP registered — use browser_* tools in Claude Code"
+echo -e "     Headed mode: claude mcp add playwright -s user npx @playwright/mcp --headed"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
