@@ -186,6 +186,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domacc/main/macc/install.
 | `/ceo-security` | Secrets → OWASP → auth → API | 시크릿 → OWASP → 인증 → API |
 | `/ceo-doc` | Codemaps → API docs → SEO | 코드맵 → API 문서 → SEO |
 | `/ceo-learn` | Extract → instincts → retro | 추출 → 인스팅트 → 회고 |
+| `/ceo-ralph [task]` | Autonomous loop — CEO defines completion criteria, loops until done | 자율 반복 루프 — CEO가 완료 조건 정의 후 완료까지 자동 반복 |
 
 ---
 
@@ -194,7 +195,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domacc/main/macc/install.
 | Phase | Tier | Agent | Role | Model |
 |-------|------|-------|------|-------|
 | PLANNER | CORE | DC-BIZ | Business Judge | Opus |
-| PLANNER | CORE | DC-RES | Researcher | Haiku |
+| PLANNER | CORE | DC-RES | Researcher | Sonnet |
 | PLANNER | CORE | DC-OSS | Open Source Scout | Opus |
 | GENERATOR | CORE | DC-DEV-FE | Frontend Developer | Sonnet |
 | GENERATOR | CORE | DC-DEV-BE | Backend Developer | Sonnet |
@@ -203,9 +204,9 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domacc/main/macc/install.
 | GENERATOR | CORE | DC-DOC | Documentation Writer | Haiku |
 | GENERATOR | EXTENDED | DC-DEV-MOB | Mobile Developer | Sonnet |
 | GENERATOR | EXTENDED | DC-DEV-INT | Integration Engineer | Sonnet |
-| GENERATOR | EXTENDED | DC-WRT | Writer / Copywriter | Sonnet |
+| GENERATOR | EXTENDED | DC-WRT | Writer / Copywriter | Haiku |
 | GENERATOR | EXTENDED | DC-SEO | SEO / AEO / GEO Specialist | Haiku |
-| EVALUATOR | CORE | DC-QA | QA Engineer | Haiku |
+| EVALUATOR | CORE | DC-QA | QA Engineer | Sonnet |
 | EVALUATOR | CORE | DC-SEC | Security Reviewer | Opus |
 | EVALUATOR | CORE | DC-REV | Code Reviewer | Opus |
 | SUPPORT | CORE | DC-TOK | Token Optimizer | Haiku |
