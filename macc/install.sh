@@ -194,16 +194,19 @@ if [ "$SUPERPOWERS_INSTALLED" = false ]; then
     exit 1
 fi
 
-# ── 10. MACC Hooks — auto-test + auto-fix ────────
+# ── 10. MACC Hooks — auto-test + auto-fix + CEO enforcer ────────
 echo ""
 echo -e "${BLUE}[Extra] Installing MACC hooks → ~/.claude/hooks/${NC}"
 mkdir -p "${CLAUDE_DIR}/hooks"
 cp "${SRC}/hooks/macc-post-edit.sh" "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
 cp "${SRC}/hooks/macc-stop.sh"      "${CLAUDE_DIR}/hooks/macc-stop.sh"
+cp "${SRC}/hooks/macc-ceo-enforcer.py" "${CLAUDE_DIR}/hooks/macc-ceo-enforcer.py"
 chmod +x "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
 chmod +x "${CLAUDE_DIR}/hooks/macc-stop.sh"
+chmod +x "${CLAUDE_DIR}/hooks/macc-ceo-enforcer.py"
 echo -e "${GREEN}  ✅ macc-post-edit.sh (auto-test + auto-fix)${NC}"
 echo -e "${GREEN}  ✅ macc-stop.sh (CEO quality review)${NC}"
+echo -e "${GREEN}  ✅ macc-ceo-enforcer.py (CEO pipeline enforcer — UserPromptSubmit)${NC}"
 
 # ── 11. Inject hooks into settings.json ──────────
 echo ""
@@ -222,6 +225,10 @@ MACC_POST = {
 # async: true — CEO quality review runs in background so session ends immediately
 MACC_STOP = {
     "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-stop.sh"', "timeout": 120, "async": True}]
+}
+MACC_ENFORCER = {
+    "matcher": "",
+    "hooks": [{"type": "command", "command": f'python3 "{hooks_dir}/macc-ceo-enforcer.py"'}]
 }
 # macc-stop-checks.js: TypeScript check + Playwright smoke test (ECC plugin)
 # Runs FIRST so it can read the edited-files accumulator before format-typecheck clears it
@@ -242,6 +249,12 @@ if os.path.exists(settings_path):
 
 hooks = settings.get("hooks", {})
 
+# UserPromptSubmit — CEO pipeline enforcer (idempotent)
+upr = hooks.get("UserPromptSubmit", [])
+upr = [h for h in upr if not any("macc-ceo-enforcer" in sub.get("command","") for sub in h.get("hooks",[]))]
+upr.insert(0, MACC_ENFORCER)
+hooks["UserPromptSubmit"] = upr
+
 # PostToolUse — remove old MACC hook, append fresh
 post = hooks.get("PostToolUse", [])
 post = [h for h in post if not any("macc-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
@@ -253,10 +266,8 @@ stop = hooks.get("Stop", [])
 stop = [h for h in stop if not any(
     "macc-stop" in sub.get("command","") for sub in h.get("hooks",[])
 )]
-# 1st: macc-stop-checks (sync, blocking tsc + playwright) — reads accumulator before it's cleared
 if MACC_STOP_CHECKS:
     stop.insert(0, MACC_STOP_CHECKS)
-# Last: macc-stop.sh (async, CEO quality review via claude -p)
 stop.append(MACC_STOP)
 hooks["Stop"] = stop
 

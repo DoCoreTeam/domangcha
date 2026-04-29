@@ -8,7 +8,7 @@ description: >
   SMALL tasks use FAST PATH (CEO direct + DC-REV + GATE).
 ---
 
-# CEO AGENT SYSTEM v2.0.9 — Router
+# CEO AGENT SYSTEM v2.0.10 — Router
 
 > 이 파일은 라우터입니다. 세부 지침은 아래 서브스킬을 참조합니다.
 
