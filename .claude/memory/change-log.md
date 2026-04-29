@@ -157,3 +157,25 @@
 | 2026-04-29 04:11 | `../../.claude/hooks/s-auto-manual.py` | Write |
 | 2026-04-29 04:12 | `../../.claude/commands/ceo-ralph.md` | Edit |
 | 2026-04-29 04:13 | `../../.claude/hooks/s-auto-manual.py` | Edit |
+| 2026-04-29 04:15 | `README.md` | Edit |
+| 2026-04-29 04:15 | `README.md` | Edit |
+| 2026-04-29 04:15 | `README.md` | Edit |
+| 2026-04-29 04:15 | `README.md` | Edit |
+| 2026-04-29 17:55 | `../../.claude/commands/ceo.md` | Edit |
+| 2026-04-29 17:55 | `../../.claude/commands/ceo-ralph.md` | Edit |
+| 2026-04-29 17:55 | `../../.claude/commands/ceo-ralph.md` | Edit |
+| 2026-04-29 17:55 | `../../.claude/hooks/macc-stop.sh` | Edit |
+| 2026-04-29 18:00 | `../../.claude/commands/ceo.md` | Write |
+| 2026-04-29 18:01 | `macc/CLAUDE.md` | Edit |
+| 2026-04-29 18:01 | `macc/skills/ceo-system/SKILL.md` | Edit |
+| 2026-04-29 18:01 | `README.md` | Edit |
+| 2026-04-29 18:01 | `CLAUDE.md` | Edit |
+| 2026-04-29 18:05 | `CLAUDE.md` | Edit |
+| 2026-04-29 18:06 | `../../.claude/hooks/macc-stop.sh` | Edit |
+| 2026-04-29 18:06 | `../../.claude/commands/ceo-ralph.md` | Edit |
+| 2026-04-29 18:07 | `../../.claude/commands/ceo.md` | Edit |
+| 2026-04-29 | `macc/VERSION` | v2.0.7 bump |
+| 2026-04-29 | `ceo.md` | PHASE 0.3 STACK SELECTION added, trimmed 353→183L |
+| 2026-04-29 | `ceo-ralph.md` | STEP 1.5 weight matrix + STEP 3.5 WEIGHTED DECISION |
+| 2026-04-29 | `macc-stop.sh` | Guards 1-3 + exit 2 completion block |
+| 2026-04-29 | `s-auto-manual.py` | is_task_request() narrowed |
