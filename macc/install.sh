@@ -282,6 +282,54 @@ echo ""
 echo -e "${BLUE}[Extra] Setting up Playwright MCP (browser testing)...${NC}"
 bash "${SRC}/hooks/macc-playwright-setup.sh"
 
+# ── 13. Git hooks — auto-reinstall on pull/clone ──
+echo ""
+echo -e "${BLUE}[Extra] Installing git hooks (auto-reinstall on update)...${NC}"
+# Find the git repo root that contains macc/ (works from any working dir)
+GIT_REPO=$(git -C "$(dirname "${SRC}")" rev-parse --show-toplevel 2>/dev/null || true)
+if [ -n "$GIT_REPO" ]; then
+    GIT_HOOKS_DIR="${GIT_REPO}/.git/hooks"
+    mkdir -p "$GIT_HOOKS_DIR"
+
+    # post-merge: fires after `git pull` merges changes
+    cat > "${GIT_HOOKS_DIR}/post-merge" << 'HOOK_EOF'
+#!/bin/bash
+# Auto-reinstall MACC when repo is updated via git pull
+INSTALL_SH="$(git rev-parse --show-toplevel)/macc/install.sh"
+if [ -f "$INSTALL_SH" ]; then
+    echo "[MACC] 업데이트 감지 — 재설치 중..."
+    bash "$INSTALL_SH"
+fi
+HOOK_EOF
+
+    # post-checkout: fires after `git clone` (initial checkout)
+    cat > "${GIT_HOOKS_DIR}/post-checkout" << 'HOOK_EOF'
+#!/bin/bash
+# Auto-install MACC on first checkout (git clone)
+PREV_HEAD=$1
+NEW_HEAD=$2
+IS_BRANCH_CHECKOUT=$3
+# Only fire on branch checkout (IS_BRANCH_CHECKOUT=1), not file checkout
+[ "$IS_BRANCH_CHECKOUT" != "1" ] && exit 0
+INSTALL_SH="$(git rev-parse --show-toplevel)/macc/install.sh"
+if [ -f "$INSTALL_SH" ]; then
+    echo "[MACC] 체크아웃 감지 — 설치 중..."
+    bash "$INSTALL_SH"
+fi
+HOOK_EOF
+
+    chmod +x "${GIT_HOOKS_DIR}/post-merge"
+    chmod +x "${GIT_HOOKS_DIR}/post-checkout"
+    echo -e "${GREEN}  ✅ .git/hooks/post-merge (git pull 시 자동 재설치)${NC}"
+    echo -e "${GREEN}  ✅ .git/hooks/post-checkout (git clone 시 자동 설치)${NC}"
+else
+    echo -e "${YELLOW}  ⚠️  git 레포 루트를 찾을 수 없음 — git hooks 건너뜀${NC}"
+fi
+
+# ── 14. Mark installed version ────────────────────
+echo "${MACC_VERSION}" > "${CLAUDE_DIR}/macc-installed-version"
+echo -e "${GREEN}  ✅ ~/.claude/macc-installed-version = ${MACC_VERSION}${NC}"
+
 # ── Done ─────────────────────────────────────────
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -294,8 +342,10 @@ echo -e "    ${YELLOW}~/.claude/skills/ceo-system/${NC}      ← CEO orchestrati
 echo -e "    ${YELLOW}~/.claude/skills/ecc:*/  ${NC}         ← 183 ECC skills (no commands — use /ceo-*)"
 echo -e "    ${YELLOW}~/.claude/skills/gstack/ ${NC}         ← gstack tools"
 echo -e "    ${YELLOW}~/.claude/skills/superpowers/${NC}     ← superpowers (or via plugin)"
-echo -e "    ${YELLOW}~/.claude/hooks/macc-*.sh${NC}         ← auto-test + CEO review hooks"
-echo -e "    ${YELLOW}~/.claude/settings.json${NC}           ← hooks injected (merged)"
+echo -e "    ${YELLOW}~/.claude/hooks/macc-*.sh${NC}         ← auto-test + CEO review + enforcer hooks"
+echo -e "    ${YELLOW}~/.claude/settings.json${NC}           ← hooks injected (UserPromptSubmit + PostToolUse + Stop)"
+echo -e "    ${YELLOW}.git/hooks/post-merge${NC}             ← git pull 시 자동 재설치"
+echo -e "    ${YELLOW}.git/hooks/post-checkout${NC}          ← git clone 시 자동 설치"
 echo -e "    ${YELLOW}playwright MCP${NC}                    ← browser testing (headless/headed)"
 echo -e "    ${YELLOW}~/.claude/CLAUDE.md${NC}               ← auto-loaded by Claude Code"
 echo -e "    ${YELLOW}~/.claude/*-registry.md${NC}           ← preserved (user data)"

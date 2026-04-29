@@ -1,4 +1,4 @@
-# MACC v2.0.10 — Multi-Agent Claude Crew
+# MACC v2.0.11 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 MACC Agent System이 즉시 활성화됨
 
