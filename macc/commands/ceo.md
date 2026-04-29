@@ -4,34 +4,33 @@
 - **SMALL** (버그픽스/수정): FAST PATH — 질문 없이 즉시 수정 → DC-REV → GATE
 - **MEDIUM+** (새 기능/아키텍처): FULL PIPELINE — Q&A → 16 에이전트 → GATE
 
-## 사용법
-
-```
-/ceo "원하는 업무 설명"
-```
-
 ## 에이전트 Tier
 
 **CORE (항상 실행 — 생략 불가):**
 DC-BIZ, DC-RES, DC-OSS, DC-DEV-DB, DC-DEV-BE, DC-DEV-FE, DC-DEV-OPS, DC-QA, DC-SEC, DC-REV, DC-DOC, DC-TOK
 
-**EXTENDED (업무 분석 후 CEO가 판단하여 추가):**
-DC-DEV-MOB (모바일 포함 시), DC-DEV-INT (외부 API 연동 시), DC-WRT (마케팅/카피 필요 시), DC-SEO (웹 공개 서비스 시)
+**EXTENDED (업무 분석 후 CEO가 판단):**
+DC-DEV-MOB (모바일), DC-DEV-INT (외부 API), DC-WRT (마케팅), DC-SEO (웹 공개)
 
 ---
 
-## 실행 순서
+## DC Agent 실행 규칙 (CRITICAL)
 
-### PHASE 0: SIZE ASSESSMENT (항상 먼저 — 1초 판단)
+DC-* 에이전트는 반드시 **`Agent` 도구**로 서브에이전트 스폰. 텍스트 시뮬레이션 **절대 금지**.
 
-CEO는 업무를 받는 즉시 규모를 판정하고 경로를 결정한다.
+```
+Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="...")
+# 병렬 실행: 한 메시지에서 여러 Agent 호출 동시 선언
+```
 
-**판정 기준:**
+---
+
+## PHASE 0: SIZE ASSESSMENT (항상 먼저)
 
 | 규모 | 조건 | 경로 |
 |------|------|------|
-| **SMALL** | 버그픽스, 타이포, 기존 기능 수정, 1-2파일 변경, DB스키마 변경 없음 | **→ FAST PATH** |
-| **MEDIUM** | 새 기능 추가, 3-5파일, 경미한 DB변경 | **→ FULL PIPELINE** |
+| **SMALL** | 버그픽스, 타이포, 기존 기능 수정, 1-2파일, DB변경 없음 | **→ FAST PATH** |
+| **MEDIUM** | 새 기능, 3-5파일, 경미한 DB변경 | **→ FULL PIPELINE** |
 | **LARGE** | 새 모듈/서비스, 5+파일, DB스키마 변경 | **→ FULL PIPELINE** |
 | **HEAVY** | 아키텍처 변경, 외부 연동, 전체 리팩터링 | **→ FULL PIPELINE** |
 
@@ -44,266 +43,141 @@ CEO는 업무를 받는 즉시 규모를 판정하고 경로를 결정한다.
 
 ---
 
-### FAST PATH (SMALL 전용 — 빠른 실행)
+## PHASE 0.3: STACK SELECTION (MEDIUM+ 전용)
 
-SMALL 판정 시 Q&A, PLANNER, GENERATOR 에이전트 전체 생략. 직접 수정 후 DC-REV + GATE만 실행.
+CEO가 업무를 분석하여 각 스택 적합도 계산 후 메뉴 제시.
 
-**FAST PATH 실행 순서:**
+**적합도 가산 기준:**
+- Standard: 기본 50% + 새 기능/명확한 구현범위 +20% + 반복 아님 +15%
+- Ralph Loop: 기본 20% + 반복 검증 필요 +25% + "자동화/완료까지" 언급 +25%
+- gstack 강화: 기본 15% + 웹앱 포함 +30% + UI/UX 중심 +20%
+- Superpowers: 기본 15% + 아키텍처 변경 +30% + 설계/계획 중심 +25%
 
-1. **RIPPLE CHECK** — 영향 범위 30초 확인
-   ```
-   [FAST PATH]
-   🔧 수정 대상: <파일명>
-   🌊 연관 파일: <있으면 목록>
-   ⚡ 즉시 수정 시작
-   ```
+```
+[CEO STACK SELECTION]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+업무 분석: <CEO 한 줄 분석>
 
-2. **직접 수정** — CEO가 직접 코드 수정 (에이전트 없이)
+┌──────────────────────────────────────────────────────────┐
+│ 스택              │ 적합도          │ 특징                 │
+├──────────────────────────────────────────────────────────┤
+│ [1] Standard      │ ████████░░  80% │ DC-* 16명, 기능 구현 │
+│ [2] Ralph Loop    │ ██████░░░░  60% │ 자율 반복, 완료 조건 │
+│ [3] gstack 강화   │ ████░░░░░░  45% │ 웹 E2E, 브라우저 QA  │
+│ [4] Superpowers   │ ██░░░░░░░░  25% │ 설계 중심, 계획 강화 │
+└──────────────────────────────────────────────────────────┘
 
-3. **DC-REV** 호출 → 코드 리뷰 1회
+💡 CEO 추천: [N] <스택명> — <한 줄 이유>
+선택 (1-4, Enter = 추천):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
-4. **GATE 1-5** → 통과 확인
+**스택별 실행 경로:**
+- **[1] Standard**: FULL PIPELINE (PHASE 0.5 → DC-BIZ/RES/OSS → DC-DEV-* → EVALUATOR → GATE)
+- **[2] Ralph Loop**: `ceo-ralph.md` 지침 그대로 실행 — `.ralph/` 초기화 → PROMPT.md + fix_plan.md 작성 → 사용자 승인 대기 → 승인 시 자율 루프 시작 → 가중치 결정 + RALPH_STATUS 출력
+- **[3] gstack 강화**: FULL PIPELINE + PHASE 4에서 `Skill("gstack")` E2E 브라우저 테스트 추가
+- **[4] Superpowers**: `Skill("superpowers:brainstorming")` → `Skill("superpowers:writing-plans")` → 사용자 승인 → `Skill("superpowers:executing-plans")` → `Skill("superpowers:verification-before-completion")`
 
-5. **버전 PATCH 업** → macc/VERSION +0.0.1 (해당 프로젝트 VERSION 파일 기준)
-
-6. **git commit** + **FAST REPORT** 출력:
-   ```
-   [CEO FAST REPORT]
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ⚡ FAST PATH 완료: $ARGUMENTS
-   🏷️ 버전: v{VERSION}
-   👤 투입: CEO + DC-REV
-   ✅ GATE 1-5 통과
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ```
-
-**FAST PATH 완료 → 종료 (FULL PIPELINE 진행 안 함)**
+**실패 처리 (전 스택 공통):**
+- 에러 시: "🔧 수정 중..." 한 줄만 출력, 조용히 수정
+- 3회 재시도 후 실패 시에만: "[에스컬레이션] <항목> 해결 필요"
+- "뭐가 안됩니다" 식 보고만 하고 멈추는 것 **절대 금지**
 
 ---
 
-### FULL PIPELINE (MEDIUM / LARGE / HEAVY)
+## FAST PATH (SMALL 전용)
 
-### PHASE 0.5: CLARIFICATION Q&A (필수 — 생략 불가)
+1. **RIPPLE CHECK** — 30초 영향 범위 확인 → `[FAST PATH] 🔧 수정 대상 / 🌊 연관 파일 / ⚡ 즉시 수정`
+2. **직접 수정** — CEO가 직접 코드 수정
+3. **DC-REV** 호출 → 코드 리뷰
+4. **GATE 1-5** 통과 확인
+5. **버전 PATCH 업** → macc/VERSION +0.0.1
+6. **git commit** + 보고:
+   ```
+   [CEO FAST REPORT] ⚡ FAST PATH 완료: $ARGUMENTS | v{VERSION} | CEO+DC-REV | GATE 1-5 ✅
+   ```
 
-CEO는 PHASE 1 진입 전에 반드시 사용자에게 핵심 질문을 한다.
-질문 없이 바로 실행하는 것은 **절대 금지**됨.
+---
 
-**Q&A 실행 규칙:**
-- 질문을 **한 번에 하나씩** 묻는다 — 답변을 받으면 다음 질문으로 넘어간다
-- 앞 답변을 반영해 다음 질문을 조정한다 (예: "웹"이라고 하면 모바일 질문 생략)
-- 최소 7개, 최대 12개 질문 후 충분히 파악되면 Q&A 종료
-- 모든 질문이 끝나면 `[Q&A COMPLETE]`를 출력하고 PHASE 1으로 진행
+## FULL PIPELINE (MEDIUM / LARGE / HEAVY)
 
-**Q&A 진행 방식 (스텝바이스텝):**
+### PHASE 0.5: Q&A (필수 — 생략 불가)
 
-```
-[CEO Q&A — PHASE 0.5]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-업무: $ARGUMENTS
+**규칙:** 질문 1개씩, 앞 답변 반영하여 조정, 최소 7개 최대 12개, 완료 시 `[Q&A COMPLETE]` 출력.
 
-Q1. [기술스택] 사용할 언어/프레임워크/DB가 정해져 있나요?
-    (예: Next.js + Supabase, FastAPI + PostgreSQL, 아직 미정)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-→ 사용자 답변 대기
-→ 답변 받으면 다음 질문:
-
-```
-Q2. [타겟 플랫폼] 어느 플랫폼이 대상인가요?
-    (예: 웹, iOS/Android, API only, 데스크톱, 복합)
-```
-
-→ 이런 식으로 한 번에 하나씩 계속 진행
-
-**질문 풀 (앞 답변에 따라 불필요한 항목은 건너뜀):**
-
+**질문 풀:**
 1. [기술스택] 언어/프레임워크/DB
 2. [타겟 플랫폼] 웹/모바일/API/데스크톱
-3. [기존 코드베이스] 있음(경로) / 없음(새로 시작)
-4. [완료 기준] 이 업무가 "완료"라고 판단하는 기준
-5. [사용자/규모] 예상 사용자 규모와 트래픽
-6. [인증/보안] 로그인, 소셜, 역할별 권한 필요 여부
+3. [기존 코드베이스] 있음(경로) / 없음
+4. [완료 기준] "완료" 판단 기준
+5. [사용자/규모] 예상 트래픽
+6. [인증/보안] 로그인, 역할 권한
 7. [데이터] 주요 데이터 모델
-8. [외부 연동] Stripe, OpenAI, Slack 등 외부 API
-9. [우선순위/제약] 하면 안 되는 것 또는 반드시 해야 할 것
-10. [디자인] UI 방향, Figma 링크, 참고 서비스
-11. [배포/인프라] Vercel, AWS, Railway, 로컬
-12. [추가 맥락] 위에 없지만 알아야 할 중요한 정보
-
-**모든 질문이 끝나면:**
-- CEO가 답변을 요약하여 `[Q&A COMPLETE]` 블록 출력
-- EXTENDED 에이전트 필요 여부 결정 (MOB/INT/WRT/SEO)
-- 답변을 INTAKE REPORT에 반영
-- PHASE 1 진입
+8. [외부 연동] Stripe, OpenAI 등
+9. [우선순위/제약] 금지/필수 항목
+10. [디자인] UI 방향, Figma
+11. [배포/인프라] Vercel/AWS/Railway
+12. [추가 맥락] 기타 중요 정보
 
 ```
-[Q&A COMPLETE]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ 확인된 사항:
-• 기술스택: <답변>
-• 플랫폼: <답변>
-• 완료 기준: <답변>
-• 주요 제약: <답변>
-• EXTENDED 에이전트: <추가 여부 + 이유>
-→ PHASE 1 진입합니다
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Q&A COMPLETE] ✅ 스택/플랫폼/완료기준/제약 확인 | EXTENDED: <필요 에이전트> → PHASE 1 진입
 ```
 
----
-
----
-
-## DC Agent 실행 규칙 (CRITICAL)
-
-DC-* 에이전트를 실행할 때는 반드시 **`Agent` 도구**를 사용하여 서브에이전트로 스폰합니다.
-에이전트 파일을 읽고 인라인으로 시뮬레이션하는 것은 **절대 금지**입니다.
-이렇게 해야만 Claude Code UI에서 서브에이전트가 실행 중으로 표시됩니다.
+### PHASE 0.7: RIPPLE ANALYSIS
 
 ```
-Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="...")
-Agent(subagent_type="dc-res", description="DC-RES: Researcher", prompt="...")
-# 병렬 실행: 한 메시지에서 여러 Agent 호출을 동시에 선언
+[RIPPLE ANALYSIS] 🎯 직접 변경 / 🌊 파급 영향 / 🔧 함께 개선 / ⚠️ 사이드이펙트 위험
 ```
+수정 1개 → 연관 파일 2-3개 추가 점검. "이것만 해줘" = "이것 + 연관 모두 일관되게".
 
----
+### PHASE 1: PLANNER
 
-### PHASE 0.7: RIPPLE ANALYSIS (확장적 영향도 분석 — 필수)
+1. CEO 자가점검 (error-registry / skill-registry / project-registry 확인)
+2. Intake Report: 업무명/목표/위험도/병렬가능/우선순위/규모/모델배정/EXTENDED
+3. **DC-BIZ** → 사업 타당성
+4. **DC-RES** → 기술 리서치
+5. **DC-OSS** → 외부 도구 Top 3
+6. `docs/PLAN.md` 작성
 
-Q&A 완료 후, 구현 시작 전에 CEO는 반드시 아래를 수행합니다:
+### PHASE 2: CONTRACT
 
-```
-[RIPPLE ANALYSIS]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 직접 변경 대상: <수정할 파일/컴포넌트>
-🌊 파급 영향: <이 변경이 영향주는 연관 파일>
-🔧 함께 개선할 항목: <사용자 미언급 but 필요한 것>
-⚠️ 사이드이펙트 위험: <깨질 수 있는 기존 동작>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+7. CEO + DC-QA 스프린트 계약 → `docs/CONTRACT-SPRINT-1.md`
 
-- 수정 1개 → 연관 파일 2-3개 추가 점검 필수
-- "이것만 해줘" = "이것 + 연관된 모든 것을 일관되게"
-- 개선 기회 발견 시 → 즉시 처리 (보고는 [CEO 자체 추가]로)
+### PHASE 3: GENERATOR (병렬)
 
----
+CORE: **DC-DEV-DB** / **DC-DEV-BE** / **DC-DEV-FE** / **DC-DEV-OPS** / **DC-DOC**
+EXTENDED: DC-DEV-MOB / DC-DEV-INT / DC-WRT / DC-SEO (Q&A 분석 결과에 따라)
+완료 후 `docs/SPRINT-1-HANDOFF.md` 작성
 
-### PHASE 1: PLANNER (기획)
+### PHASE 4: EVALUATOR (3-way 동시)
 
-CEO가 아래를 순서대로 수행:
-
-1. **CEO 자가점검** 실행
-   - 사용자가 명시하지 않았지만 포함해야 할 항목 확인
-   - error-registry 관련 패턴 확인
-   - skill-registry 사용 가능 패턴 확인
-   - project-registry 제약 충돌 확인
-
-2. **Intake Report** 생성
-   ```
-   [CEO INTAKE REPORT]
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   📋 업무명: $ARGUMENTS
-   🎯 목표: <달성해야 할 결과>
-   ⚠️ 위험도: LOW / MEDIUM / HIGH / CRITICAL
-   🔀 병렬 가능: YES / NO
-   🚦 우선순위: P0 / P1 / P2 / P3
-   💰 규모 판정: SMALL / MEDIUM / LARGE / HEAVY
-   🤖 모델 배정: <Opus/Sonnet/Haiku 조합>
-   🧩 EXTENDED 에이전트: <MOB/INT/WRT/SEO 중 필요한 것>
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ```
-
-3. **DC-BIZ** 호출 → 사업 타당성 판단 (agents/dc-biz.md 참조)
-4. **DC-RES** 호출 → 기술 리서치 (agents/dc-res.md 참조)
-5. **DC-OSS** 호출 → 외부 라이브러리/도구 Top 3 탐색 (agents/dc-oss.md 참조)
-6. CEO가 **docs/PLAN.md** 작성
-
-### PHASE 2: CONTRACT (계약)
-
-7. CEO + **DC-QA** 스프린트 계약 협상
-8. **docs/CONTRACT-SPRINT-1.md** 작성 (구현 범위 + 검증 기준 합의)
-
-### PHASE 3: GENERATOR (개발 — 병렬 실행)
-
-**CORE 에이전트 (항상 실행 — 동시):**
-
-9.  **DC-DEV-DB** → 스키마 설계 + 마이그레이션 (agents/dc-dev-db.md 참조)
-10. **DC-DEV-BE** → API 엔드포인트 + 비즈니스 로직 (agents/dc-dev-be.md 참조)
-11. **DC-DEV-FE** → UI 컴포넌트 + 페이지 (agents/dc-dev-fe.md 참조)
-12. **DC-DEV-OPS** → CI/CD + 하네스 장치 구축 (agents/dc-dev-ops.md 참조)
-13. **DC-DOC** → API 문서 + 사용 가이드 (agents/dc-doc.md 참조)
-
-**EXTENDED 에이전트 (Q&A 분석 결과에 따라 추가 실행):**
-
-14. **DC-DEV-MOB** → 모바일 대응 — 모바일 플랫폼 포함 시 (agents/dc-dev-mob.md 참조)
-15. **DC-DEV-INT** → 외부 API 연동 — 외부 서비스 연동 시 (agents/dc-dev-int.md 참조)
-16. **DC-WRT** → 마케팅 카피/콘텐츠 — 마케팅 페이지/카피 필요 시 (agents/dc-wrt.md 참조)
-17. **DC-SEO** → SEO/AEO/GEO 최적화 — 웹 공개 서비스 시 (agents/dc-seo.md 참조)
-
-18. 완료 후 **docs/SPRINT-1-HANDOFF.md** 작성 (사실만 기록 — 평가 없이)
-
-### PHASE 4: EVALUATOR (검증 — 3-way 동시)
-
-19. **DC-QA** → 기능/품질 테스트 → docs/QA-SPRINT-1.md (agents/dc-qa.md 참조)
-20. **DC-SEC** → OWASP 기반 보안 검토 → docs/SEC-SPRINT-1.md (agents/dc-sec.md 참조)
-21. **DC-REV** → 코드 리뷰 + 품질 채점 → docs/REV-SPRINT-1.md (agents/dc-rev.md 참조)
+**DC-QA** → QA-SPRINT-1.md | **DC-SEC** → SEC-SPRINT-1.md | **DC-REV** → REV-SPRINT-1.md
 
 ### PHASE 5: 판정
 
-22. **전체 PASS** → PHASE 6으로 진행
-23. **ANY FAIL** → GENERATOR로 돌아가서 재작업 (최대 3회)
-24. **3회 초과** → 에스컬레이션:
-    ```
-    [ESCALATION]
-    🔴 실패 업무: <업무명>
-    📊 시도 횟수: 3/3
-    🔍 근본 원인: <CEO 분석>
-    💡 대안:
-      1. 접근 방식 변경
-      2. 범위 축소
-      3. 수동 처리 권고
-    ```
+PASS → PHASE 6 | FAIL → GENERATOR 재작업 (최대 3회)
+3회 초과: `[ESCALATION] 🔴 실패업무 / 시도 3/3 / 근본원인 / 대안 3가지`
 
-### PHASE 6: GATE + 최종 보고
+### PHASE 6: GATE + 보고
 
-25. **GATE 1**: error-registry 금지 패턴 스캔 + **파일 300줄 초과 감지 → 즉시 차단** (모듈 분리 지시)
+25. **GATE 1**: error-registry 스캔 + **300줄 초과 → 즉시 차단**
 26. **GATE 2**: 완료 조건 충족 검증
-27. **GATE 3**: 버전 태그 포함 확인 — `macc/VERSION` 파일의 현재 버전과 일치 여부
-28. **GATE 4**: Builder ≠ Reviewer 역할 분리 확인
-29. **GATE 5**: 파괴적 변경 감지 → 있으면 사용자 승인 필요
-30. **DC-TOK** → 컨텍스트 사용량 보고 (agents/dc-tok.md 참조)
-31. **CEO 자가점검** 최종 실행
-32. **git commit** -m "v$(cat macc/VERSION 2>/dev/null || cat VERSION 2>/dev/null || echo "??"): $ARGUMENTS"
-33. **CEO REPORT** 출력:
+27. **GATE 3**: 버전 태그 = `macc/VERSION` 일치
+28. **GATE 4**: Builder ≠ Reviewer 역할 분리
+29. **GATE 5**: 파괴적 변경 → 사용자 승인
+30. **DC-TOK** → 컨텍스트 사용량 보고
+31. CEO 자가점검 최종
+32. `git commit -m "v$(cat macc/VERSION): $ARGUMENTS"`
+33. CEO REPORT:
 
 ```
 [CEO REPORT]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ 업무 완료: $ARGUMENTS
-🏷️ 버전: v{VERSION} (macc/VERSION 파일 기준)
-👥 투입: CORE 12명 + EXTENDED <n>명
-⏱️ 실행: PLANNER→GENERATOR(병렬)→EVALUATOR(3-way)→GATE
+🏷️ 버전: v{VERSION} | 👥 CORE 12명 + EXTENDED <n>명 | GATE 1-5 ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[산출물]
-(실제 결과물 — 코드, 파일, 문서 등)
-
-[품질 보증]
-□ GATE 1-5 모두 통과
-□ DC-QA 검증 완료
-□ DC-SEC 보안 검토 완료
-□ DC-REV 코드 리뷰 완료
-□ 버전 태그 적용
-□ 하네스 장치 구현 완료
-□ CEO 자가점검 완료
-
-[CEO 자체 추가 항목]
-• (사용자가 명시하지 않았지만 CEO가 추가한 것)
-
-[다음 권장 액션]
-• (CEO가 권장하는 다음 단계)
-
-[Rollback 가이드]
-• (문제 발견 시 되돌리는 방법)
+[산출물] <실제 코드/파일/문서>
+[품질 보증] DC-QA ✅ / DC-SEC ✅ / DC-REV ✅ / 버전태그 ✅ / 하네스 ✅
+[다음 권장 액션] <CEO 권장>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

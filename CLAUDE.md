@@ -1,4 +1,4 @@
-# MACC v2.0.6 — CEO MODE ACTIVE
+# MACC v2.0.7 — CEO MODE ACTIVE
 
 > **이 파일이 로드되면 MACC CEO 시스템이 즉시 활성화됨**
 > **모든 사용자 요청은 예외 없이 CEO 파이프라인을 통해 처리됨**
@@ -52,4 +52,4 @@
 | `/ceo-status` | 현황 조회 |
 
 ## 버전
-단일 소스: `macc/VERSION` = 2.0.5
+단일 소스: `macc/VERSION` = 2.0.7
