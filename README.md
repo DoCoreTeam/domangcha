@@ -66,7 +66,8 @@ You press Enter
 You press Enter
 └── "Hold on — I have questions"
     └── 12 sharp questions
-        └── 16 specialists → 5 gates → ship
+        └── Risk check → 16 specialists
+            → 5 gates → ship
 ```
 
 </td>
@@ -76,10 +77,12 @@ You press Enter
 | | DOMANGCHA | Typical AI tool |
 |---|:---:|:---:|
 | Requirements before code | ✅ Up to 12 questions | ❌ Codes immediately |
+| Tradeoff check before building | ✅ Catches risks upfront | ❌ None |
 | Role separation by specialist | ✅ 16 agents, parallel | ❌ Single model |
 | Builder ≠ Reviewer (enforced) | ✅ Always | ❌ None |
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
 | Mistakes → permanent patterns | ✅ error-registry | ❌ None |
+| Rule memory auto-sync on update | ✅ v2.0.32 | ❌ None |
 
 ---
 
@@ -90,21 +93,23 @@ You press Enter
 ```
 [INTENT PARSED]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-원본: Build a Stripe-powered invoicing tool for freelancers —
-      create invoices, send via email, track paid/overdue
+Input:   Build a Stripe-powered invoicing tool for freelancers —
+         create invoices, send via email, track paid/overdue
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-정제: Freelancer creates an invoice for a client, emails it with a
-      Stripe payment link, and tracks real-time payment status
-      (draft → sent → paid/overdue) in a dashboard
-목표: Invoice create → email send → Stripe pay → dashboard auto-update (3 flows)
-범위: IN  — invoice CRUD, Stripe Payment Links, email via Resend, webhook status sync
-      OUT — tax calculation, multi-currency, accounting software sync, PDF export
-전제: Web app / greenfield / Stripe confirmed / stack TBD → Q&A needed
+Parsed:  Freelancer creates an invoice for a client, emails it with a
+         Stripe payment link, tracks real-time payment status
+         (draft → sent → paid/overdue) in a dashboard
+Goal:    Invoice create → email send → Stripe pay → dashboard auto-update (3 flows)
+Scope:   IN  — invoice CRUD, Stripe Payment Links, email via Resend, webhook status sync
+         OUT — tax calculation, multi-currency, accounting software sync, PDF export
+Context: Web app / greenfield / Stripe confirmed / stack TBD → Q&A needed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [CEO SIZE ASSESSMENT]
-Task: Freelancer invoicing tool (Stripe + email + status dashboard)
+Task:   Freelancer invoicing tool (Stripe + email + status dashboard)
 Rating: MEDIUM  →  FULL PIPELINE
+
+[TRADEOFF CHECK] ✅ CLEAR — No architectural risks detected. Proceeding to Q&A.
 
 [CEO] Q1: What's your stack? (Next.js / Express / other?)
 > Next.js 14 + Supabase
@@ -126,50 +131,50 @@ Rating: MEDIUM  →  FULL PIPELINE
 
 [TASK REFINED]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-원본 입력: Stripe-powered invoicing tool for freelancers
-Q&A 핵심 답변: Next.js 14 + Supabase / clients table per user /
-               Stripe Payment Links + webhook / Resend email / GitHub OAuth /
-               3 E2E flows in Stripe test mode
+Original Input:  Stripe-powered invoicing tool for freelancers
+Q&A Summary:     Next.js 14 + Supabase / clients table per user /
+                 Stripe Payment Links + webhook / Resend email / GitHub OAuth /
+                 3 E2E flows in Stripe test mode
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-최종 태스크: Next.js 14 + Supabase + Stripe + Resend.
-             GitHub OAuth login, RLS on all tables.
-             clients + invoices + stripe_events tables.
-             CRUD invoices → generate Stripe Payment Link →
-             send email via Resend → webhook flips status to "paid".
-완료 조건: ① Freelancer creates invoice → client receives email with pay link
-           ② Client pays via Stripe (test mode) → webhook fires
-           ③ Dashboard shows invoice status "Paid" without page refresh
-제외 범위: Tax calculation, multi-currency, PDF export, accounting integrations
+Final Task:   Next.js 14 + Supabase + Stripe + Resend.
+              GitHub OAuth login, RLS on all tables.
+              clients + invoices + stripe_events tables.
+              CRUD invoices → generate Stripe Payment Link →
+              send email via Resend → webhook flips status to "paid".
+Done When:    ① Freelancer creates invoice → client receives email with pay link
+              ② Client pays via Stripe (test mode) → webhook fires
+              ③ Dashboard shows invoice status "Paid" without page refresh
+Out of Scope: Tax calculation, multi-currency, PDF export, accounting integrations
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[DOC-FIRST] Creating docs/2026-05-01-v2.0.19/
-  ✔ 00-requirements.md  (invoice lifecycle + Stripe webhook + Resend SLA)
-  ✔ 01-architecture.md  (GitHub OAuth → Supabase RLS + Stripe webhook flow)
-  ✔ 02-task-breakdown.md  P0: Auth+RLS+Stripe  P1: Invoice CRUD+email  P2: Dashboard UI
-  ✔ 03-test-strategy.md  (Stripe test mode E2E + webhook signature security test)
+[DOC-FIRST] Creating docs/2026-05-01-v2.0.32/
+  ✔ 00-requirements.md       (invoice lifecycle + Stripe webhook + Resend SLA)
+  ✔ 01-architecture.md       (GitHub OAuth → Supabase RLS + Stripe webhook flow)
+  ✔ 02-task-breakdown.md     P0: Auth+RLS+Stripe  P1: Invoice CRUD+email  P2: Dashboard UI
+  ✔ 03-test-strategy.md      (Stripe test mode E2E + webhook signature security test)
   ✔ 04-completion-criteria.md  (3-flow checklist + rollback criteria)
 [DOC COMPLETE]
 
-━━━━━━━━━━━━━ PHASE 1: PLANNER ━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━ PHASE 1: PLANNER ━━━━━━━━━━━━━━━
 DC-BIZ  ✔  Freelancer invoicing is a proven pain point. Stripe + email is the right wedge. Build.
 DC-RES  ✔  Stripe Payment Links beat custom checkout for v1 speed. Resend > SendGrid for DX.
 DC-OSS  ✔  stripe-node (39k★), resend (5k★), @supabase/ssr. All stable, actively maintained.
 
-━━━━━━━━━━━━━ PHASE 2: BUILDER ━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━ PHASE 2: BUILDER ━━━━━━━━━━━━━━━
 DC-DEV-DB   ✔  users · clients · invoices · stripe_events tables + RLS — 4 migrations
 DC-DEV-BE   ✔  /api/invoices (CRUD) · /api/stripe/webhook · /api/send-invoice (Resend)
 DC-DEV-FE   ✔  InvoiceForm · ClientList · StatusBadge · Dashboard · SendButton — 6 components
 DC-DEV-OPS  ✔  .env.example (STRIPE_SECRET · STRIPE_WEBHOOK_SECRET · RESEND_API_KEY) · Vercel
 
-━━━━━━━━━━━━━ PHASE 3: EVALUATOR ━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━ PHASE 3: EVALUATOR ━━━━━━━━━━━━━
 DC-QA   ✔  22 unit tests · 3 E2E flows (create→send→paid) · Stripe test mode all green
 DC-SEC  ✔  Stripe webhook signature verified · RLS all tables · 0 vulnerabilities
 DC-REV  ✔  Code approved · no logic duplication · types sound
 
-━━━━━━━━━━━━━ GATE 1–5 ━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━ GATE 1–5 ━━━━━━━━━━━━━━━━━━━
 ① Scan       ✅  0 error-registry hits · all files ≤ 300 lines
 ② Criteria   ✅  3 E2E flows passing in Stripe test mode
-③ Version    ✅  v2.0.19 consistent
+③ Version    ✅  v2.0.32 consistent across all files
 ④ Separation ✅  Builder ≠ Reviewer confirmed
 ⑤ Breaking   ✅  Greenfield — no breaking changes
 
@@ -190,7 +195,12 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
     ┌─────────────────┐
     │  INTENT PARSE   │  Every input → structured [INTENT PARSED] block
     └────────┬────────┘
-             │  원본 / 정제 / 목표 / 범위 / 전제
+             │  Input / Parsed / Goal / Scope / Context
+             ▼
+    ┌──────────────────┐
+    │ TRADEOFF CHECK   │  CEO scans for risks before any code is written
+    └────────┬─────────┘
+             │  ✅ CLEAR → proceed   ⚠️ DETECTED → show risks + 4 options
              ▼
     ┌─────────────┐
     │  STACK SEL  │  CEO analyzes your task and recommends the best stack
@@ -208,16 +218,16 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
     ┌──────────────────┐
     │  TASK SYNTHESIS  │  Q&A answers → structured [TASK REFINED] block
     └────────┬─────────┘
-             │  최종 태스크 / 완료 조건 / 제외 범위 확정
+             │  Final task / Done criteria / Out-of-scope locked
              ▼
     ┌─────────────┐
     │  DOC-FIRST  │  ← IMMUTABLE RULE — all stacks, no exceptions
     └──────┬──────┘
            │  docs/YYYY-MM-DD-vX.X.X/
-           │  ├── 00-requirements.md       functional + non-functional reqs
-           │  ├── 01-architecture.md       system design, data flow
-           │  ├── 02-task-breakdown.md     tasks + priority P0/P1/P2
-           │  ├── 03-test-strategy.md      test strategy + security criteria
+           │  ├── 00-requirements.md         functional + non-functional reqs
+           │  ├── 01-architecture.md         system design, data flow
+           │  ├── 02-task-breakdown.md       tasks + priority P0/P1/P2
+           │  ├── 03-test-strategy.md        test strategy + security criteria
            │  └── 04-completion-criteria.md  done condition + exit + rollback
            │  ↳ Planner self-checks for gaps → asks user if needed → [DOC COMPLETE]
            ▼
@@ -292,6 +302,16 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 ---
 
+## 🆕 What's New
+
+| Version | Feature |
+|---|---|
+| **v2.0.32** | **Memory Sync** — rule memories auto-refresh on every `npx domangcha` update. User feedback and project context are never overwritten. |
+| **v2.0.31** | **Tradeoff Check** — CEO surfaces architectural risks and side effects before any Q&A or implementation begins. |
+| **v2.0.30** | Agent color-coding system — visual group identification across all pipeline output. |
+
+---
+
 ## 🔄 Updates
 
 **How updates work:**
@@ -303,7 +323,7 @@ Files are installed to `~/.claude/` on first run. They do **not** auto-update wh
 **Auto-update prompt (built-in):** Every `/ceo` call silently checks the npm registry for a newer version. If one exists, you'll see:
 
 ```
-[CEO] New version v2.0.20 available (installed: v2.0.19).
+[CEO] New version v2.0.32 available (installed: v2.0.31).
 Update before continuing? (y/n):
 ```
 
@@ -373,11 +393,6 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 npm install -g domangcha && domangcha
 ```
 
-```bash
-# Update from inside Claude Code
-/ceo-update
-```
-
 Re-running always pulls the latest. Your registries (errors, instincts, history) are preserved.
 
 ---
@@ -426,7 +441,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 
 ### ⚡ 왜 DOMANGCHA인가?
 
-DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, workflow automation을 가능하게 합니다. 전통적인 개발자 도구와 달리, 16명의 전문화된 AI 에이전트를 병렬로 조율하여 문맥 전환 없이 엔드-투-엔드 프로젝트 완성을 제공합니다.
+DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**입니다. 16명의 전문화된 AI 에이전트를 병렬로 조율하여 문맥 전환 없이 엔드-투-엔드 프로젝트를 완성합니다.
 
 <table>
 <tr>
@@ -450,7 +465,8 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
 엔터를 치는 순간
 └── "잠깐, 질문이 있어요"
     └── 12개 핵심 질문
-        └── 16명 전문가 → 5 게이트 → 출시
+        └── 리스크 체크 → 16명 전문가
+            → 5 게이트 → 출시
 ```
 
 </td>
@@ -460,10 +476,22 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
 | | DOMANGCHA | 일반 AI 도구 |
 |---|:---:|:---:|
 | 코드 전 요구사항 분석 | ✅ 최대 12개 질문 | ❌ 바로 코딩 |
+| 구현 전 트레이드오프 체크 | ✅ 리스크 사전 발굴 | ❌ 없음 |
 | 전문가 역할 분리 | ✅ 16명 병렬 운영 | ❌ 단일 모델 |
 | 빌더 ≠ 리뷰어 강제 | ✅ 항상 분리 | ❌ 없음 |
 | 파괴적 변경 보호 | ✅ Gate 5 차단 | ❌ 없음 |
 | 실수 → 영구 패턴 등록 | ✅ error-registry | ❌ 없음 |
+| 업데이트 시 규칙 메모리 자동 갱신 | ✅ v2.0.32 | ❌ 없음 |
+
+---
+
+### 🆕 최신 업데이트
+
+| 버전 | 기능 |
+|---|---|
+| **v2.0.32** | **메모리 자동 동기화** — `npx domangcha` 업데이트 시 규칙 메모리 자동 갱신. 사용자 피드백/프로젝트 컨텍스트는 절대 덮어쓰지 않음. |
+| **v2.0.31** | **트레이드오프 체크** — Q&A 및 구현 시작 전 CEO가 아키텍처 리스크와 부작용을 사전에 표면화. |
+| **v2.0.30** | 에이전트 컬러 코딩 시스템 — 파이프라인 출력 전체에서 그룹 시각적 식별. |
 
 ---
 
@@ -477,6 +505,11 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
     │  인텐트 파싱      │  모든 입력 → 구조화된 [INTENT PARSED] 블록 출력
     └────────┬──────────┘
              │  원본 / 정제 / 목표 / 범위 / 전제
+             ▼
+    ┌──────────────────┐
+    │  트레이드오프 체크│  CEO가 구현 전 리스크를 스캔
+    └────────┬─────────┘
+             │  ✅ 이상 없음 → 진행   ⚠️ 위험 감지 → 리스크 + 4가지 선택지 제시
              ▼
     ┌─────────────┐
     │  스택 선택  │  CEO가 업무 분석 후 최적 스택 추천
@@ -580,8 +613,6 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
 
 ### 🖥️ 명령어
 
-커맨드라인 인터페이스는 workflow automation을 Claude Code에 직접 가져옵니다. 모든 명령은 다중 에이전트 시스템을 트리거하여 기획, 빌드, 품질, 배포 단계를 조율합니다.
-
 | 명령어 | 동작 |
 |---|---|
 | `/ceo "[업무]"` | 🚀 전체 파이프라인 — Q&A → 16명 → GATE → 출시 |
@@ -610,8 +641,6 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
 
 ### 📦 요구사항
 
-DOMANGCHA는 수동 조율 없이 AI 기반 자동화와 다중 에이전트 조율을 원하는 Claude Code 사용자를 위한 개발자 도구입니다.
-
 | | |
 |---|---|
 | [Claude Code](https://claude.ai/code) | 필수 |
@@ -635,11 +664,6 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 **방법 3 — 전역 설치**
 ```bash
 npm install -g domangcha && domangcha
-```
-
-```bash
-# Claude Code 내에서 업데이트
-/ceo-update
 ```
 
 인스톨러를 다시 실행하면 항상 최신 버전을 가져옵니다. 레지스트리(에러, 본능, 히스토리)는 보존됩니다. `~/.claude/projects/*/memory/`의 규칙 메모리는 최신 버전 정의로 자동 갱신되며, 사용자 피드백/프로젝트 컨텍스트는 절대 덮어쓰지 않습니다.
