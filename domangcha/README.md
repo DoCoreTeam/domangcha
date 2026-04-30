@@ -132,7 +132,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 ## Structure / 구조
 
 ```
-macc/
+domangcha/
 ├── CLAUDE.md                    ← CEO brain entry point / CEO 두뇌 진입점
 ├── install.sh                   ← One-line installer / 원라인 설치 스크립트
 ├── agents/                      ← 16 agent definitions / 16개 에이전트 정의
