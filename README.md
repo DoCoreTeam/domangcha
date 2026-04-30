@@ -15,7 +15,7 @@
 
 Open-source developer tools for AI-driven workflow automation.
 
-[![Version](https://img.shields.io/badge/version-2.0.12-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.13-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -27,6 +27,10 @@ Open-source developer tools for AI-driven workflow automation.
 > **You just hired a 16-person engineering team. With one command.**
 
 ```bash
+# Option 1 — npx (recommended)
+npx domangcha
+
+# Option 2 — curl
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
 ```
 
@@ -266,7 +270,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 AI 기반 workflow automation 개발자 도구
 
-[![Version](https://img.shields.io/badge/version-2.0.12-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.13-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
 [![Agents](https://img.shields.io/badge/에이전트-16명-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
@@ -275,6 +279,10 @@ AI 기반 workflow automation 개발자 도구
 > **16명의 엔지니어링 팀을 단 한 줄로 채용하세요.**
 
 ```bash
+# 방법 1 — npx (권장)
+npx domangcha
+
+# 방법 2 — curl
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
 ```
 
