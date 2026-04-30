@@ -158,7 +158,7 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-*Built with **DOMACC**.*
+*Built with **DOMACC** · by [docore](https://github.com/DoCoreTeam) (Michael Dohyeon Kim · KDC CEO)*
 
 ---
 
@@ -324,4 +324,4 @@ MIT — [LICENSE](LICENSE) 참조.
 
 ---
 
-*Built with **DOMACC**.*
+*Built with **DOMACC** · by [docore](https://github.com/DoCoreTeam) (Michael Dohyeon Kim · KDC CEO)*
