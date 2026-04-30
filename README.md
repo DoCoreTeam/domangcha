@@ -13,7 +13,7 @@
 
 **16 AI specialists. One command. From requirements to shipped code.**
 
-[![Version](https://img.shields.io/badge/version-2.0.19-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.20-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -292,13 +292,35 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 ---
 
+## 🔄 Updates
+
+**How updates work:**
+
+Files are installed to `~/.claude/` on first run. They do **not** auto-update while a project is in progress — the version at install time is what runs.
+
+**To update:** re-run `npx domangcha`. Your error registry and project registries are preserved.
+
+**Auto-update prompt (built-in):** Every `/ceo` call silently checks the npm registry for a newer version. If one exists, you'll see:
+
+```
+[CEO] New version v2.0.20 available (installed: v2.0.19).
+Update before continuing? (y/n):
+```
+
+- `y` → runs `npx domangcha`, updates in-place, then continues with your task
+- `n` / Enter → skips and continues without updating
+
+Version check failures (offline, etc.) are silently ignored — your task is never blocked.
+
+---
+
 ## 🖥️ Commands
 
-The command-line interface brings workflow automation directly into Claude Code. Every command triggers the multi-agent system to orchestrate tasks across planning, building, quality, and deployment phases.
+Every command triggers the multi-agent system to orchestrate tasks across planning, building, quality, and deployment phases.
 
 | Command | What it does |
 |---|---|
-| `/ceo "[task]"` | 🚀 Full pipeline — Q&A → 16 agents → GATE → ship |
+| `/ceo "[task]"` | 🚀 Full pipeline — version check → Q&A → 16 agents → GATE → ship |
 | `/ceo-ralph "[task]"` | 🔁 Autonomous loop until completion criteria met |
 | `/ceo-init` | 🔧 Project harness setup |
 | `/ceo-debug "[bug]"` | 🐛 Investigate → fix → verify |
@@ -377,7 +399,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 **16명 AI 전문가. 명령 하나. 요구사항부터 배포까지.**
 
-[![Version](https://img.shields.io/badge/version-2.0.19-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.20-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)

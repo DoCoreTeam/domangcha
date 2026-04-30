@@ -25,6 +25,32 @@ Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="..."
 
 ---
 
+## PHASE -2: VERSION CHECK (항상 먼저 — INTENT PARSE 전)
+
+**목적:** 설치된 DOMANGCHA 버전이 최신인지 확인. 구버전이면 사용자에게 물어보고 업데이트 후 진행.
+
+**실행 규칙:**
+1. 설치된 버전 읽기:
+   ```bash
+   cat ~/.claude/domangcha-installed-version 2>/dev/null || echo "unknown"
+   ```
+2. npm 최신 버전 확인:
+   ```bash
+   npm view domangcha version 2>/dev/null || echo "unknown"
+   ```
+3. 두 값 비교:
+   - **같으면** → 알림 없이 바로 PHASE -1로 진행
+   - **다르면** → 아래 프롬프트 출력 후 사용자 응답 대기:
+     ```
+     [CEO] 새 버전 v{LATEST}가 있습니다 (현재 설치: v{INSTALLED}).
+     업데이트하고 진행할까요? (y/n, 기본값 n):
+     ```
+4. 사용자가 **y** → `npx domangcha` 실행 → "✅ 업데이트 완료 — 계속합니다" 출력 → PHASE -1 진행
+5. 사용자가 **n** 또는 엔터 → "⏩ 업데이트 건너뜀 — 계속합니다" 출력 → PHASE -1 진행
+6. npm 확인 실패(오프라인 등) → 무시하고 PHASE -1 진행 (버전 체크 실패로 파이프라인 중단 금지)
+
+---
+
 ## PHASE -1: INTENT PARSE (항상 먼저 — 모든 입력 전처리)
 
 **목적:** 사용자 입력이 명확하든 모호하든, CEO가 최적으로 이해할 수 있는 구조화된 태스크로 변환.
