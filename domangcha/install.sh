@@ -73,13 +73,7 @@ git_update_or_clone() {
     fi
 }
 
-# ── 1. DOMANGCHA ──────────────────────────────────
-printf "${DIM}  다운로드 중... / Fetching DOMANGCHA...${NC}\n"
-( git clone --depth 1 "$MACC_REPO" "$TMP_DIR/domangcha-repo" --quiet ) & spin "DOMANGCHA 다운로드 중 / Downloading..."
-SRC="${TMP_DIR}/domangcha-repo/domangcha"
-DOMANGCHA_VERSION=$(cat "${SRC}/VERSION" 2>/dev/null || echo "unknown")
-
-# ── Banner ─────────────────────────────────────────
+# ── 1. DOMANGCHA download ─────────────────────────
 clear
 echo ""
 echo -e "${CYAN}${BOLD}"
@@ -93,54 +87,16 @@ echo -e "${NC}"
 echo -e "${WHITE}${BOLD}  돔황차 — 개발 지옥에서 도망쳐  🚗💨${NC}"
 echo -e "${DIM}  Your AI getaway car from development hell.${NC}"
 echo ""
-# Category label
 echo -e "  ${MAGENTA}${BOLD}AI 개발 자동화 도구${NC}  ${DIM}·${NC}  ${MAGENTA}AI Development Automation Tool${NC}"
 echo -e "  ${DIM}손코딩에서 도망쳐 — 16명 AI 크루가 대신 짭니다${NC}"
 echo -e "  ${DIM}Escape hand-coding — a 16-agent AI crew builds for you${NC}"
 echo ""
-# Version — large block display (auto-read from domangcha/VERSION)
-echo -e "${GREEN}${BOLD}"
-python3 - "${DOMANGCHA_VERSION}" <<'PYEOF'
-import sys
-V = sys.argv[1]
-digits = {
-  '0':["┌─┐","│ │","└─┘"], '1':[" ┐ "," │ "," ┴ "],
-  '2':["┌─┐","┌─┘","└─┘"], '3':["┌─┐"," ─┤","└─┘"],
-  '4':["┬ ┬","└─┤","  ┴"], '5':["┌─ ","└─┐","└─┘"],
-  '6':["┌─ ","├─┐","└─┘"], '7':["┌─┐","  │","  ╵"],
-  '8':["┌─┐","├─┤","└─┘"], '9':["┌─┐","└─┤","  ┘"],
-  '.':["   ","   "," · "], '-':["   ","───","   "], 'v':["   ","\\/ ","   "],
-}
-lines = ["  ", "  ", "  "]
-for c in "v" + V:
-  d = digits.get(c, ["   ","   ","   "])
-  for i in range(3): lines[i] += d[i] + " "
-for l in lines: print(l)
-PYEOF
-echo -e "${NC}"
-python3 - <<'PYEOF'
-M,C,D,W,NC = "\033[0;35m","\033[0;36m","\033[2m","\033[1;37m","\033[0m"
-rows = [
-    (C, "16 에이전트(Agents)  ·  16 명령어(Commands)  ·  풀 파이프라인(Full Pipeline)"),
-    (D, "기획 → 빌드 → 검증 → GATE → 출시  /  Plan → Build → Eval → GATE → Ship"),
-    (W, "by docore  (Michael Dohyeon Kim · KDC CEO)"),
-    (D, "github.com/DoCoreTeam"),
-]
-import unicodedata
-def dw(s):
-    return sum(2 if unicodedata.east_asian_width(c) in ('W','F') else 1 for c in s)
-pad = 2
-W_box = max(dw(t) for _, t in rows) + pad * 2 + 2
-bar = "─" * (W_box)
-def row(col, text):
-    spaces = W_box - dw(text) - pad * 2
-    return f"  {M}│{NC}  {col}{text}{NC}{' ' * spaces}  {M}│{NC}"
-print(f"  {M}┌{bar}┐{NC}")
-for col, text in rows:
-    print(row(col, text))
-print(f"  {M}└{bar}┘{NC}")
-PYEOF
+echo -e "${DIM}  ──────────────────────────────────────────────────────${NC}"
+echo -e "  ${DIM}설치를 시작합니다 / Starting installation...${NC}"
 echo ""
+( git clone --depth 1 "$MACC_REPO" "$TMP_DIR/domangcha-repo" --quiet ) & spin "DOMANGCHA 다운로드 중 / Downloading..."
+SRC="${TMP_DIR}/domangcha-repo/domangcha"
+DOMANGCHA_VERSION=$(cat "${SRC}/VERSION" 2>/dev/null || echo "unknown")
 
 # ── 2. Agents ────────────────────────────────────
 step "에이전트 16명 설치" "Installing 16 agents"
@@ -420,57 +376,113 @@ fi
 # ── 14. Mark installed version ────────────────────
 echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 
-# ── Done ─────────────────────────────────────────
-echo ""
-echo ""
+# ── Done — clear + full screen ───────────────────
+clear
 python3 - "${DOMANGCHA_VERSION}" <<'PYEOF'
-import sys, unicodedata
+import sys, unicodedata, shutil
+
 v = sys.argv[1]
+cols = shutil.get_terminal_size((80, 24)).columns
+
 def dw(s):
-    w = 0
-    for c in s:
-        ea = unicodedata.east_asian_width(c)
-        w += 2 if ea in ('W', 'F') else 1
-    return w
-line1 = "✅  설치 완료! / Installation Complete!"
-line2 = f"DOMANGCHA v{v}  —  AI 개발 자동화 도구 / AI Dev Automation"
-inner = max(dw(line1), dw(line2)) + 4
-bar = "═" * (inner + 2)
-def row(text, color="", reset=""):
-    pad = inner - dw(text)
-    return f"  ║  {color} {text}{reset}{' ' * pad} ║"
-C, G, NC = "\033[0;36m\033[1m", "\033[0;32m", "\033[0m"
-print(f"\n{C}  ╔{bar}╗")
-print(row(line1, G, C))
-print(row(line2, G, C))
-print(f"  ╚{bar}╝{NC}")
+    return sum(2 if unicodedata.east_asian_width(c) in ('W','F') else 1 for c in s)
+
+CY="\033[0;36m"; CB="\033[0;36m\033[1m"; GR="\033[0;32m"
+MG="\033[0;35m"; WH="\033[1;37m"; DM="\033[2m"; NC="\033[0m"; BD="\033[1m"
+
+# ── ASCII banner (wide: full art / narrow: text) ──
+wide = cols >= 86
+if wide:
+    print(f"\n{CB}")
+    for line in [
+        "  ██████╗  ██████╗ ███╗   ███╗ █████╗ ███╗   ██╗ ██████╗ ██╗  ██╗ █████╗ ",
+        "  ██╔══██╗██╔═══██╗████╗ ████║██╔══██╗████╗  ██║██╔════╝ ██║  ██║██╔══██╗",
+        "  ██║  ██║██║   ██║██╔████╔██║███████║██╔██╗ ██║██║  ███╗███████║███████║",
+        "  ██║  ██║██║   ██║██║╚██╔╝██║██╔══██║██║╚██╗██║██║   ██║██╔══██║██╔══██║",
+        "  ██████╔╝╚██████╔╝██║ ╚═╝ ██║██║  ██║██║ ╚████║╚██████╔╝██║  ██║██║  ██║",
+        "  ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝",
+    ]: print(line)
+    print(NC)
+else:
+    print(f"\n{CB}  🚗💨 DOMANGCHA{NC}")
+
+print(f"{WH}{BD}  돔황차 — 개발 지옥에서 도망쳐  🚗💨{NC}")
+print(f"{DM}  Escape development hell. DOMANGCHA is your getaway car.{NC}")
+print(f"  {MG}{BD}AI 개발 자동화 도구{NC}  {DM}·{NC}  {MG}AI Development Automation Tool{NC}")
+print()
+
+# ── Version block (wide: big digits / narrow: inline) ──
+if wide:
+    digits = {
+        '0':["┌─┐","│ │","└─┘"],'1':[" ┐ "," │ "," ┴ "],'2':["┌─┐","┌─┘","└─┘"],
+        '3':["┌─┐"," ─┤","└─┘"],'4':["┬ ┬","└─┤","  ┴"],'5':["┌─ ","└─┐","└─┘"],
+        '6':["┌─ ","├─┐","└─┘"],'7':["┌─┐","  │","  ╵"],'8':["┌─┐","├─┤","└─┘"],
+        '9':["┌─┐","└─┤","  ┘"],'.':["   ","   "," · "],'-':["   ","───","   "],
+        'v':["   ","\\/ ","   "],
+    }
+    print(f"{GR}{BD}")
+    lines = ["  ","  ","  "]
+    for c in "v" + v:
+        d = digits.get(c, ["   ","   ","   "])
+        for i in range(3): lines[i] += d[i] + " "
+    for l in lines: print(l)
+    print(NC)
+else:
+    print(f"  {GR}{BD}v{v}{NC}\n")
+
+# ── Info box (width-adaptive) ──
+rows = [
+    (CY, "16 에이전트(Agents)  ·  16 명령어(Commands)  ·  풀 파이프라인(Full Pipeline)"),
+    (DM, "기획 → 빌드 → 검증 → GATE → 출시  /  Plan → Build → Eval → GATE → Ship"),
+    (WH, "by docore  (Michael Dohyeon Kim · KDC CEO)"),
+    (DM, "github.com/DoCoreTeam"),
+]
+max_content = max(dw(t) for _, t in rows)
+box_inner = min(max_content + 4, cols - 6)
+bar = "─" * (box_inner)
+def row(col, text):
+    pad = box_inner - dw(text) - 4
+    return f"  {MG}│{NC}  {col}{text}{NC}{' ' * max(pad,0)}  {MG}│{NC}"
+print(f"  {MG}┌{bar}┐{NC}")
+for col, text in rows:
+    print(row(col, text))
+print(f"  {MG}└{bar}┘{NC}")
+print()
+
+# ── Installed items ──
+sep = "  " + "─" * min(cols - 6, 56)
+print(f"{WH}{BD}  설치된 항목 / What's installed{NC}")
+print(f"{DM}{sep}{NC}")
+items = [
+    ("~/.claude/agents/dc-*.md",   "16명 DC-* 에이전트 / 16 DC-* Worker Agents"),
+    ("~/.claude/commands/ceo*.md", "/ceo /ceo-init /ceo-ralph /ceo-status ..."),
+    ("~/.claude/skills/",          "CEO 스킬 + 183 ECC + gstack + Superpowers"),
+    ("~/.claude/hooks/ + settings.json", "자동 테스트·CEO 검토·파이프라인 강제 / enforcer"),
+    ("~/.claude/CLAUDE.md",        "Claude Code 자동 로드 / auto-loaded"),
+]
+for path, desc in items:
+    print(f"  {GR}✔{NC}  \033[1;33m{path}{NC}")
+    print(f"     {DM}{desc}{NC}")
+print(f"{DM}{sep}{NC}")
+print()
+
+# ── Getting started ──
+print(f"{WH}{BD}  🚀 시작하기 / Getting Started{NC}")
+print(f"  {DM}1.{NC} Claude Code 를 아무 프로젝트에서 열기  {DM}/ Open Claude Code in any project{NC}")
+print(f"  {DM}2.{NC} {CY}/ceo-init{NC}  {DM}프로젝트 초기화 / Initialize project{NC}")
+print(f"  {DM}3.{NC} {CY}/ceo \"투두앱 만들어줘\"{NC}  {DM}→ 풀 파이프라인 시작 / Start full pipeline{NC}")
+print()
+print(f"  {WH}{BD}📋 주요 명령어 / Key Commands{NC}")
+cmds = [
+    ("/ceo \"업무\"", "Q&A → 16에이전트 → GATE → 완료"),
+    ("/ceo-ralph",    "자율 반복 루프 / autonomous loop"),
+    ("/ceo-init",     "프로젝트 하네스 셋업 / harness setup"),
+    ("/ceo-status",   "현황 조회 / show status"),
+]
+for cmd, desc in cmds:
+    print(f"  {CY}{cmd:<20}{NC}  {DM}{desc}{NC}")
+print()
+print(f"  {MG}{BD}개발 지옥에서 도망쳐. 🚗💨 돔황차가 데려다 줄게.{NC}")
+print(f"  {DM}Escape development hell. DOMANGCHA is your getaway car.{NC}")
+print()
 PYEOF
-echo -e "  ${WHITE}${BOLD}설치된 항목 / What's installed${NC}"
-echo -e "  ${DIM}──────────────────────────────────────────────────────${NC}"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/agents/dc-*.md${NC}"
-echo -e "     ${DIM}16명 DC-* 에이전트 / 16 DC-* Worker Agents${NC}"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/commands/ceo*.md${NC}"
-echo -e "     ${DIM}/ceo /ceo-init /ceo-ralph /ceo-status ...${NC}"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/skills/ceo-system/${NC}"
-echo -e "     ${DIM}CEO 오케스트레이션 브레인 / CEO orchestration brain${NC}"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/hooks/${NC}  +  ${YELLOW}~/.claude/settings.json${NC}"
-echo -e "     ${DIM}자동 테스트·CEO 검토·파이프라인 강제 / auto-test + CEO review + enforcer${NC}"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/CLAUDE.md${NC}"
-echo -e "     ${DIM}Claude Code 자동 로드 / auto-loaded by Claude Code${NC}"
-echo -e "  ${DIM}──────────────────────────────────────────────────────${NC}"
-echo ""
-echo -e "  ${WHITE}${BOLD}🚀 시작하기 / Getting Started${NC}"
-echo -e "  ${DIM}  1.${NC} Claude Code를 아무 프로젝트에서 열기"
-echo -e "     ${DIM}Open Claude Code in any project${NC}"
-echo -e "  ${DIM}  2.${NC} ${CYAN}/ceo-init${NC}  ${DIM}프로젝트 초기화 / Initialize project${NC}"
-echo -e "  ${DIM}  3.${NC} ${CYAN}/ceo \"투두앱 만들어줘\"${NC}  ${DIM}→ 풀 파이프라인 시작 / Start full pipeline${NC}"
-echo ""
-echo -e "  ${WHITE}${BOLD}📋 주요 명령어 / Key Commands${NC}"
-echo -e "  ${CYAN}/ceo \"업무\"${NC}    ${DIM}Q&A → 16에이전트 → GATE → 완료 / Q&A → 16 agents → GATE → done${NC}"
-echo -e "  ${CYAN}/ceo-ralph${NC}    ${DIM}자율 반복 루프 / autonomous loop until done${NC}"
-echo -e "  ${CYAN}/ceo-init${NC}     ${DIM}프로젝트 하네스 셋업 / project harness setup${NC}"
-echo -e "  ${CYAN}/ceo-status${NC}   ${DIM}현황 조회 / show status${NC}"
-echo ""
-echo -e "  ${MAGENTA}${BOLD}  개발 지옥에서 도망쳐. 🚗💨 돔황차가 데려다 줄게.${NC}"
-echo -e "  ${DIM}  Escape development hell. DOMANGCHA is your getaway car.${NC}"
-echo ""
