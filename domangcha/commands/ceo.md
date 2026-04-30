@@ -37,11 +37,12 @@ Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="..."
 - 버전 다를 때만 → hook이 시스템 메시지에 `[⚠️ UPDATE]` 주입
 
 **CEO 실행 규칙:**
-1. 시스템 메시지에 `[⚠️ UPDATE]`가 있으면 → 사용자에게 물어봄:
+1. 시스템 메시지에 `[⚠️ UPDATE]`가 있으면 → 아래 질문만 출력하고 **즉시 멈춤** (PHASE -1 절대 진입 금지):
    ```
    [CEO] 새 버전 v{LATEST}가 있습니다 (현재 설치: v{INSTALLED}).
    업데이트하고 진행할까요? (y/n, 기본값 n):
    ```
+   → 이 응답에서 추가 처리 없음. 사용자 답변 대기.
 2. 사용자가 **y** → `npx domangcha` 실행 → "✅ 업데이트 완료" → PHASE -1 진행
 3. 사용자가 **n** 또는 엔터 → "⏩ 건너뜀" → PHASE -1 진행
 4. `[⚠️ UPDATE]` 없으면 → 바로 PHASE -1 진행 (알림 없음)
