@@ -13,7 +13,7 @@
 
 **16 AI specialists. One command. From requirements to shipped code.**
 
-[![Version](https://img.shields.io/badge/version-2.0.13-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.18-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -88,6 +88,16 @@ You press Enter
 > `/ceo "Build a user auth system with Google OAuth, JWT, and a profile page"`
 
 ```
+[INTENT PARSED]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+원본: Build a user auth system with Google OAuth, JWT, and a profile page
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+정제: Google OAuth + JWT 기반 인증 시스템 + 사용자 프로필 페이지 구현
+목표: 보안 인증 플로우 완성 및 브라우저에서 동작 확인
+범위: 포함 — OAuth, JWT 미들웨어, 프로필 UI  /  제외 — 기타 소셜 로그인
+전제: 웹앱 구현, 기존 스택 미확인 → Q&A로 확인 필요
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 [CEO SIZE ASSESSMENT]
 Task: User auth system with Google OAuth + JWT + profile page
 Rating: MEDIUM  →  FULL PIPELINE
@@ -105,6 +115,17 @@ Rating: MEDIUM  →  FULL PIPELINE
 > Greenfield
 
 [Q&A COMPLETE] ✅  Stack / done criteria / constraints confirmed
+
+[TASK REFINED]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+원본 입력: Build a user auth system with Google OAuth, JWT, and a profile page
+Q&A 핵심 답변: Next.js + Supabase / Google OAuth only / 단위테스트 + 브라우저 플로우 / 그린필드
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+최종 태스크: Next.js + Supabase에서 Google OAuth 인증 구현 (next-auth v5),
+             JWT 미들웨어로 세션 보호, 프로필 페이지 UI 완성
+완료 조건: ① 단위테스트 통과  ② 브라우저에서 로그인 플로우 정상 동작
+제외 범위: 추가 소셜 로그인 (추후 확장 가능하도록 설계)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [DOC-FIRST] Creating docs/2026-04-30-v2.0.14/
   ✔ 00-requirements.md
@@ -151,6 +172,11 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 /ceo "Build me a SaaS"
            │
            ▼
+    ┌─────────────────┐
+    │  INTENT PARSE   │  Every input → structured [INTENT PARSED] block
+    └────────┬────────┘
+             │  원본 / 정제 / 목표 / 범위 / 전제
+             ▼
     ┌─────────────┐
     │  STACK SEL  │  CEO analyzes your task and recommends the best stack
     └──────┬──────┘
@@ -164,6 +190,11 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
     └──────┬──────┘
            │  Stack? Done criteria? External APIs? Auth? Deploy target?
            ▼
+    ┌──────────────────┐
+    │  TASK SYNTHESIS  │  Q&A answers → structured [TASK REFINED] block
+    └────────┬─────────┘
+             │  최종 태스크 / 완료 조건 / 제외 범위 확정
+             ▼
     ┌─────────────┐
     │  DOC-FIRST  │  ← IMMUTABLE RULE — all stacks, no exceptions
     └──────┬──────┘
@@ -331,7 +362,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 **16명 AI 전문가. 명령 하나. 요구사항부터 배포까지.**
 
-[![Version](https://img.shields.io/badge/version-2.0.13-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.18-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -405,6 +436,11 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
 /ceo "SaaS 만들어줘"
            │
            ▼
+    ┌───────────────────┐
+    │  인텐트 파싱      │  모든 입력 → 구조화된 [INTENT PARSED] 블록 출력
+    └────────┬──────────┘
+             │  원본 / 정제 / 목표 / 범위 / 전제
+             ▼
     ┌─────────────┐
     │  스택 선택  │  CEO가 업무 분석 후 최적 스택 추천
     └──────┬──────┘
@@ -418,6 +454,11 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, work
     └──────┬──────┘
            │  스택? 완료 기준? 외부 API? 인증? 배포?
            ▼
+    ┌──────────────────┐
+    │  태스크 정제      │  Q&A 답변 → 구조화된 [TASK REFINED] 블록 출력
+    └────────┬─────────┘
+             │  최종 태스크 / 완료 조건 / 제외 범위 확정
+             ▼
     ┌─────────────┐
     │  문서 먼저  │  ← 절대 불변 — 어떤 스택이든, 예외 없음
     └──────┬──────┘
