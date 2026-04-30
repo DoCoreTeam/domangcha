@@ -16,6 +16,7 @@
 Open-source developer tools for AI-driven workflow automation.
 
 [![Version](https://img.shields.io/badge/version-2.0.12-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
 [![Agents](https://img.shields.io/badge/Agents-16-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-16-agents)
@@ -225,9 +226,16 @@ DOMANGCHA is a developer tool built for Claude Code users who want AI-driven aut
 
 ## 🚀 Install · Update
 
+**Option 1 — curl (recommended)**
 ```bash
-# Install or update
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
+```
+
+**Option 2 — npm / npx**
+```bash
+npx domangcha
+# or install globally
+npm install -g domangcha && domangcha
 ```
 
 ```bash
@@ -464,9 +472,16 @@ DOMANGCHA는 수동 조율 없이 AI 기반 자동화와 다중 에이전트 조
 
 ### 🚀 설치 · 업데이트
 
+**방법 1 — curl (권장)**
 ```bash
-# 설치 또는 업데이트
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
+```
+
+**방법 2 — npm / npx**
+```bash
+npx domangcha
+# 또는 전역 설치
+npm install -g domangcha && domangcha
 ```
 
 ```bash
