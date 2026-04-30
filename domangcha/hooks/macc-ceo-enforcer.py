@@ -3,8 +3,9 @@
 UserPromptSubmit hook — MACC CEO Pipeline Enforcer
 1. Injects CEO pipeline reminder for task requests
 2. Loads domain-specific manual context based on keywords
+3. Checks for DOMANGCHA updates (cached, max 1x/hour — no npm calls on cache hit)
 """
-import json, sys, os, re
+import json, sys, os, re, time, subprocess
 from pathlib import Path
 
 P = os.environ.get('CLAUDE_PROJECT_DIR', os.getcwd())
@@ -63,6 +64,44 @@ def load(d):
             return f.read_text()[:1500]
     return None
 
+# ── Cached version check (TTL 1 hour) ────────────────────────────────────────
+_CACHE = Path.home() / '.claude' / '.domangcha-version-cache'
+_INSTALLED = Path.home() / '.claude' / 'domangcha-installed-version'
+_TTL = 3600  # seconds
+
+def _latest_version() -> str:
+    if _CACHE.exists():
+        try:
+            ver, ts = _CACHE.read_text().strip().rsplit(':', 1)
+            if time.time() - float(ts) < _TTL:
+                return ver
+        except Exception:
+            pass
+    try:
+        r = subprocess.run(['npm', 'view', 'domangcha', 'version'],
+                           capture_output=True, text=True, timeout=5)
+        v = r.stdout.strip()
+        if v:
+            _CACHE.write_text(f'{v}:{time.time():.0f}')
+            return v
+    except Exception:
+        pass
+    return ''
+
+def update_notice() -> str:
+    try:
+        installed = _INSTALLED.read_text().strip() if _INSTALLED.exists() else ''
+        latest = _latest_version()
+        if latest and installed and latest != installed:
+            return (f'\n[⚠️ UPDATE] DOMANGCHA v{latest} available '
+                    f'(installed: v{installed}). '
+                    f'CEO: ask user "Update before continuing? (y/n)" — '
+                    f'y → run `npx domangcha` then proceed | n → proceed as-is.')
+    except Exception:
+        pass
+    return ''
+# ─────────────────────────────────────────────────────────────────────────────
+
 def is_task_request(prompt):
     """Detect if this is a CEO task request requiring pipeline enforcement."""
     p_lower = prompt.lower()
@@ -100,7 +139,7 @@ try:
     parts = []
 
     if is_task_request(prompt):
-        parts.append(CEO_REMINDER)
+        parts.append(CEO_REMINDER + update_notice())
 
     found = set()
     for domain, kws in KW.items():

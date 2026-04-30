@@ -27,27 +27,24 @@ Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="..."
 
 ## PHASE -2: VERSION CHECK (항상 먼저 — INTENT PARSE 전)
 
-**목적:** 설치된 DOMANGCHA 버전이 최신인지 확인. 구버전이면 사용자에게 물어보고 업데이트 후 진행.
+**목적:** 업데이트가 있을 때만 사용자에게 알림. npm 호출은 최대 1시간에 1번으로 제한.
 
-**실행 규칙:**
-1. 설치된 버전 읽기:
-   ```bash
-   cat ~/.claude/domangcha-installed-version 2>/dev/null || echo "unknown"
+**작동 방식 (hook이 자동 처리 — CEO가 npm 직접 호출하지 않음):**
+- `macc-ceo-enforcer.py` hook이 캐시(`~/.claude/.domangcha-version-cache`)를 확인
+- 캐시 유효(1시간 이내) → 파일 읽기만, npm 호출 없음 (거의 0ms)
+- 캐시 만료/없음 → npm 1번 호출 → 캐시 갱신
+- 버전 같으면 → 완전 무음, CEO는 아무것도 하지 않음
+- 버전 다를 때만 → hook이 시스템 메시지에 `[⚠️ UPDATE]` 주입
+
+**CEO 실행 규칙:**
+1. 시스템 메시지에 `[⚠️ UPDATE]`가 있으면 → 사용자에게 물어봄:
    ```
-2. npm 최신 버전 확인:
-   ```bash
-   npm view domangcha version 2>/dev/null || echo "unknown"
+   [CEO] 새 버전 v{LATEST}가 있습니다 (현재 설치: v{INSTALLED}).
+   업데이트하고 진행할까요? (y/n, 기본값 n):
    ```
-3. 두 값 비교:
-   - **같으면** → 알림 없이 바로 PHASE -1로 진행
-   - **다르면** → 아래 프롬프트 출력 후 사용자 응답 대기:
-     ```
-     [CEO] 새 버전 v{LATEST}가 있습니다 (현재 설치: v{INSTALLED}).
-     업데이트하고 진행할까요? (y/n, 기본값 n):
-     ```
-4. 사용자가 **y** → `npx domangcha` 실행 → "✅ 업데이트 완료 — 계속합니다" 출력 → PHASE -1 진행
-5. 사용자가 **n** 또는 엔터 → "⏩ 업데이트 건너뜀 — 계속합니다" 출력 → PHASE -1 진행
-6. npm 확인 실패(오프라인 등) → 무시하고 PHASE -1 진행 (버전 체크 실패로 파이프라인 중단 금지)
+2. 사용자가 **y** → `npx domangcha` 실행 → "✅ 업데이트 완료" → PHASE -1 진행
+3. 사용자가 **n** 또는 엔터 → "⏩ 건너뜀" → PHASE -1 진행
+4. `[⚠️ UPDATE]` 없으면 → 바로 PHASE -1 진행 (알림 없음)
 
 ---
 
