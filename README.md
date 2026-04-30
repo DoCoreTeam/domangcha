@@ -11,9 +11,7 @@
 
 ### 🚗💨 DOMANGCHA — *Your AI getaway car from development hell.*
 
-**Multi-Agent AI Automation for Claude Code**
-
-Open-source developer tools for AI-driven workflow automation.
+**16 AI specialists. One command. From requirements to shipped code.**
 
 [![Version](https://img.shields.io/badge/version-2.0.13-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
@@ -24,18 +22,18 @@ Open-source developer tools for AI-driven workflow automation.
 
 <br/>
 
-> **You just hired a 16-person engineering team. With one command.**
+> **I typed one command and got back auth, payments, and a dashboard — tested, reviewed, security-audited. I went to get coffee.**
+>
+> *— Michael Dohyeon Kim, KDC CEO · builder of DOMANGCHA*
 
 ```bash
-# Option 1 — npx (recommended)
+# Install (30 seconds)
 npx domangcha
-
-# Option 2 — curl
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
 ```
 
 ```bash
-/ceo "Build a SaaS app with auth, payments, and a dashboard"
+# Then, inside Claude Code:
+/ceo "Build a SaaS with auth, payments, and an admin dashboard"
 ```
 
 </div>
@@ -82,6 +80,68 @@ You press Enter
 | Builder ≠ Reviewer (enforced) | ✅ Always | ❌ None |
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
 | Mistakes → permanent patterns | ✅ error-registry | ❌ None |
+
+---
+
+## 🎬 Watch a Real Sprint
+
+> `/ceo "Build a user auth system with Google OAuth, JWT, and a profile page"`
+
+```
+[CEO SIZE ASSESSMENT]
+Task: User auth system with Google OAuth + JWT + profile page
+Rating: MEDIUM  →  FULL PIPELINE
+
+[CEO] Q1: What's your stack? (Next.js / Express / other?)
+> Next.js + Supabase
+
+[CEO] Q2: Do you want magic link as a fallback, or Google-only?
+> Google-only for now, but leave room to add more later
+
+[CEO] Q3: What's "done" look like? Unit tests? E2E?
+> Passing unit tests + the login flow works in the browser
+
+[CEO] Q4: Any existing codebase or greenfield?
+> Greenfield
+
+[Q&A COMPLETE] ✅  Stack / done criteria / constraints confirmed
+
+[DOC-FIRST] Creating docs/2026-04-30-v2.0.13/
+  ✔ 00-requirements.md
+  ✔ 01-architecture.md
+  ✔ 02-task-breakdown.md       P0: OAuth flow  P1: JWT middleware  P2: profile UI
+  ✔ 03-test-strategy.md
+  ✔ 04-completion-criteria.md
+[DOC COMPLETE]
+
+━━━━━━━━━━━━━ PHASE 1: PLANNER ━━━━━━━━━━━━━
+DC-BIZ  ✔  Auth is table-stakes. Build it right first time. Go.
+DC-RES  ✔  next-auth v5 + Supabase RLS — best fit for this stack.
+DC-OSS  ✔  next-auth (21k★), supabase-js, jose (JWT). All stable.
+
+━━━━━━━━━━━━━ PHASE 2: BUILDER ━━━━━━━━━━━━━
+DC-DEV-DB   ✔  profiles table + RLS policies — 3 migrations
+DC-DEV-BE   ✔  /api/auth/[...nextauth] + JWT middleware + session handler
+DC-DEV-FE   ✔  LoginButton · ProfilePage · useSession hook — 4 components
+DC-DEV-OPS  ✔  .env.example · Vercel deploy config
+
+━━━━━━━━━━━━━ PHASE 3: EVALUATOR ━━━━━━━━━━━━━
+DC-QA   ✔  18 unit tests · 2 E2E flows · all green
+DC-SEC  ✔  0 vulnerabilities · CSRF protected · tokens short-lived
+DC-REV  ✔  Code approved · no logic duplication · types sound
+
+━━━━━━━━━━━━━ GATE 1–5 ━━━━━━━━━━━━━
+① Scan       ✅  0 error-registry hits · all files ≤ 300 lines
+② Criteria   ✅  OAuth flow + JWT + profile — all done
+③ Version    ✅  v2.0.13 consistent
+④ Separation ✅  Builder ≠ Reviewer confirmed
+⑤ Breaking   ✅  Greenfield — no breaking changes
+
+[CEO REPORT] ✅ Done in 23 minutes.
+  Files: 11 new  ·  Tests: 18 passing  ·  Security: clean  ·  Deploy: ready
+```
+
+**That's a complete, production-ready auth system. You didn't write a line.**
 
 ---
 
@@ -230,15 +290,18 @@ DOMANGCHA is a developer tool built for Claude Code users who want AI-driven aut
 
 ## 🚀 Install · Update
 
-**Option 1 — curl (recommended)**
+**Option 1 — npx (recommended)**
+```bash
+npx domangcha
+```
+
+**Option 2 — curl**
 ```bash
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
 ```
 
-**Option 2 — npm / npx**
+**Option 3 — global install**
 ```bash
-npx domangcha
-# or install globally
 npm install -g domangcha && domangcha
 ```
 
@@ -266,17 +329,18 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 ### 🚗💨 돔황차 — *개발 지옥에서 도망쳐*
 
-**Claude Code를 위한 다중 에이전트 AI 자동화**
-
-AI 기반 workflow automation 개발자 도구
+**16명 AI 전문가. 명령 하나. 요구사항부터 배포까지.**
 
 [![Version](https://img.shields.io/badge/version-2.0.13-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
 [![Agents](https://img.shields.io/badge/에이전트-16명-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
 [![Gates](https://img.shields.io/badge/게이트-5개-orange?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
 
-> **16명의 엔지니어링 팀을 단 한 줄로 채용하세요.**
+> **명령 하나 쳤더니 인증, 결제, 대시보드가 돌아왔다. 테스트 통과, 보안 감사 완료, 코드 리뷰까지.**
+>
+> *— Michael Dohyeon Kim, KDC CEO · DOMANGCHA 제작자*
 
 ```bash
 # 방법 1 — npx (권장)
@@ -480,15 +544,18 @@ DOMANGCHA는 수동 조율 없이 AI 기반 자동화와 다중 에이전트 조
 
 ### 🚀 설치 · 업데이트
 
-**방법 1 — curl (권장)**
+**방법 1 — npx (권장)**
+```bash
+npx domangcha
+```
+
+**방법 2 — curl**
 ```bash
 curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
 ```
 
-**방법 2 — npm / npx**
+**방법 3 — 전역 설치**
 ```bash
-npx domangcha
-# 또는 전역 설치
 npm install -g domangcha && domangcha
 ```
 
@@ -508,10 +575,17 @@ npm install -g domangcha && domangcha
 **Escape development hell. 🚗💨 DOMANGCHA is your getaway car.**
 
 [![GitHub](https://img.shields.io/badge/GitHub-DoCoreTeam-181717?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha)
-[![Made by](https://img.shields.io/badge/Made%20by-docore-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam)
+[![npm](https://img.shields.io/badge/npm-domangcha-CB3837?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/domangcha)
 
-*Built with **DOMANGCHA** · by [docore](https://github.com/DoCoreTeam) (Michael Dohyeon Kim · KDC CEO)*
+---
 
-MIT License
+**Built by [Michael Dohyeon Kim](https://github.com/DoCoreTeam)**  
+CEO of KDC (Korea Development Company) · Serial builder · Claude Code power user
+
+*I built DOMANGCHA because I was drowning in manual orchestration.*  
+*Now I ship features in hours that used to take days.*  
+*This is my exact setup — open-sourced.*
+
+MIT License · Star it if it's useful ⭐
 
 </div>
