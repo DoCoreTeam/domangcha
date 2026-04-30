@@ -17,3 +17,7 @@
 # Temp
 *.tmp
 *.log
+
+# Node
+node_modules/
+package-lock.json
