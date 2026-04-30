@@ -17,7 +17,7 @@ AGENTS_DIR="${CLAUDE_DIR}/agents"
 COMMANDS_DIR="${CLAUDE_DIR}/commands"
 SKILLS_DIR="${CLAUDE_DIR}/skills"
 
-MACC_REPO="https://github.com/DoCoreTeam/domacc.git"
+MACC_REPO="https://github.com/DoCoreTeam/domangcha.git"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
 ECC_REPO="https://github.com/affaan-m/everything-claude-code.git"
 
