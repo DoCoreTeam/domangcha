@@ -5,10 +5,10 @@ description: >
   Routes ALL tasks through 16 specialized DC-* agents in fixed pipeline order.
   PLANNER (DC-BIZ, DC-RES, DC-OSS) → GENERATOR (DC-DEV-*) → EVALUATOR (DC-QA/SEC/REV) → GATE 1-5.
   No agent is ever skipped. Full pipeline always runs for MEDIUM+.
-  SMALL tasks use FAST PATH (CEO direct + DC-REV + GATE).
+  SMALL tasks use FAST PATH (CEO direct + 경량DOC(00-summary.md) + DC-REV + GATE).
 ---
 
-# CEO AGENT SYSTEM v2.0.33 — Router
+# CEO AGENT SYSTEM v2.0.34 — Router
 
 > 이 파일은 라우터입니다. 세부 지침은 아래 서브스킬을 참조합니다.
 
@@ -23,7 +23,7 @@ description: >
 ## 파이프라인 순서
 
 ```
-SMALL:  SIZE CHECK → CEO 직접 수정 → DC-REV → GATE 1-5 → PATCH++
+SMALL:  SIZE CHECK → RIPPLE CHECK → 경량DOC(00-summary.md, 필수) → CEO 직접 수정 → DC-REV → GATE 1-5 → PATCH++
 MEDIUM+: Q&A(7-12) → DC-BIZ+DC-RES+DC-OSS → DC-DEV-*(병렬) → DC-QA+DC-SEC+DC-REV → GATE 1-5 → PATCH++
 ```
 

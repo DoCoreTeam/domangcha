@@ -137,18 +137,26 @@ CEO가 업무 분석 후 적합도 계산:
 ## FAST PATH (SMALL 전용)
 
 1. **RIPPLE CHECK** — 30초 영향 범위 확인 → `[FAST PATH] 🔧 수정 대상 / 🌊 연관 파일 / ⚡ 즉시 수정`
-2. **직접 수정** — CEO가 직접 코드 수정
-3. **🟥 DC-REV** 호출 → 코드 리뷰
-4. **GATE 1-5** 통과 확인
-5. **버전 PATCH 업** → domangcha/VERSION +0.0.1
-6. **README 업데이트** (필수 — 생략 불가) — 변경 사항을 README에 반영. 새 기능/명령어/동작 변경 모두 포함. 형식적 수정 금지, 실제 내용 반영.
-7. **git commit** + **git push** + **npm publish** (3개 세트 — 생략 불가):
+2. **경량 DOC** — `docs/YYYY-MM-DD-vX.X.X/00-summary.md` 생성 (필수 — 생략 절대 금지)
+   ```markdown
+   # FAST PATH Summary
+   작업: <변경 내용 1줄>
+   대상: <수정 파일>
+   이유: <왜 이 변경이 필요한가>
+   영향: <연관 파일 / 없음>
+   ```
+3. **직접 수정** — CEO가 직접 코드 수정
+4. **🟥 DC-REV** 호출 → 코드 리뷰
+5. **GATE 1-5** 통과 확인
+6. **버전 PATCH 업** → domangcha/VERSION +0.0.1
+7. **README 업데이트** (필수 — 생략 불가) — 변경 사항을 README에 반영. 새 기능/명령어/동작 변경 모두 포함. 형식적 수정 금지, 실제 내용 반영.
+8. **git commit** + **git push** + **npm publish** (3개 세트 — 생략 불가):
    ```bash
    git commit -m "v{VERSION}: $ARGUMENTS"
    git push origin main
    npm publish --access public
    ```
-8. 보고:
+9. 보고:
    ```
    [CEO FAST REPORT] ⚡ FAST PATH 완료: $ARGUMENTS | v{VERSION} | CEO+🟥 DC-REV | GATE 1-5 ✅ | npm@{VERSION} ✅
    ```

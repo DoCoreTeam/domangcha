@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.33 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.34 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
@@ -31,6 +31,11 @@
 - 5개 기획 문서 필수: `00-requirements.md` / `01-architecture.md` / `02-task-breakdown.md` / `03-test-strategy.md` / `04-completion-criteria.md`
 - [DOC COMPLETE] 출력 후에만 PHASE 0.8 → PHASE 1 진입
 - Standard / Ralph Loop / gstack / Superpowers — 어떤 스택이든 건너뛰기 **절대 금지**
+
+### 3-2. FAST PATH 경량 DOC (SMALL 전용 — 생략 절대 금지)
+- RIPPLE CHECK 직후, 코드 수정 전 → `docs/YYYY-MM-DD-vX.X.X/00-summary.md` 생성 필수
+- 내용: 작업 1줄 요약 / 수정 대상 파일 / 변경 이유 / 영향 범위
+- FAST PATH에서 docs/ 폴더가 없으면 → **규칙 위반** (중단 후 생성)
 
 ### 4. GATE 5개 반드시 통과
 1. error-registry 패턴 스캔 + 파일 300줄 초과 차단
@@ -87,13 +92,15 @@
 
 **버전 업데이트 필수 절차 (커밋 전 반드시 전부 완료):**
 1. `domangcha/VERSION` 파일 업데이트 ← **이것이 단일 소스**
-2. `domangcha/CLAUDE.md` 헤더 (`# DOMANGCHA vX.X.X`) 업데이트
-3. `domangcha/skills/ceo-system/SKILL.md` 헤더 (`# CEO AGENT SYSTEM vX.X.X`) 업데이트
-4. `domangcha/skills/ceo-core/SKILL.md` 헤더 (`# CEO AGENT SYSTEM vX.X.X`) 업데이트
-5. `domangcha/skills/ceo-sprint/SKILL.md` 헤더 버전 마커 업데이트
-6. `domangcha/skills/ceo-standards/SKILL.md` 초기화 메시지 (`[CEO SYSTEM INITIALIZED] vX.X.X`) 업데이트
-7. `README.md` 버전 배지 (`version-X.X.X`) 업데이트
-8. git commit: `v{VERSION}: 변경 내용`
+2. `package.json` `"version"` 필드 업데이트 ← **npm publish 게이트 (누락 시 배포 실패)**
+3. `domangcha/CLAUDE.md` 헤더 (`# DOMANGCHA vX.X.X`) 업데이트
+4. `CLAUDE.md` (프로젝트 루트) 헤더 + 버전 라인 업데이트
+5. `domangcha/skills/ceo-system/SKILL.md` 헤더 (`# CEO AGENT SYSTEM vX.X.X`) 업데이트
+6. `domangcha/skills/ceo-core/SKILL.md` 헤더 (`# CEO AGENT SYSTEM vX.X.X`) 업데이트
+7. `domangcha/skills/ceo-sprint/SKILL.md` 헤더 버전 마커 업데이트
+8. `domangcha/skills/ceo-standards/SKILL.md` 초기화 메시지 (`[CEO SYSTEM INITIALIZED] vX.X.X`) 업데이트
+9. `README.md` 버전 배지 (`version-X.X.X`) 업데이트
+10. git commit: `v{VERSION}: 변경 내용`
 
 **절대 금지 (위반 시 버전 혼란 발생):**
 - VERSION 파일 수정 없이 커밋 메시지에만 버전 번호 사용 금지

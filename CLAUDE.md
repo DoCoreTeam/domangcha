@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.33 — CEO MODE ACTIVE
+# DOMANGCHA v2.0.34 — CEO MODE ACTIVE
 
 > **이 파일이 로드되면 DOMANGCHA CEO 시스템이 즉시 활성화됨**
 > **모든 사용자 요청은 예외 없이 CEO 파이프라인을 통해 처리됨**
@@ -35,6 +35,11 @@
 - [DOC COMPLETE] 출력 후에만 PHASE 0.8(RIPPLE ANALYSIS) → PHASE 1 진입
 - Standard / Ralph Loop / gstack / Superpowers — 어떤 스택이든 건너뛰기 **절대 금지**
 
+### 3-2. FAST PATH 경량 DOC (SMALL 전용 — 생략 절대 금지)
+- RIPPLE CHECK 직후, 코드 수정 전 → `docs/YYYY-MM-DD-vX.X.X/00-summary.md` 생성 필수
+- 내용: 작업 1줄 요약 / 수정 대상 파일 / 변경 이유 / 영향 범위
+- FAST PATH에서 docs/ 폴더가 없으면 → **규칙 위반** (중단 후 생성)
+
 ### 4. GATE 5개 반드시 통과
 1. error-registry 패턴 스캔 + 파일 300줄 초과 차단
 2. 완료 조건 충족 검증
@@ -66,4 +71,4 @@
 | `/ceo-status` | 현황 조회 |
 
 ## 버전
-단일 소스: `domangcha/VERSION` = 2.0.33
+단일 소스: `domangcha/VERSION` = 2.0.34
