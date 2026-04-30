@@ -4,6 +4,11 @@ set -euo pipefail
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+WHITE='\033[1;37m'
+BOLD='\033[1m'
+DIM='\033[2m'
 NC='\033[0m'
 
 CLAUDE_DIR="${HOME}/.claude"
@@ -37,18 +42,32 @@ git_update_or_clone() {
 }
 
 # ── 1. DOMANGCHA ──────────────────────────────────
-echo -e "${BLUE}[1/5] Downloading DOMANGCHA...${NC}"
+printf "${DIM}  Fetching DOMANGCHA...${NC}\n"
 git clone --depth 1 "$MACC_REPO" "$TMP_DIR/domangcha-repo" --quiet
 SRC="${TMP_DIR}/domangcha-repo/domangcha"
 DOMANGCHA_VERSION=$(cat "${SRC}/VERSION" 2>/dev/null || echo "unknown")
 
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  👔 DOMANGCHA Installer v${DOMANGCHA_VERSION}${NC}"
-echo -e "${GREEN}  The AI Chief Executive for Claude Code${NC}"
-echo -e "${GREEN}  16 Agents. 15 Commands. Full Pipeline.${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+# ── Banner ─────────────────────────────────────────
+clear
 echo ""
-echo -e "${GREEN}  ✅ Downloaded v${DOMANGCHA_VERSION}${NC}"
+echo -e "${CYAN}${BOLD}"
+echo "  ██████╗  ██████╗ ███╗   ███╗ █████╗ ███╗   ██╗ ██████╗ ██╗  ██╗ █████╗ "
+echo "  ██╔══██╗██╔═══██╗████╗ ████║██╔══██╗████╗  ██║██╔════╝ ██║  ██║██╔══██╗"
+echo "  ██║  ██║██║   ██║██╔████╔██║███████║██╔██╗ ██║██║  ███╗███████║███████║"
+echo "  ██║  ██║██║   ██║██║╚██╔╝██║██╔══██║██║╚██╗██║██║   ██║██╔══██║██╔══██║"
+echo "  ██████╔╝╚██████╔╝██║ ╚═╝ ██║██║  ██║██║ ╚████║╚██████╔╝██║  ██║██║  ██║"
+echo "  ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝"
+echo -e "${NC}"
+echo -e "${WHITE}${BOLD}  돔황차 — 개발 지옥에서 도망쳐  🚗💨${NC}"
+echo -e "${DIM}  Your AI getaway car from development hell.${NC}"
+echo ""
+echo -e "${MAGENTA}  ┌──────────────────────────────────────────────────────┐${NC}"
+echo -e "${MAGENTA}  │${NC}  ${GREEN}${BOLD}v${DOMANGCHA_VERSION}${NC}   ${CYAN}16 Agents${NC}  ·  ${CYAN}15 Commands${NC}  ·  ${CYAN}Full Pipeline${NC}  ${MAGENTA}│${NC}"
+echo -e "${MAGENTA}  │${NC}  ${DIM}Planner → Builder → Evaluator → GATE → Ship${NC}          ${MAGENTA}│${NC}"
+echo -e "${MAGENTA}  │${NC}  ${DIM}by ${NC}${WHITE}docore${DIM} (Michael Dohyeon Kim · KDC CEO)${NC}           ${MAGENTA}│${NC}"
+echo -e "${MAGENTA}  │${NC}  ${DIM}github.com/DoCoreTeam${NC}                                ${MAGENTA}│${NC}"
+echo -e "${MAGENTA}  └──────────────────────────────────────────────────────┘${NC}"
+echo ""
 
 # ── 2. Agents → ~/.claude/agents/ ───────────────
 echo ""
@@ -327,44 +346,35 @@ else
 fi
 
 # ── 14. Mark installed version ────────────────────
-echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/macc-installed-version"
-echo -e "${GREEN}  ✅ ~/.claude/domangcha-installed-version = ${DOMANGCHA_VERSION}${NC}"
+echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 
 # ── Done ─────────────────────────────────────────
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  ✅ CEO installed/updated successfully!${NC}"
+echo -e "${CYAN}${BOLD}"
+echo "  ╔══════════════════════════════════════════════════════╗"
+echo -e "  ║  ${GREEN}✅  DOMANGCHA v${DOMANGCHA_VERSION} — 설치 완료!${CYAN}                    ║"
+echo "  ╚══════════════════════════════════════════════════════╝"
+echo -e "${NC}"
+echo -e "  ${WHITE}${BOLD}무엇이 설치되었나요?${NC}"
+echo -e "  ${DIM}────────────────────────────────────────────────────${NC}"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/agents/dc-*.md${NC}       16 DC-* 에이전트"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/commands/ceo*.md${NC}     /ceo /ceo-init /ceo-ralph ..."
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/skills/ceo-system/${NC}   CEO 오케스트레이션 브레인"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/hooks/${NC}               auto-test + CEO review + enforcer"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/settings.json${NC}        hooks 자동 주입"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/CLAUDE.md${NC}            Claude Code 자동 로드"
+echo -e "  ${DIM}────────────────────────────────────────────────────${NC}"
 echo ""
-echo -e "  Updated:"
-echo -e "    ${YELLOW}~/.claude/agents/dc-*.md${NC}          ← 16 DOMANGCHA agents"
-echo -e "    ${YELLOW}~/.claude/commands/ceo*.md${NC}        ← /ceo /ceo-init /ceo-status"
-echo -e "    ${YELLOW}~/.claude/skills/ceo-system/${NC}      ← CEO orchestration brain"
-echo -e "    ${YELLOW}~/.claude/skills/ecc:*/  ${NC}         ← 183 ECC skills (no commands — use /ceo-*)"
-echo -e "    ${YELLOW}~/.claude/skills/gstack/ ${NC}         ← gstack tools"
-echo -e "    ${YELLOW}~/.claude/skills/superpowers/${NC}     ← superpowers (or via plugin)"
-echo -e "    ${YELLOW}~/.claude/hooks/macc-*.sh${NC}         ← auto-test + CEO review + enforcer hooks"
-echo -e "    ${YELLOW}~/.claude/settings.json${NC}           ← hooks injected (UserPromptSubmit + PostToolUse + Stop)"
-echo -e "    ${YELLOW}.git/hooks/post-merge${NC}             ← git pull 시 자동 재설치"
-echo -e "    ${YELLOW}.git/hooks/post-checkout${NC}          ← git clone 시 자동 설치"
-echo -e "    ${YELLOW}playwright MCP${NC}                    ← browser testing (headless/headed)"
-echo -e "    ${YELLOW}~/.claude/CLAUDE.md${NC}               ← auto-loaded by Claude Code"
-echo -e "    ${YELLOW}~/.claude/*-registry.md${NC}           ← preserved (user data)"
+echo -e "  ${WHITE}${BOLD}🚀 시작하기${NC}"
+echo -e "  ${DIM}  1.${NC} Claude Code를 아무 프로젝트에서 열기"
+echo -e "  ${DIM}  2.${NC} ${CYAN}/ceo-init${NC}                  프로젝트 초기화"
+echo -e "  ${DIM}  3.${NC} ${CYAN}/ceo \"투두앱 만들어줘\"${NC}       풀 파이프라인 시작"
 echo ""
-echo -e "  🚀 ${YELLOW}Getting started:${NC}"
-echo -e "     1. Open Claude Code in any project"
-echo -e "     2. ${YELLOW}/ceo-init${NC}               Initialize project"
-echo -e "     3. ${YELLOW}/ceo \"build a todo app\"${NC}   Start full pipeline"
+echo -e "  ${WHITE}${BOLD}📋 주요 명령어${NC}"
+echo -e "  ${CYAN}/ceo \"업무\"${NC}    Q&A → 16에이전트 → GATE → 완료"
+echo -e "  ${CYAN}/ceo-ralph${NC}    완료 조건 정의 + 자율 반복 루프"
+echo -e "  ${CYAN}/ceo-init${NC}     프로젝트 하네스 셋업"
+echo -e "  ${CYAN}/ceo-status${NC}   현황 조회"
 echo ""
-echo -e "  📋 Commands:"
-echo -e "     ${YELLOW}/ceo \"task\"${NC}      Q&A → full pipeline (16 agents)"
-echo -e "     ${YELLOW}/ceo-init${NC}        Project setup + harness"
-echo -e "     ${YELLOW}/ceo-status${NC}      Show current status"
+echo -e "  ${MAGENTA}${BOLD}  개발 지옥에서 도망쳐. 🚗💨 돔황차가 데려다 줄게.${NC}"
 echo ""
-echo -e "  🔁 ${YELLOW}Auto-hooks active:${NC}"
-echo -e "     PostToolUse(Write/Edit) → test + auto-fix"
-echo -e "     Stop                    → CEO quality review"
-echo ""
-echo -e "  🌐 ${YELLOW}Browser testing:${NC}"
-echo -e "     Playwright MCP registered — use browser_* tools in Claude Code"
-echo -e "     Headed mode: claude mcp add playwright -s user npx @playwright/mcp --headed"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
