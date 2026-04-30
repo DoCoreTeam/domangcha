@@ -4,6 +4,7 @@ set -euo pipefail
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 WHITE='\033[1;37m'
@@ -23,7 +24,7 @@ ECC_REPO="https://github.com/affaan-m/everything-claude-code.git"
 TMP_DIR=$(mktemp -d)
 trap "rm -rf $TMP_DIR" EXIT
 
-TOTAL_STEPS=9
+TOTAL_STEPS=12
 CURRENT_STEP=0
 
 # ── progress bar ─────────────────────────────────
@@ -117,12 +118,28 @@ for c in "v" + V:
 for l in lines: print(l)
 PYEOF
 echo -e "${NC}"
-echo -e "${MAGENTA}  ┌──────────────────────────────────────────────────────┐${NC}"
-echo -e "${MAGENTA}  │${NC}  ${CYAN}16 에이전트(Agents)${NC}  ·  ${CYAN}15 명령어(Commands)${NC}  ·  ${CYAN}풀 파이프라인(Full Pipeline)${NC}  ${MAGENTA}│${NC}"
-echo -e "${MAGENTA}  │${NC}  ${DIM}기획 → 빌드 → 검증 → GATE → 출시 / Plan → Build → Eval → GATE → Ship${NC}  ${MAGENTA}│${NC}"
-echo -e "${MAGENTA}  │${NC}  ${DIM}by ${NC}${WHITE}docore${DIM} (Michael Dohyeon Kim · KDC CEO)${NC}           ${MAGENTA}│${NC}"
-echo -e "${MAGENTA}  │${NC}  ${DIM}github.com/DoCoreTeam${NC}                                ${MAGENTA}│${NC}"
-echo -e "${MAGENTA}  └──────────────────────────────────────────────────────┘${NC}"
+python3 - <<'PYEOF'
+M,C,D,W,NC = "\033[0;35m","\033[0;36m","\033[2m","\033[1;37m","\033[0m"
+rows = [
+    (C, "16 에이전트(Agents)  ·  16 명령어(Commands)  ·  풀 파이프라인(Full Pipeline)"),
+    (D, "기획 → 빌드 → 검증 → GATE → 출시  /  Plan → Build → Eval → GATE → Ship"),
+    (W, "by docore  (Michael Dohyeon Kim · KDC CEO)"),
+    (D, "github.com/DoCoreTeam"),
+]
+import unicodedata
+def dw(s):
+    return sum(2 if unicodedata.east_asian_width(c) in ('W','F') else 1 for c in s)
+pad = 2
+W_box = max(dw(t) for _, t in rows) + pad * 2 + 2
+bar = "─" * (W_box)
+def row(col, text):
+    spaces = W_box - dw(text) - pad * 2
+    return f"  {M}│{NC}  {col}{text}{NC}{' ' * spaces}  {M}│{NC}"
+print(f"  {M}┌{bar}┐{NC}")
+for col, text in rows:
+    print(row(col, text))
+print(f"  {M}└{bar}┘{NC}")
+PYEOF
 echo ""
 
 # ── 2. Agents ────────────────────────────────────
@@ -261,10 +278,10 @@ fi
 # REQUIRED — fail loudly if not installed
 if [ "$SUPERPOWERS_INSTALLED" = false ]; then
     echo ""
-    echo -e "\033[0;31m  ╔══════════════════════════════════════════╗\033[0m"
-    echo -e "\033[0;31m  ║  ❌  SUPERPOWERS 설치 실패 / FAILED     ║\033[0m"
-    echo -e "\033[0;31m  ║  CEO 작동에 필수 / Required for CEO     ║\033[0m"
-    echo -e "\033[0;31m  ╚══════════════════════════════════════════╝\033[0m"
+    echo -e "${RED}  ╔══════════════════════════════════════════╗${NC}"
+    echo -e "${RED}  ║  ❌  SUPERPOWERS 설치 실패 / FAILED     ║${NC}"
+    echo -e "${RED}  ║  CEO 작동에 필수 / Required for CEO     ║${NC}"
+    echo -e "${RED}  ╚══════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "  Claude Code 내에서 수동 설치 / Install manually inside Claude Code:"
     echo -e "    \033[1;33m/plugin marketplace add obra/superpowers-marketplace\033[0m"
@@ -406,12 +423,28 @@ echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 # ── Done ─────────────────────────────────────────
 echo ""
 echo ""
-echo -e "${CYAN}${BOLD}"
-echo "  ╔══════════════════════════════════════════════════════════╗"
-echo -e "  ║   ${GREEN}✅  설치 완료! / Installation Complete!${CYAN}               ║"
-echo -e "  ║   ${GREEN}DOMANGCHA v${DOMANGCHA_VERSION}${CYAN}  —  AI 개발 자동화 도구 / AI Dev Automation  ║"
-echo "  ╚══════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
+python3 - "${DOMANGCHA_VERSION}" <<'PYEOF'
+import sys, unicodedata
+v = sys.argv[1]
+def dw(s):
+    w = 0
+    for c in s:
+        ea = unicodedata.east_asian_width(c)
+        w += 2 if ea in ('W', 'F') else 1
+    return w
+line1 = "✅  설치 완료! / Installation Complete!"
+line2 = f"DOMANGCHA v{v}  —  AI 개발 자동화 도구 / AI Dev Automation"
+inner = max(dw(line1), dw(line2)) + 4
+bar = "═" * (inner + 2)
+def row(text, color="", reset=""):
+    pad = inner - dw(text)
+    return f"  ║  {color} {text}{reset}{' ' * pad} ║"
+C, G, NC = "\033[0;36m\033[1m", "\033[0;32m", "\033[0m"
+print(f"\n{C}  ╔{bar}╗")
+print(row(line1, G, C))
+print(row(line2, G, C))
+print(f"  ╚{bar}╝{NC}")
+PYEOF
 echo -e "  ${WHITE}${BOLD}설치된 항목 / What's installed${NC}"
 echo -e "  ${DIM}──────────────────────────────────────────────────────${NC}"
 echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/agents/dc-*.md${NC}"
