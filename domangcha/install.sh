@@ -23,27 +23,58 @@ ECC_REPO="https://github.com/affaan-m/everything-claude-code.git"
 TMP_DIR=$(mktemp -d)
 trap "rm -rf $TMP_DIR" EXIT
 
+TOTAL_STEPS=9
+CURRENT_STEP=0
+
+# ── progress bar ─────────────────────────────────
+step() {
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    local label_ko="$1"
+    local label_en="$2"
+    local filled=$((CURRENT_STEP * 20 / TOTAL_STEPS))
+    local empty=$((20 - filled))
+    local bar="${GREEN}${BOLD}"
+    for i in $(seq 1 $filled); do bar="${bar}█"; done
+    bar="${bar}${DIM}"
+    for i in $(seq 1 $empty); do bar="${bar}░"; done
+    bar="${bar}${NC}"
+    echo ""
+    printf "  ${CYAN}[%d/%d]${NC} ${WHITE}${BOLD}%-28s${NC}${DIM} / %s${NC}\n" \
+        "$CURRENT_STEP" "$TOTAL_STEPS" "$label_ko" "$label_en"
+    printf "  %b  ${DIM}%d%%${NC}\n" "$bar" "$((CURRENT_STEP * 100 / TOTAL_STEPS))"
+}
+
+# ── spinner ───────────────────────────────────────
+spin() {
+    local pid=$! frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏' i=0
+    while kill -0 $pid 2>/dev/null; do
+        printf "\r  ${CYAN}${frames:$((i % ${#frames})):1}${NC}  ${DIM}%s${NC}" "$1"
+        sleep 0.1
+        i=$((i + 1))
+    done
+    printf "\r  ${GREEN}✔${NC}  %-40s\n" "$1"
+}
+
 # ── helper: git update-or-clone ──────────────────
-# Usage: git_update_or_clone <repo_url> <dest_dir> <label>
 git_update_or_clone() {
     local repo="$1" dest="$2" label="$3"
     if [ -d "${dest}/.git" ]; then
-        echo -e "${YELLOW}  ⟳ ${label} — pulling latest${NC}"
+        echo -e "${YELLOW}  ⟳ ${label} — 최신 버전으로 업데이트 / pulling latest${NC}"
         git -C "$dest" fetch --depth 1 origin --quiet
         git -C "$dest" reset --hard origin/HEAD --quiet
     elif [ -d "$dest" ]; then
-        echo -e "${YELLOW}  ⟳ ${label} — re-cloning (no .git found)${NC}"
+        echo -e "${YELLOW}  ⟳ ${label} — 재클론 중 / re-cloning${NC}"
         rm -rf "$dest"
         git clone --depth 1 "$repo" "$dest" --quiet
     else
-        echo -e "${GREEN}  ✅ ${label} — cloning fresh${NC}"
+        echo -e "${GREEN}  ✅ ${label} — 신규 설치 / fresh install${NC}"
         git clone --depth 1 "$repo" "$dest" --quiet
     fi
 }
 
 # ── 1. DOMANGCHA ──────────────────────────────────
-printf "${DIM}  Fetching DOMANGCHA...${NC}\n"
-git clone --depth 1 "$MACC_REPO" "$TMP_DIR/domangcha-repo" --quiet
+printf "${DIM}  다운로드 중... / Fetching DOMANGCHA...${NC}\n"
+( git clone --depth 1 "$MACC_REPO" "$TMP_DIR/domangcha-repo" --quiet ) & spin "DOMANGCHA 다운로드 중 / Downloading..."
 SRC="${TMP_DIR}/domangcha-repo/domangcha"
 DOMANGCHA_VERSION=$(cat "${SRC}/VERSION" 2>/dev/null || echo "unknown")
 
@@ -61,13 +92,14 @@ echo -e "${NC}"
 echo -e "${WHITE}${BOLD}  돔황차 — 개발 지옥에서 도망쳐  🚗💨${NC}"
 echo -e "${DIM}  Your AI getaway car from development hell.${NC}"
 echo ""
+# Category label
+echo -e "  ${MAGENTA}${BOLD}에이전트 개발 크루${NC}  ${DIM}·${NC}  ${MAGENTA}Agentic Dev Crew${NC}"
+echo -e "  ${DIM}손코딩에서 도망쳐 — 16명 AI 크루가 대신 짭니다${NC}"
+echo -e "  ${DIM}Escape hand-coding — a 16-agent AI crew builds for you${NC}"
+echo ""
 # Version — large block display (auto-read from domangcha/VERSION)
-echo -e "${GREEN}${BOLD}$(printf '  %-54s' "  v${DOMANGCHA_VERSION}")${NC}"
-if command -v figlet &>/dev/null; then
-  figlet -f banner "  v${DOMANGCHA_VERSION}" 2>/dev/null | sed "s/^/${BOLD}${GREEN}/" | sed "s/$/${NC}/" || true
-else
-  echo -e "${GREEN}${BOLD}"
-  python3 - "${DOMANGCHA_VERSION}" <<'PYEOF'
+echo -e "${GREEN}${BOLD}"
+python3 - "${DOMANGCHA_VERSION}" <<'PYEOF'
 import sys
 V = sys.argv[1]
 digits = {
@@ -84,49 +116,56 @@ for c in "v" + V:
   for i in range(3): lines[i] += d[i] + " "
 for l in lines: print(l)
 PYEOF
-  echo -e "${NC}"
-fi
+echo -e "${NC}"
 echo -e "${MAGENTA}  ┌──────────────────────────────────────────────────────┐${NC}"
-echo -e "${MAGENTA}  │${NC}  ${CYAN}16 Agents${NC}  ·  ${CYAN}15 Commands${NC}  ·  ${CYAN}Full Pipeline${NC}             ${MAGENTA}│${NC}"
-echo -e "${MAGENTA}  │${NC}  ${DIM}Planner → Builder → Evaluator → GATE → Ship${NC}          ${MAGENTA}│${NC}"
+echo -e "${MAGENTA}  │${NC}  ${CYAN}16 에이전트(Agents)${NC}  ·  ${CYAN}15 명령어(Commands)${NC}  ·  ${CYAN}풀 파이프라인(Full Pipeline)${NC}  ${MAGENTA}│${NC}"
+echo -e "${MAGENTA}  │${NC}  ${DIM}기획 → 빌드 → 검증 → GATE → 출시 / Plan → Build → Eval → GATE → Ship${NC}  ${MAGENTA}│${NC}"
 echo -e "${MAGENTA}  │${NC}  ${DIM}by ${NC}${WHITE}docore${DIM} (Michael Dohyeon Kim · KDC CEO)${NC}           ${MAGENTA}│${NC}"
 echo -e "${MAGENTA}  │${NC}  ${DIM}github.com/DoCoreTeam${NC}                                ${MAGENTA}│${NC}"
 echo -e "${MAGENTA}  └──────────────────────────────────────────────────────┘${NC}"
 echo ""
 
-# ── 2. Agents → ~/.claude/agents/ ───────────────
-echo ""
-echo -e "${BLUE}[2/5] Installing agents → ~/.claude/agents/${NC}"
+# ── 2. Agents ────────────────────────────────────
+step "에이전트 16명 설치" "Installing 16 agents"
 mkdir -p "$AGENTS_DIR"
+agent_new=0; agent_up=0
 for f in "${SRC}/agents/"*.md; do
     name=$(basename "$f")
-    [ -f "${AGENTS_DIR}/${name}" ] && echo -e "${YELLOW}  ⟳ ${name}${NC}" || echo -e "${GREEN}  ✅ ${name}${NC}"
+    if [ -f "${AGENTS_DIR}/${name}" ]; then
+        agent_up=$((agent_up + 1))
+    else
+        agent_new=$((agent_new + 1))
+    fi
     cp "$f" "${AGENTS_DIR}/${name}"
 done
+echo -e "  ${GREEN}✔${NC}  ${GREEN}${agent_new}개 신규(new)${NC}  ${YELLOW}${agent_up}개 업데이트(updated)${NC}  ${DIM}→ ~/.claude/agents/${NC}"
 
-# ── 3. Commands → ~/.claude/commands/ ───────────
-echo ""
-echo -e "${BLUE}[3/5] Installing commands → ~/.claude/commands/${NC}"
+# ── 3. Commands ───────────────────────────────────
+step "명령어 설치" "Installing commands"
 mkdir -p "$COMMANDS_DIR"
+cmd_new=0; cmd_up=0
 for f in "${SRC}/commands/"*.md; do
     name=$(basename "$f")
-    [ -f "${COMMANDS_DIR}/${name}" ] && echo -e "${YELLOW}  ⟳ ${name}${NC}" || echo -e "${GREEN}  ✅ ${name}${NC}"
+    if [ -f "${COMMANDS_DIR}/${name}" ]; then
+        cmd_up=$((cmd_up + 1))
+    else
+        cmd_new=$((cmd_new + 1))
+    fi
     cp "$f" "${COMMANDS_DIR}/${name}"
 done
+echo -e "  ${GREEN}✔${NC}  ${GREEN}${cmd_new}개 신규(new)${NC}  ${YELLOW}${cmd_up}개 업데이트(updated)${NC}  ${DIM}→ ~/.claude/commands/${NC}"
 
-# ── 4. CEO skill ─────────────────────────────────
-echo ""
-echo -e "${BLUE}[4/5] Installing CEO skill → ~/.claude/skills/ceo-system/${NC}"
+# ── 4. CEO skill ──────────────────────────────────
+step "CEO 스킬 설치" "Installing CEO skill"
 mkdir -p "${SKILLS_DIR}/ceo-system"
 cp "${SRC}/skills/ceo-system/SKILL.md" "${SKILLS_DIR}/ceo-system/SKILL.md"
-echo -e "${GREEN}  ✅ ceo-system/SKILL.md${NC}"
+echo -e "  ${GREEN}✔${NC}  ceo-system/SKILL.md  ${DIM}→ ~/.claude/skills/ceo-system/${NC}"
 
-# ── 5. CLAUDE.md → ~/.claude/CLAUDE.md ──────────
-echo ""
-echo -e "${BLUE}[5/5] Updating CLAUDE.md...${NC}"
+# ── 5. CLAUDE.md ──────────────────────────────────
+step "CLAUDE.md 업데이트" "Updating CLAUDE.md"
 if [ -f "${CLAUDE_DIR}/CLAUDE.md" ]; then
-    if grep -qE "^# (docrew|DOCORE|MACC|CEO) v" "${CLAUDE_DIR}/CLAUDE.md" 2>/dev/null; then
-        echo -e "${YELLOW}  ⟳ CLAUDE.md — updating DOMANGCHA section${NC}"
+    if grep -qE "^# (docrew|DOCORE|MACC|CEO|DOMANGCHA) v" "${CLAUDE_DIR}/CLAUDE.md" 2>/dev/null; then
+        echo -e "${YELLOW}  ⟳ CLAUDE.md — DOMANGCHA 섹션 갱신 / updating DOMANGCHA section${NC}"
         python3 - "${CLAUDE_DIR}/CLAUDE.md" "${SRC}/CLAUDE.md" <<'PYEOF'
 import sys, re
 existing = open(sys.argv[1]).read()
@@ -139,32 +178,30 @@ with open(sys.argv[1], 'w') as out:
     out.write(existing.rstrip() + "\n\n" + docore_new)
 PYEOF
     else
-        echo -e "${YELLOW}  ⟳ Appending to existing CLAUDE.md${NC}"
+        echo -e "  ${YELLOW}⟳${NC}  기존 CLAUDE.md 갱신 / updating existing CLAUDE.md"
         echo "" >> "${CLAUDE_DIR}/CLAUDE.md"
         cat "${SRC}/CLAUDE.md" >> "${CLAUDE_DIR}/CLAUDE.md"
     fi
 else
     cp "${SRC}/CLAUDE.md" "${CLAUDE_DIR}/CLAUDE.md"
-    echo -e "${GREEN}  ✅ CLAUDE.md created${NC}"
+    echo -e "  ${GREEN}✔${NC}  CLAUDE.md 생성 완료 / created"
 fi
 
-# ── 6. Registries (user data — skip if exists) ───
+# ── 6. Registries ─────────────────────────────────
+step "레지스트리 초기화" "Initializing registries"
 mkdir -p "${CLAUDE_DIR}/reports"
 for file in error-registry skill-registry project-registry decision-log; do
     if [ ! -f "${CLAUDE_DIR}/${file}.md" ]; then
         cp "${SRC}/templates/${file}.md" "${CLAUDE_DIR}/${file}.md"
-        echo -e "${GREEN}  ✅ ${file}.md${NC}"
+        echo -e "  ${GREEN}✔${NC}  ${file}.md  ${DIM}신규(new)${NC}"
     else
-        echo -e "${YELLOW}  ⏭️  ${file}.md preserved (user data)${NC}"
+        echo -e "  ${YELLOW}⏭${NC}  ${file}.md  ${DIM}보존(preserved — user data)${NC}"
     fi
 done
 
-# ── 7. ECC (Everything Claude Code) — skills only, no commands
-# ECC commands are NOT installed to avoid cluttering the command list.
-# CEO-* orchestrators call ECC internally via skills.
-echo ""
-echo -e "${BLUE}[Extra] Updating ECC (Everything Claude Code)...${NC}"
-echo -e "        183 skills (commands excluded — use CEO-* instead)"
+# ── 7. ECC ────────────────────────────────────────
+step "ECC 183개 스킬 설치" "Installing 183 ECC skills"
+echo -e "  ${DIM}명령어 제외 — /ceo-* 오케스트레이터로 접근 / commands excluded — use /ceo-* orchestrators${NC}"
 
 ECC_TMP="${TMP_DIR}/ecc"
 git clone --depth 1 "$ECC_REPO" "$ECC_TMP" --quiet
@@ -183,23 +220,20 @@ for skill_dir in "${ECC_TMP}/skills"/*/; do
     mkdir -p "$dest"
     cp -r "${skill_dir}"* "$dest/" 2>/dev/null || true
 done
-echo -e "${GREEN}  ✅ Skills: ${NEW_SKILLS} new, ${UPDATED_SKILLS} updated${NC}"
-echo -e "${YELLOW}  ℹ️  ECC commands skipped — access via /ceo-* orchestrators${NC}"
+echo -e "  ${GREEN}✔${NC}  ECC 스킬 완료 / Skills done: ${GREEN}${NEW_SKILLS} 신규(new)${NC}  ${YELLOW}${UPDATED_SKILLS} 업데이트(updated)${NC}"
 
-# ── 8. gstack — always update ────────────────────
-echo ""
-echo -e "${BLUE}[Extra] Updating gstack...${NC}"
-git_update_or_clone "$GSTACK_REPO" "${SKILLS_DIR}/gstack" "gstack"
+# ── 8. gstack ─────────────────────────────────────
+step "gstack 업데이트" "Updating gstack"
+( git_update_or_clone "$GSTACK_REPO" "${SKILLS_DIR}/gstack" "gstack" 2>&1 ) & spin "gstack 동기화 중 / Syncing gstack..."
 
-# ── 9. Superpowers — REQUIRED ────────────────────
-echo ""
-echo -e "${BLUE}[Extra] Installing Superpowers (required)...${NC}"
+# ── 9. Superpowers ────────────────────────────────
+step "Superpowers 설치 (필수)" "Installing Superpowers (required)"
 SUPERPOWERS_INSTALLED=false
 
 # Method 1: Claude Code plugin CLI
 if command -v claude &>/dev/null; then
     if claude plugin marketplace list 2>/dev/null | grep -q "obra/superpowers-marketplace"; then
-        echo -e "${YELLOW}  ⟳ superpowers-marketplace already registered${NC}"
+        echo -e "  ${YELLOW}⟳${NC}  superpowers-marketplace 이미 등록됨 / already registered"
     else
         claude plugin marketplace add obra/superpowers-marketplace 2>/dev/null && \
             echo -e "${GREEN}  ✅ Marketplace registered: obra/superpowers-marketplace${NC}" || true
@@ -227,20 +261,19 @@ fi
 # REQUIRED — fail loudly if not installed
 if [ "$SUPERPOWERS_INSTALLED" = false ]; then
     echo ""
-    echo -e "\033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-    echo -e "\033[0;31m  ❌ SUPERPOWERS INSTALLATION FAILED\033[0m"
-    echo -e "\033[0;31m  Superpowers is required for CEO to function.\033[0m"
+    echo -e "\033[0;31m  ╔══════════════════════════════════════════╗\033[0m"
+    echo -e "\033[0;31m  ║  ❌  SUPERPOWERS 설치 실패 / FAILED     ║\033[0m"
+    echo -e "\033[0;31m  ║  CEO 작동에 필수 / Required for CEO     ║\033[0m"
+    echo -e "\033[0;31m  ╚══════════════════════════════════════════╝\033[0m"
     echo ""
-    echo -e "  Install manually inside Claude Code:"
+    echo -e "  Claude Code 내에서 수동 설치 / Install manually inside Claude Code:"
     echo -e "    \033[1;33m/plugin marketplace add obra/superpowers-marketplace\033[0m"
     echo -e "    \033[1;33m/plugin install superpowers@superpowers-marketplace\033[0m"
-    echo -e "\033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
     exit 1
 fi
 
-# ── 10. DOMANGCHA Hooks — auto-test + auto-fix + CEO enforcer ────────
-echo ""
-echo -e "${BLUE}[Extra] Installing DOMANGCHA hooks → ~/.claude/hooks/${NC}"
+# ── 10. Hooks ─────────────────────────────────────
+step "훅 설치 (자동 테스트 + CEO 검토)" "Installing hooks (auto-test + CEO review)"
 mkdir -p "${CLAUDE_DIR}/hooks"
 cp "${SRC}/hooks/macc-post-edit.sh" "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
 cp "${SRC}/hooks/macc-stop.sh"      "${CLAUDE_DIR}/hooks/macc-stop.sh"
@@ -248,13 +281,12 @@ cp "${SRC}/hooks/macc-ceo-enforcer.py" "${CLAUDE_DIR}/hooks/macc-ceo-enforcer.py
 chmod +x "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
 chmod +x "${CLAUDE_DIR}/hooks/macc-stop.sh"
 chmod +x "${CLAUDE_DIR}/hooks/macc-ceo-enforcer.py"
-echo -e "${GREEN}  ✅ macc-post-edit.sh (auto-test + auto-fix)${NC}"
-echo -e "${GREEN}  ✅ macc-stop.sh (CEO quality review)${NC}"
-echo -e "${GREEN}  ✅ macc-ceo-enforcer.py (CEO pipeline enforcer — UserPromptSubmit)${NC}"
+echo -e "  ${GREEN}✔${NC}  macc-post-edit.sh  ${DIM}자동 테스트+수정 / auto-test + auto-fix${NC}"
+echo -e "  ${GREEN}✔${NC}  macc-stop.sh        ${DIM}CEO 품질 검토 / CEO quality review${NC}"
+echo -e "  ${GREEN}✔${NC}  macc-ceo-enforcer.py  ${DIM}CEO 파이프라인 강제 / pipeline enforcer${NC}"
 
-# ── 11. Inject hooks into settings.json ──────────
-echo ""
-echo -e "${BLUE}[Extra] Configuring ~/.claude/settings.json hooks...${NC}"
+# ── 11. settings.json ─────────────────────────────
+step "settings.json 훅 주입" "Injecting hooks into settings.json"
 python3 - "${CLAUDE_DIR}" <<'PYEOF'
 import sys, json, os
 
@@ -318,17 +350,15 @@ hooks["Stop"] = stop
 settings["hooks"] = hooks
 with open(settings_path, "w") as f:
     json.dump(settings, f, indent=2)
-print("  ✅ settings.json hooks injected (merged safely)")
+print("  ✔  settings.json 훅 주입 완료 / hooks injected (merged safely)")
 PYEOF
 
-# ── 12. Playwright MCP — browser testing ─────────
-echo ""
-echo -e "${BLUE}[Extra] Setting up Playwright MCP (browser testing)...${NC}"
+# ── 12. Playwright ────────────────────────────────
+step "Playwright MCP 설정 (브라우저 테스트)" "Setting up Playwright MCP (browser testing)"
 bash "${SRC}/hooks/macc-playwright-setup.sh"
 
-# ── 13. Git hooks — auto-reinstall on pull/clone ──
-echo ""
-echo -e "${BLUE}[Extra] Installing git hooks (auto-reinstall on update)...${NC}"
+# ── 13. Git hooks ─────────────────────────────────
+step "git 훅 설치 (자동 재설치)" "Installing git hooks (auto-reinstall)"
 # Find the git repo root that contains domangcha/ (works from any working dir)
 GIT_REPO=$(git -C "$(dirname "${SRC}")" rev-parse --show-toplevel 2>/dev/null || true)
 if [ -n "$GIT_REPO" ]; then
@@ -364,10 +394,10 @@ HOOK_EOF
 
     chmod +x "${GIT_HOOKS_DIR}/post-merge"
     chmod +x "${GIT_HOOKS_DIR}/post-checkout"
-    echo -e "${GREEN}  ✅ .git/hooks/post-merge (git pull 시 자동 재설치)${NC}"
-    echo -e "${GREEN}  ✅ .git/hooks/post-checkout (git clone 시 자동 설치)${NC}"
+    echo -e "  ${GREEN}✔${NC}  post-merge  ${DIM}git pull 시 자동 재설치 / auto-reinstall on git pull${NC}"
+    echo -e "  ${GREEN}✔${NC}  post-checkout  ${DIM}git clone 시 자동 설치 / auto-install on git clone${NC}"
 else
-    echo -e "${YELLOW}  ⚠️  git 레포 루트를 찾을 수 없음 — git hooks 건너뜀${NC}"
+    echo -e "  ${YELLOW}⚠${NC}  git 레포 루트 없음 — git 훅 건너뜀 / git repo root not found — skipping git hooks"
 fi
 
 # ── 14. Mark installed version ────────────────────
@@ -375,31 +405,39 @@ echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 
 # ── Done ─────────────────────────────────────────
 echo ""
+echo ""
 echo -e "${CYAN}${BOLD}"
-echo "  ╔══════════════════════════════════════════════════════╗"
-echo -e "  ║  ${GREEN}✅  DOMANGCHA v${DOMANGCHA_VERSION} — 설치 완료!${CYAN}                    ║"
-echo "  ╚══════════════════════════════════════════════════════╝"
+echo "  ╔══════════════════════════════════════════════════════════╗"
+echo -e "  ║   ${GREEN}✅  설치 완료! / Installation Complete!${CYAN}               ║"
+echo -e "  ║   ${GREEN}DOMANGCHA v${DOMANGCHA_VERSION}${CYAN}  —  에이전트 개발 크루 / Agentic Dev Crew  ║"
+echo "  ╚══════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
-echo -e "  ${WHITE}${BOLD}무엇이 설치되었나요?${NC}"
-echo -e "  ${DIM}────────────────────────────────────────────────────${NC}"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/agents/dc-*.md${NC}       16 DC-* 에이전트"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/commands/ceo*.md${NC}     /ceo /ceo-init /ceo-ralph ..."
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/skills/ceo-system/${NC}   CEO 오케스트레이션 브레인"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/hooks/${NC}               auto-test + CEO review + enforcer"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/settings.json${NC}        hooks 자동 주입"
-echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/CLAUDE.md${NC}            Claude Code 자동 로드"
-echo -e "  ${DIM}────────────────────────────────────────────────────${NC}"
+echo -e "  ${WHITE}${BOLD}설치된 항목 / What's installed${NC}"
+echo -e "  ${DIM}──────────────────────────────────────────────────────${NC}"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/agents/dc-*.md${NC}"
+echo -e "     ${DIM}16명 DC-* 에이전트 / 16 DC-* Worker Agents${NC}"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/commands/ceo*.md${NC}"
+echo -e "     ${DIM}/ceo /ceo-init /ceo-ralph /ceo-status ...${NC}"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/skills/ceo-system/${NC}"
+echo -e "     ${DIM}CEO 오케스트레이션 브레인 / CEO orchestration brain${NC}"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/hooks/${NC}  +  ${YELLOW}~/.claude/settings.json${NC}"
+echo -e "     ${DIM}자동 테스트·CEO 검토·파이프라인 강제 / auto-test + CEO review + enforcer${NC}"
+echo -e "  ${GREEN}✔${NC}  ${YELLOW}~/.claude/CLAUDE.md${NC}"
+echo -e "     ${DIM}Claude Code 자동 로드 / auto-loaded by Claude Code${NC}"
+echo -e "  ${DIM}──────────────────────────────────────────────────────${NC}"
 echo ""
-echo -e "  ${WHITE}${BOLD}🚀 시작하기${NC}"
+echo -e "  ${WHITE}${BOLD}🚀 시작하기 / Getting Started${NC}"
 echo -e "  ${DIM}  1.${NC} Claude Code를 아무 프로젝트에서 열기"
-echo -e "  ${DIM}  2.${NC} ${CYAN}/ceo-init${NC}                  프로젝트 초기화"
-echo -e "  ${DIM}  3.${NC} ${CYAN}/ceo \"투두앱 만들어줘\"${NC}       풀 파이프라인 시작"
+echo -e "     ${DIM}Open Claude Code in any project${NC}"
+echo -e "  ${DIM}  2.${NC} ${CYAN}/ceo-init${NC}  ${DIM}프로젝트 초기화 / Initialize project${NC}"
+echo -e "  ${DIM}  3.${NC} ${CYAN}/ceo \"투두앱 만들어줘\"${NC}  ${DIM}→ 풀 파이프라인 시작 / Start full pipeline${NC}"
 echo ""
-echo -e "  ${WHITE}${BOLD}📋 주요 명령어${NC}"
-echo -e "  ${CYAN}/ceo \"업무\"${NC}    Q&A → 16에이전트 → GATE → 완료"
-echo -e "  ${CYAN}/ceo-ralph${NC}    완료 조건 정의 + 자율 반복 루프"
-echo -e "  ${CYAN}/ceo-init${NC}     프로젝트 하네스 셋업"
-echo -e "  ${CYAN}/ceo-status${NC}   현황 조회"
+echo -e "  ${WHITE}${BOLD}📋 주요 명령어 / Key Commands${NC}"
+echo -e "  ${CYAN}/ceo \"업무\"${NC}    ${DIM}Q&A → 16에이전트 → GATE → 완료 / Q&A → 16 agents → GATE → done${NC}"
+echo -e "  ${CYAN}/ceo-ralph${NC}    ${DIM}자율 반복 루프 / autonomous loop until done${NC}"
+echo -e "  ${CYAN}/ceo-init${NC}     ${DIM}프로젝트 하네스 셋업 / project harness setup${NC}"
+echo -e "  ${CYAN}/ceo-status${NC}   ${DIM}현황 조회 / show status${NC}"
 echo ""
 echo -e "  ${MAGENTA}${BOLD}  개발 지옥에서 도망쳐. 🚗💨 돔황차가 데려다 줄게.${NC}"
+echo -e "  ${DIM}  Escape development hell. DOMANGCHA is your getaway car.${NC}"
 echo ""
