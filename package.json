@@ -1,8 +1,52 @@
 {
-  "name": "docore",
-  "version": "1.0.0",
-  "private": true,
+  "name": "domangcha",
+  "version": "2.0.12",
+  "description": "AI getaway car from development hell. 16-agent Claude Code crew for AI development automation.",
+  "keywords": [
+    "claude-code",
+    "ai-agents",
+    "anthropic",
+    "llm",
+    "automation",
+    "developer-tools",
+    "cli",
+    "ai",
+    "multi-agent",
+    "mcp",
+    "productivity",
+    "devtools",
+    "agentic-ai",
+    "code-generation",
+    "workflow-automation",
+    "claude",
+    "bash",
+    "ai-automation",
+    "open-source"
+  ],
+  "homepage": "https://github.com/DoCoreTeam/domangcha#readme",
+  "bugs": {
+    "url": "https://github.com/DoCoreTeam/domangcha/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoCoreTeam/domangcha.git"
+  },
+  "license": "MIT",
+  "author": "Michael Dohyeon Kim <kko2349@gmail.com> (https://github.com/docore)",
+  "bin": {
+    "domangcha": "./bin/domangcha.sh"
+  },
+  "files": [
+    "bin/",
+    "domangcha/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
-    "test": "bash -n domangcha/install.sh && echo 'install.sh syntax OK'"
+    "test": "bash -n domangcha/install.sh && echo 'install.sh syntax OK'",
+    "prepublishOnly": "bash -n domangcha/install.sh"
   }
 }

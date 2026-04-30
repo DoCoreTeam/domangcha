@@ -1,0 +1,46 @@
+# Claude / AI tool internals
+.claude/
+domangcha/.claude/
+
+# Planning and documentation
+docs/
+
+# GitHub metadata
+.github/
+
+# Log files
+*.jsonl
+*.log
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Scripts (not part of the published package)
+scripts/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Development configs
+.eslintrc*
+.prettierrc*
+tsconfig*.json
+jest.config.*
+
+# Test files
+*.test.*
+*.spec.*
+__tests__/
+test/
+tests/

@@ -11,7 +11,9 @@
 
 ### 🚗💨 DOMANGCHA — *Your AI getaway car from development hell.*
 
-**AI Development Automation Tool**
+**Multi-Agent AI Automation for Claude Code**
+
+Open-source developer tools for AI-driven workflow automation.
 
 [![Version](https://img.shields.io/badge/version-2.0.12-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
@@ -36,6 +38,8 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 ---
 
 ## ⚡ Why DOMANGCHA?
+
+DOMANGCHA is a **multi-agent system** that brings workflow automation to Claude Code. Unlike traditional developer tools, it orchestrates 16 specialized AI agents in parallel, delivering end-to-end project delivery with zero context-switching.
 
 <table>
 <tr>
@@ -179,6 +183,8 @@ You press Enter
 
 ## 🖥️ Commands
 
+The command-line interface brings workflow automation directly into Claude Code. Every command triggers the multi-agent system to orchestrate tasks across planning, building, quality, and deployment phases.
+
 | Command | What it does |
 |---|---|
 | `/ceo "[task]"` | 🚀 Full pipeline — Q&A → 16 agents → GATE → ship |
@@ -206,6 +212,8 @@ Non-negotiable. Gate 1 enforces on every file.
 ---
 
 ## 📦 Requirements
+
+DOMANGCHA is a developer tool built for Claude Code users who want AI-driven automation and multi-agent coordination without manual orchestration.
 
 | | |
 |---|---|
@@ -246,7 +254,9 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 ### 🚗💨 돔황차 — *개발 지옥에서 도망쳐*
 
-**AI 개발 자동화 도구**
+**Claude Code를 위한 다중 에이전트 AI 자동화**
+
+AI 기반 workflow automation 개발자 도구
 
 [![Version](https://img.shields.io/badge/version-2.0.12-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
@@ -267,6 +277,8 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 ---
 
 ### ⚡ 왜 DOMANGCHA인가?
+
+DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**으로, workflow automation을 가능하게 합니다. 전통적인 개발자 도구와 달리, 16명의 전문화된 AI 에이전트를 병렬로 조율하여 문맥 전환 없이 엔드-투-엔드 프로젝트 완성을 제공합니다.
 
 <table>
 <tr>
@@ -410,6 +422,8 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 
 ### 🖥️ 명령어
 
+커맨드라인 인터페이스는 workflow automation을 Claude Code에 직접 가져옵니다. 모든 명령은 다중 에이전트 시스템을 트리거하여 기획, 빌드, 품질, 배포 단계를 조율합니다.
+
 | 명령어 | 동작 |
 |---|---|
 | `/ceo "[업무]"` | 🚀 전체 파이프라인 — Q&A → 16명 → GATE → 출시 |
@@ -437,6 +451,8 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 ---
 
 ### 📦 요구사항
+
+DOMANGCHA는 수동 조율 없이 AI 기반 자동화와 다중 에이전트 조율을 원하는 Claude Code 사용자를 위한 개발자 도구입니다.
 
 | | |
 |---|---|
