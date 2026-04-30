@@ -129,6 +129,19 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 | GATE 4 | Builder ≠ Reviewer (enforced) | 빌더 ≠ 리뷰어 강제 |
 | GATE 5 | No breaking changes without approval | 승인 없는 브레이킹 체인지 차단 |
 
+## Agent Color Coding / 에이전트 컬러 코딩
+
+Every agent name in CEO output is prefixed with its group emoji — renders natively in all terminals and markdown viewers.
+
+모든 에이전트 이름에 그룹 이모지 접두사가 붙어 터미널과 마크다운 뷰어에서 즉시 렌더링됨.
+
+| Group | Emoji | Agents |
+|-------|-------|--------|
+| PLANNER | 🟦 | DC-BIZ · DC-RES · DC-OSS |
+| GENERATOR | 🟩 | DC-DEV-BE · DC-DEV-FE · DC-DEV-DB · DC-DEV-OPS · DC-DEV-MOB · DC-DEV-INT · DC-WRT · DC-DOC · DC-SEO |
+| EVALUATOR | 🟥 | DC-QA · DC-SEC · DC-REV |
+| SUPPORT | 🟨 | DC-TOK |
+
 ## Structure / 구조
 
 ```
