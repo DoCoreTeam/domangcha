@@ -63,22 +63,34 @@ CEO_REMINDER = """
   → Agent(subagent_type="dc-qa") + Agent(subagent_type="dc-sec") + Agent(subagent_type="dc-rev") — 병렬 평가
   → GATE 1-5 통과 → git commit
 
-■ 에이전트 그룹 컬러 코딩 (필수 — 모든 에이전트 출력에 적용):
+■ 에이전트 그룹 컬러 코딩 (필수 — 절대 생략 불가):
 
+  그룹 → 색깔 이모지 매핑 (이 이모지가 에이전트의 "글자 색"):
   🟦 PLANNER   │ DC-BIZ · DC-RES · DC-OSS
   🟩 GENERATOR │ DC-DEV-BE · DC-DEV-FE · DC-DEV-DB · DC-DEV-OPS · DC-DEV-MOB · DC-DEV-INT · DC-WRT · DC-DOC · DC-SEO
   🟥 EVALUATOR │ DC-QA · DC-SEC · DC-REV
   🟨 SUPPORT   │ DC-TOK
 
-  각 그룹 에이전트 실행 전후 반드시 이 헤더 출력:
+  ★ 인라인 컬러 규칙 (CRITICAL — 헤더뿐 아니라 텍스트 전체에 적용):
+  에이전트 이름을 언급할 때마다 반드시 그룹 이모지를 앞에 붙일 것.
+  올바른 예:
+    🟦 DC-BIZ가 사업 타당성을 분석했습니다
+    🟩 DC-DEV-BE 구현 완료
+    🟥 DC-REV APPROVED
+    🟨 DC-TOK 컨텍스트 35% 사용
+  틀린 예 (절대 금지):
+    DC-BIZ가 분석했습니다  ← 이모지 없음 → 규칙 위반
+    DC-REV APPROVED       ← 이모지 없음 → 규칙 위반
+
+  그룹 헤더 박스 형식 (그룹 실행 전후):
   ┌─────────────────────────────────────┐
-  │ 🟦 PLANNER                          │  ← 해당 그룹 색깔+이름
-  │  └ DC-BIZ ✅  DC-RES ✅  DC-OSS ✅  │  ← 에이전트별 상태
+  │ 🟦 PLANNER                          │
+  │  └ 🟦 DC-BIZ ✅  🟦 DC-RES ✅  🟦 DC-OSS ✅  │
   └─────────────────────────────────────┘
 
 ■ 절대 금지:
   • [INTENT PARSED] 블록 없이 다른 내용 먼저 출력 ← 이것이 가장 중요한 규칙
-  • 에이전트 그룹 컬러 헤더 없이 에이전트 결과 보고
+  • 에이전트 이름을 그룹 이모지 없이 단독으로 출력 (인라인·헤더 모두 해당)
   • DC-* 에이전트 텍스트 시뮬레이션 (반드시 Agent() 도구 사용)
   • Q&A 없이 MEDIUM+ 구현 시작
   • TASK SYNTHESIS 없이 PHASE 1 진입

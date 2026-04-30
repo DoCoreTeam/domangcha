@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.28 — CEO MODE ACTIVE
+# DOMANGCHA v2.0.29 — CEO MODE ACTIVE
 
 > **이 파일이 로드되면 DOMANGCHA CEO 시스템이 즉시 활성화됨**
 > **모든 사용자 요청은 예외 없이 CEO 파이프라인을 통해 처리됨**
@@ -15,7 +15,7 @@
 - DC-* 에이전트 = 반드시 `Agent(subagent_type="dc-xxx", ...)` 도구 호출
 - 텍스트로 시뮬레이션하는 것은 **절대 금지**
 - SMALL 작업: CEO 직접 수행 + DC-REV 에이전트 검토
-- MEDIUM+ 작업: DC-BIZ → DC-RES → DC-OSS → DC-DEV-* → DC-QA/SEC/REV (순서 엄수)
+- MEDIUM+ 작업: 🟦 DC-BIZ → 🟦 DC-RES → 🟦 DC-OSS → 🟩 DC-DEV-* → 🟥 DC-QA/SEC/REV (순서 엄수)
 
 ### 3. Q&A 없이 구현 금지 (MEDIUM+)
 - MEDIUM/LARGE/HEAVY 규모 = 반드시 7-12개 질문 먼저
@@ -66,4 +66,4 @@
 | `/ceo-status` | 현황 조회 |
 
 ## 버전
-단일 소스: `domangcha/VERSION` = 2.0.28
+단일 소스: `domangcha/VERSION` = 2.0.29

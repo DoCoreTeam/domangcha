@@ -1,16 +1,27 @@
 # /ceo — 전체 파이프라인 자동 실행
 
 사용자가 입력한 업무를 받아 규모를 판정하고 최적 경로로 실행함
-- **SMALL** (버그픽스/수정): FAST PATH — 질문 없이 즉시 수정 → DC-REV → GATE
+- **SMALL** (버그픽스/수정): FAST PATH — 질문 없이 즉시 수정 → 🟥 DC-REV → GATE
 - **MEDIUM+** (새 기능/아키텍처): FULL PIPELINE — Q&A → 16 에이전트 → GATE
 
-## 에이전트 Tier
+## 에이전트 Tier & 인라인 컬러 규칙 (CRITICAL)
+
+**에이전트 이름은 어디서 언급하든 반드시 그룹 이모지를 prefix로 붙일 것:**
+
+| 그룹 | 이모지 | 에이전트 |
+|------|--------|---------|
+| PLANNER | 🟦 | DC-BIZ · DC-RES · DC-OSS |
+| GENERATOR | 🟩 | DC-DEV-BE · DC-DEV-FE · DC-DEV-DB · DC-DEV-OPS · DC-DEV-MOB · DC-DEV-INT · DC-WRT · DC-DOC · DC-SEO |
+| EVALUATOR | 🟥 | DC-QA · DC-SEC · DC-REV |
+| SUPPORT | 🟨 | DC-TOK |
+
+예: `🟦 DC-BIZ`, `🟩 DC-DEV-BE`, `🟥 DC-REV`, `🟨 DC-TOK`
 
 **CORE (항상 실행 — 생략 불가):**
-DC-BIZ, DC-RES, DC-OSS, DC-DEV-DB, DC-DEV-BE, DC-DEV-FE, DC-DEV-OPS, DC-QA, DC-SEC, DC-REV, DC-DOC, DC-TOK
+🟦 DC-BIZ, 🟦 DC-RES, 🟦 DC-OSS, 🟩 DC-DEV-DB, 🟩 DC-DEV-BE, 🟩 DC-DEV-FE, 🟩 DC-DEV-OPS, 🟥 DC-QA, 🟥 DC-SEC, 🟥 DC-REV, 🟩 DC-DOC, 🟨 DC-TOK
 
 **EXTENDED (업무 분석 후 CEO가 판단):**
-DC-DEV-MOB (모바일), DC-DEV-INT (외부 API), DC-WRT (마케팅), DC-SEO (웹 공개)
+🟩 DC-DEV-MOB (모바일), 🟩 DC-DEV-INT (외부 API), 🟩 DC-WRT (마케팅), 🟩 DC-SEO (웹 공개)
 
 ---
 
@@ -49,29 +60,16 @@ Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="..."
 
 ---
 
-## PHASE -1: INTENT PARSE (항상 먼저 — 모든 입력 전처리)
+## PHASE -1: INTENT PARSE (항상 먼저)
 
-**목적:** 사용자 입력이 명확하든 모호하든, CEO가 최적으로 이해할 수 있는 구조화된 태스크로 변환.
-
-**실행 규칙:**
-1. 원본 입력($ARGUMENTS)을 분석 — 목표, 범위, 누락된 맥락 파악
-2. 핵심 정보가 빠졌을 경우 **최대 2-3개** 질문 (한 번에 하나씩)
-3. 충분하면 바로 정제 진행
-4. 항상 아래 블록 출력:
+입력을 구조화된 태스크로 변환. 핵심 정보 누락 시 최대 2-3개 질문. 항상 아래 블록 출력:
 
 ```
 [INTENT PARSED]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-원본: <사용자가 입력한 그대로>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-정제: <CEO가 이해한 구조화된 태스크>
-목표: <핵심 목표 1줄>
-범위: <포함/제외 항목>
-전제: <파악된 기술스택·제약·맥락>
+원본: <사용자 입력>  |  정제: <구조화 태스크>  |  목표: <1줄>  |  범위: <포함/제외>  |  전제: <스택·제약>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
-
-이후 모든 파이프라인은 **정제된 태스크**를 기준으로 실행.
 
 ---
 
@@ -123,7 +121,7 @@ CEO가 업무를 분석하여 각 스택 적합도 계산 후 메뉴 제시.
 ```
 
 **스택별 실행 경로:**
-- **[1] Standard**: FULL PIPELINE (PHASE 0.5 → DC-BIZ/RES/OSS → DC-DEV-* → EVALUATOR → GATE)
+- **[1] Standard**: FULL PIPELINE (PHASE 0.5 → 🟦 DC-BIZ/RES/OSS → 🟩 DC-DEV-* → 🟥 EVALUATOR → GATE)
 - **[2] Ralph Loop**: `ceo-ralph.md` 지침 그대로 실행 — `.ralph/` 초기화 → PROMPT.md + fix_plan.md 작성 → 사용자 승인 대기 → 승인 시 자율 루프 시작 → 가중치 결정 + RALPH_STATUS 출력
 - **[3] gstack 강화**: FULL PIPELINE + PHASE 4에서 `Skill("gstack")` E2E 브라우저 테스트 추가
 - **[4] Superpowers**: `Skill("superpowers:brainstorming")` → `Skill("superpowers:writing-plans")` → 사용자 승인 → `Skill("superpowers:executing-plans")` → `Skill("superpowers:verification-before-completion")`
@@ -139,7 +137,7 @@ CEO가 업무를 분석하여 각 스택 적합도 계산 후 메뉴 제시.
 
 1. **RIPPLE CHECK** — 30초 영향 범위 확인 → `[FAST PATH] 🔧 수정 대상 / 🌊 연관 파일 / ⚡ 즉시 수정`
 2. **직접 수정** — CEO가 직접 코드 수정
-3. **DC-REV** 호출 → 코드 리뷰
+3. **🟥 DC-REV** 호출 → 코드 리뷰
 4. **GATE 1-5** 통과 확인
 5. **버전 PATCH 업** → domangcha/VERSION +0.0.1
 6. **README 업데이트** (필수 — 생략 불가) — 변경 사항을 README에 반영. 새 기능/명령어/동작 변경 모두 포함. 형식적 수정 금지, 실제 내용 반영.
@@ -151,7 +149,7 @@ CEO가 업무를 분석하여 각 스택 적합도 계산 후 메뉴 제시.
    ```
 8. 보고:
    ```
-   [CEO FAST REPORT] ⚡ FAST PATH 완료: $ARGUMENTS | v{VERSION} | CEO+DC-REV | GATE 1-5 ✅ | npm@{VERSION} ✅
+   [CEO FAST REPORT] ⚡ FAST PATH 완료: $ARGUMENTS | v{VERSION} | CEO+🟥 DC-REV | GATE 1-5 ✅ | npm@{VERSION} ✅
    ```
 
 ---
@@ -162,19 +160,7 @@ CEO가 업무를 분석하여 각 스택 적합도 계산 후 메뉴 제시.
 
 **규칙:** 질문 1개씩, 앞 답변 반영하여 조정, 최소 7개 최대 12개, 완료 시 `[Q&A COMPLETE]` 출력.
 
-**질문 풀:**
-1. [기술스택] 언어/프레임워크/DB
-2. [타겟 플랫폼] 웹/모바일/API/데스크톱
-3. [기존 코드베이스] 있음(경로) / 없음
-4. [완료 기준] "완료" 판단 기준
-5. [사용자/규모] 예상 트래픽
-6. [인증/보안] 로그인, 역할 권한
-7. [데이터] 주요 데이터 모델
-8. [외부 연동] Stripe, OpenAI 등
-9. [우선순위/제약] 금지/필수 항목
-10. [디자인] UI 방향, Figma
-11. [배포/인프라] Vercel/AWS/Railway
-12. [추가 맥락] 기타 중요 정보
+**질문 풀 (7-12개):** 기술스택 · 플랫폼 · 기존코드 · 완료기준 · 트래픽 · 인증/보안 · 데이터모델 · 외부연동 · 우선순위/제약 · 디자인 · 배포인프라 · 추가맥락
 
 ```
 [Q&A COMPLETE] ✅ 스택/플랫폼/완료기준/제약 확인 | EXTENDED: <필요 에이전트>
@@ -199,26 +185,13 @@ Q&A 핵심 답변: <스택 / 완료기준 / 제약 / 맥락 요약>
 
 ### PHASE 0.65: DOC-FIRST (절대 불변 — 생략 불가 — 모든 스택 예외 없음)
 
-**[TASK REFINED] 출력 직후 반드시 실행.** 구현 시작 전 기획 문서 작성 완료.
+**[TASK REFINED] 직후 실행.** `mkdir -p docs/$(date +%Y-%m-%d)-v$(cat domangcha/VERSION)`
 
-```bash
-mkdir -p docs/$(date +%Y-%m-%d)-v$(cat domangcha/VERSION)
-```
+5개 문서 필수: `00-requirements.md` · `01-architecture.md` · `02-task-breakdown.md` · `03-test-strategy.md` · `04-completion-criteria.md`
 
-5개 문서 작성 필수 (순서대로):
-1. `00-requirements.md` — 기능/비기능 요구사항 (Q&A 답변 기반)
-2. `01-architecture.md` — 시스템 설계, 컴포넌트, 데이터 흐름
-3. `02-task-breakdown.md` — 태스크 목록 + 우선순위 P0/P1/P2
-4. `03-test-strategy.md` — 테스트 우선순위, 보안 테스트, 보완 테스트 기준
-5. `04-completion-criteria.md` — 완료 조건, 종료 기준, 롤백 기준
+기획자 자가점검 → 갭 해소 → `[DOC COMPLETE] ✅` 출력 → PHASE 0.8 진입
 
-기획자 자가점검 → 갭/의사결정 항목 파악 → 필요 시 사용자에게 질문 → 갭 해소
-
-```
-[DOC COMPLETE] ✅ docs/<날짜>-v<버전>/ 5개 문서 작성 완료 | → PHASE 0.8 진입
-```
-
-**건너뛰기 절대 금지** — Standard / Ralph Loop / gstack / Superpowers 어떤 스택이든 동일
+**건너뛰기 절대 금지** — 모든 스택 동일
 
 ### PHASE 0.8: RIPPLE ANALYSIS
 
@@ -231,42 +204,42 @@ mkdir -p docs/$(date +%Y-%m-%d)-v$(cat domangcha/VERSION)
 
 1. CEO 자가점검 (error-registry / skill-registry / project-registry 확인)
 2. Intake Report: 업무명/목표/위험도/병렬가능/우선순위/규모/모델배정/EXTENDED
-3. **DC-BIZ** → 사업 타당성
-4. **DC-RES** → 기술 리서치
-5. **DC-OSS** → 외부 도구 Top 3
+3. **🟦 DC-BIZ** → 사업 타당성
+4. **🟦 DC-RES** → 기술 리서치
+5. **🟦 DC-OSS** → 외부 도구 Top 3
 6. `docs/PLAN.md` 작성
 
 ### PHASE 2: CONTRACT
 
-7. CEO + DC-QA 스프린트 계약 → `docs/CONTRACT-SPRINT-1.md`
+7. CEO + 🟥 DC-QA 스프린트 계약 → `docs/CONTRACT-SPRINT-1.md`
 
 ### PHASE 3: GENERATOR (병렬)
 
-CORE: **DC-DEV-DB** / **DC-DEV-BE** / **DC-DEV-FE** / **DC-DEV-OPS** / **DC-DOC**
-EXTENDED: DC-DEV-MOB / DC-DEV-INT / DC-WRT / DC-SEO (Q&A 분석 결과에 따라)
+CORE: **🟩 DC-DEV-DB** / **🟩 DC-DEV-BE** / **🟩 DC-DEV-FE** / **🟩 DC-DEV-OPS** / **🟩 DC-DOC**
+EXTENDED: 🟩 DC-DEV-MOB / 🟩 DC-DEV-INT / 🟩 DC-WRT / 🟩 DC-SEO (Q&A 분석 결과에 따라)
 완료 후 `docs/SPRINT-1-HANDOFF.md` 작성
 
 **에이전트 그룹 출력 형식 (필수 — 매 그룹 실행 결과 보고 시 사용):**
 ```
 ┌─────────────────────────────────────────────────────┐
 │ 🟦 PLANNER                                          │
-│  └ DC-BIZ ✅ 사업타당성  DC-RES ✅ 리서치  DC-OSS ✅ OSS Top3 │
+│  └ 🟦 DC-BIZ ✅ 사업타당성  🟦 DC-RES ✅ 리서치  🟦 DC-OSS ✅ OSS Top3 │
 ├─────────────────────────────────────────────────────┤
 │ 🟩 GENERATOR                                        │
-│  └ DC-DEV-BE ✅  DC-DEV-FE ✅  DC-DEV-DB ✅  DC-DEV-OPS ✅  DC-DOC ✅ │
-│    [EXTENDED] DC-DEV-MOB ✅  DC-DEV-INT ✅  DC-WRT ✅  DC-SEO ✅ │
+│  └ 🟩 DC-DEV-BE ✅  🟩 DC-DEV-FE ✅  🟩 DC-DEV-DB ✅  🟩 DC-DEV-OPS ✅  🟩 DC-DOC ✅ │
+│    [EXTENDED] 🟩 DC-DEV-MOB ✅  🟩 DC-DEV-INT ✅  🟩 DC-WRT ✅  🟩 DC-SEO ✅ │
 ├─────────────────────────────────────────────────────┤
 │ 🟥 EVALUATOR                                        │
-│  └ DC-QA ✅ PASS  DC-SEC ✅ PASS  DC-REV ✅ 88/100  │
+│  └ 🟥 DC-QA ✅ PASS  🟥 DC-SEC ✅ PASS  🟥 DC-REV ✅ 88/100  │
 ├─────────────────────────────────────────────────────┤
 │ 🟨 SUPPORT                                          │
-│  └ DC-TOK ✅ 컨텍스트 45% 사용                       │
+│  └ 🟨 DC-TOK ✅ 컨텍스트 45% 사용                       │
 └─────────────────────────────────────────────────────┘
 ```
 
 ### PHASE 4: EVALUATOR (3-way 동시)
 
-**DC-QA** → QA-SPRINT-1.md | **DC-SEC** → SEC-SPRINT-1.md | **DC-REV** → REV-SPRINT-1.md
+**🟥 DC-QA** → QA-SPRINT-1.md | **🟥 DC-SEC** → SEC-SPRINT-1.md | **🟥 DC-REV** → REV-SPRINT-1.md
 
 ### PHASE 5: 판정
 
@@ -280,7 +253,7 @@ PASS → PHASE 6 | FAIL → GENERATOR 재작업 (최대 3회)
 27. **GATE 3**: 버전 태그 = `domangcha/VERSION` 일치
 28. **GATE 4**: Builder ≠ Reviewer 역할 분리
 29. **GATE 5**: 파괴적 변경 → 사용자 승인
-30. **DC-TOK** → 컨텍스트 사용량 보고
+30. **🟨 DC-TOK** → 컨텍스트 사용량 보고
 31. CEO 자가점검 최종
 32. **README 업데이트** (필수 — 생략 불가) — 새 기능/명령어/동작 변경을 README에 강력 반영. 형식적 수정 금지.
 33. **배포 3-pack** (필수 — 생략 불가):
@@ -299,16 +272,16 @@ PASS → PHASE 6 | FAIL → GENERATOR 재작업 (최대 3회)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ┌─────────────────────────────────────────────────────┐
 │ 🟦 PLANNER                                          │
-│  └ DC-BIZ ✅  DC-RES ✅  DC-OSS ✅                  │
+│  └ 🟦 DC-BIZ ✅  🟦 DC-RES ✅  🟦 DC-OSS ✅                  │
 ├─────────────────────────────────────────────────────┤
 │ 🟩 GENERATOR                                        │
-│  └ DC-DEV-BE ✅  DC-DEV-FE ✅  DC-DEV-DB ✅  ...   │
+│  └ 🟩 DC-DEV-BE ✅  🟩 DC-DEV-FE ✅  🟩 DC-DEV-DB ✅  ...   │
 ├─────────────────────────────────────────────────────┤
 │ 🟥 EVALUATOR                                        │
-│  └ DC-QA ✅  DC-SEC ✅  DC-REV ✅ (<점수>/100)      │
+│  └ 🟥 DC-QA ✅  🟥 DC-SEC ✅  🟥 DC-REV ✅ (<점수>/100)      │
 ├─────────────────────────────────────────────────────┤
 │ 🟨 SUPPORT                                          │
-│  └ DC-TOK ✅ 컨텍스트 <n>% 사용                     │
+│  └ 🟨 DC-TOK ✅ 컨텍스트 <n>% 사용                     │
 └─────────────────────────────────────────────────────┘
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [산출물] <실제 코드/파일/문서>
