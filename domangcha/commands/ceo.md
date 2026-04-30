@@ -30,7 +30,7 @@ Agent(subagent_type="dc-biz", description="DC-BIZ: Business Judge", prompt="..."
 **목적:** 업데이트가 있을 때만 사용자에게 알림. npm 호출은 최대 1시간에 1번으로 제한.
 
 **작동 방식 (hook이 자동 처리 — CEO가 npm 직접 호출하지 않음):**
-- `macc-ceo-enforcer.py` hook이 캐시(`~/.claude/.domangcha-version-cache`)를 확인
+- `domangcha-ceo-enforcer.py` hook이 캐시(`~/.claude/.domangcha-version-cache`)를 확인
 - 캐시 유효(1시간 이내) → 파일 읽기만, npm 호출 없음 (거의 0ms)
 - 캐시 만료/없음 → npm 1번 호출 → 캐시 갱신
 - 버전 같으면 → 완전 무음, CEO는 아무것도 하지 않음

@@ -1,4 +1,4 @@
-# MACC Project Registry
+# DOMANGCHA Project Registry
 
 > 현재 진행 중인 프로젝트와 확정된 기술 결정사항을 기록
 > CEO는 새 작업 착수 전 이 파일을 확인하여 제약 충돌을 사전 방지
@@ -9,7 +9,7 @@
 
 | 코드 | 프로젝트명 | 상태 | 기술스택 | 담당자 |
 |------|-----------|------|---------|-------|
-| DOCORE | MACC CEO System | ACTIVE | Claude Code + Bash + MD | CEO |
+| DOCORE | DOMANGCHA CEO System | ACTIVE | Claude Code + Bash + MD | CEO |
 
 ---
 

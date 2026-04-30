@@ -69,6 +69,6 @@
 | `/land-and-deploy` | gstack | 랜딩 + 배포 |
 | `/review` | gstack | 배포 전 리뷰 |
 | `/qa` | gstack | 배포 후 QA |
-| DC-DEV-OPS | MACC | DevOps 전문 에이전트 |
-| DC-REV | MACC | 최종 리뷰 에이전트 |
-| DC-QA | MACC | QA 전문 에이전트 |
+| DC-DEV-OPS | DOMANGCHA | DevOps 전문 에이전트 |
+| DC-REV | DOMANGCHA | 최종 리뷰 에이전트 |
+| DC-QA | DOMANGCHA | QA 전문 에이전트 |

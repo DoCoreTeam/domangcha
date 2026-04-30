@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# MACC Stop Hook — Premature Completion Guard + Quality Review
+# DOMANGCHA Stop Hook — Premature Completion Guard + Quality Review
 # exit 2 = force CEO to continue (Block completion)
 # exit 0 = allow session to end
 # ============================================================
@@ -50,10 +50,10 @@ fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  [MACC] Stop Hook — CEO Quality Review"
+echo "  [DOMANGCHA] Stop Hook — CEO Quality Review"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-PROMPT="Act as the CEO of MACC (Multi-Agent Claude Crew). Run a rapid final quality review.
+PROMPT="Act as the CEO of DOMANGCHA. Run a rapid final quality review.
 
 Check recently modified files for:
 1. SECURITY: Hardcoded secrets, SQL injection, XSS, unvalidated inputs (OWASP Top 10)
@@ -62,7 +62,7 @@ Check recently modified files for:
 4. VERSION: domangcha/VERSION or VERSION file consistent with git log
 
 Output format:
-[MACC STOP REVIEW]
+[DOMANGCHA STOP REVIEW]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅/⚠️/🔴 Security: <brief result>
 ✅/⚠️/🔴 Code Quality: <brief result>
@@ -76,6 +76,6 @@ Keep under 20 lines total."
 claude -p "$PROMPT" \
     --allowedTools "Read,Grep,Glob,Bash" \
     --max-turns 5 \
-    2>/dev/null || echo "  [MACC] Stop review skipped (claude CLI not available)"
+    2>/dev/null || echo "  [DOMANGCHA] Stop review skipped (claude CLI not available)"
 
 exit 0

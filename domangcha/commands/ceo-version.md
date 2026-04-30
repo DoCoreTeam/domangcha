@@ -1,6 +1,6 @@
 # /ceo-version — 버전 확인 및 업데이트 안내
 
-현재 설치된 MACC 버전을 확인하고, GitHub 최신 버전과 비교하여 업데이트 여부를 물어봄
+현재 설치된 DOMANGCHA 버전을 확인하고, GitHub 최신 버전과 비교하여 업데이트 여부를 물어봄
 
 ## 실행 순서
 
@@ -8,10 +8,10 @@
 
 ```bash
 # 1순위: CLAUDE.md (가장 신뢰할 수 있는 소스)
-INSTALLED=$(grep "^# MACC v" ~/.claude/CLAUDE.md 2>/dev/null | head -1 | sed 's/# MACC v//' | cut -d' ' -f1)
+INSTALLED=$(grep "^# DOMANGCHA v" ~/.claude/CLAUDE.md 2>/dev/null | head -1 | sed 's/# DOMANGCHA v//' | cut -d' ' -f1)
 # 2순위: SKILL.md (헤더 패턴이 다를 수 있음)
 if [ -z "$INSTALLED" ]; then
-  INSTALLED=$(grep "^# CEO AGENT SYSTEM v\|^# MACC v" ~/.claude/skills/ceo-system/SKILL.md 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  INSTALLED=$(grep "^# CEO AGENT SYSTEM v\|^# DOMANGCHA v" ~/.claude/skills/ceo-system/SKILL.md 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 fi
 echo "설치된 버전: ${INSTALLED:-알 수 없음}"
 ```

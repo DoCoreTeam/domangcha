@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.21 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.22 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
@@ -76,7 +76,7 @@
 
 **버전 업데이트 필수 절차 (커밋 전 반드시 전부 완료):**
 1. `domangcha/VERSION` 파일 업데이트 ← **이것이 단일 소스**
-2. `domangcha/CLAUDE.md` 헤더 (`# MACC vX.X.X`) 업데이트
+2. `domangcha/CLAUDE.md` 헤더 (`# DOMANGCHA vX.X.X`) 업데이트
 3. `domangcha/skills/ceo-system/SKILL.md` 헤더 (`# CEO AGENT SYSTEM vX.X.X`) 업데이트
 4. `domangcha/skills/ceo-core/SKILL.md` 헤더 (`# CEO AGENT SYSTEM vX.X.X`) 업데이트
 5. `domangcha/skills/ceo-sprint/SKILL.md` 헤더 버전 마커 업데이트

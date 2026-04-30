@@ -140,14 +140,14 @@ echo -e "  ${GREEN}✔${NC}  ceo-system/SKILL.md  ${DIM}→ ~/.claude/skills/ceo
 # ── 5. CLAUDE.md ──────────────────────────────────
 step "CLAUDE.md 업데이트" "Updating CLAUDE.md"
 if [ -f "${CLAUDE_DIR}/CLAUDE.md" ]; then
-    if grep -qE "^# (docrew|DOCORE|MACC|CEO|DOMANGCHA) v" "${CLAUDE_DIR}/CLAUDE.md" 2>/dev/null; then
+    if grep -qE "^# (docrew|DOCORE|DOMANGCHA|CEO) v" "${CLAUDE_DIR}/CLAUDE.md" 2>/dev/null; then
         echo -e "${YELLOW}  ⟳ CLAUDE.md — DOMANGCHA 섹션 갱신 / updating DOMANGCHA section${NC}"
         python3 - "${CLAUDE_DIR}/CLAUDE.md" "${SRC}/CLAUDE.md" <<'PYEOF'
 import sys, re
 existing = open(sys.argv[1]).read()
 docore_new = open(sys.argv[2]).read()
 # Match any of the possible section headers
-match = re.search(r'^# (docrew|DOCORE|MACC|CEO) v', existing, re.MULTILINE)
+match = re.search(r'^# (docrew|DOCORE|DOMANGCHA|CEO) v', existing, re.MULTILINE)
 if match:
     existing = existing[:match.start()].rstrip() + "\n"
 with open(sys.argv[1], 'w') as out:
@@ -251,15 +251,15 @@ fi
 # ── 10. Hooks ─────────────────────────────────────
 step "훅 설치 (자동 테스트 + CEO 검토)" "Installing hooks (auto-test + CEO review)"
 mkdir -p "${CLAUDE_DIR}/hooks"
-cp "${SRC}/hooks/macc-post-edit.sh" "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
-cp "${SRC}/hooks/macc-stop.sh"      "${CLAUDE_DIR}/hooks/macc-stop.sh"
-cp "${SRC}/hooks/macc-ceo-enforcer.py" "${CLAUDE_DIR}/hooks/macc-ceo-enforcer.py"
-chmod +x "${CLAUDE_DIR}/hooks/macc-post-edit.sh"
-chmod +x "${CLAUDE_DIR}/hooks/macc-stop.sh"
-chmod +x "${CLAUDE_DIR}/hooks/macc-ceo-enforcer.py"
-echo -e "  ${GREEN}✔${NC}  macc-post-edit.sh  ${DIM}자동 테스트+수정 / auto-test + auto-fix${NC}"
-echo -e "  ${GREEN}✔${NC}  macc-stop.sh        ${DIM}CEO 품질 검토 / CEO quality review${NC}"
-echo -e "  ${GREEN}✔${NC}  macc-ceo-enforcer.py  ${DIM}CEO 파이프라인 강제 / pipeline enforcer${NC}"
+cp "${SRC}/hooks/domangcha-post-edit.sh" "${CLAUDE_DIR}/hooks/domangcha-post-edit.sh"
+cp "${SRC}/hooks/domangcha-stop.sh"      "${CLAUDE_DIR}/hooks/domangcha-stop.sh"
+cp "${SRC}/hooks/domangcha-ceo-enforcer.py" "${CLAUDE_DIR}/hooks/domangcha-ceo-enforcer.py"
+chmod +x "${CLAUDE_DIR}/hooks/domangcha-post-edit.sh"
+chmod +x "${CLAUDE_DIR}/hooks/domangcha-stop.sh"
+chmod +x "${CLAUDE_DIR}/hooks/domangcha-ceo-enforcer.py"
+echo -e "  ${GREEN}✔${NC}  domangcha-post-edit.sh  ${DIM}자동 테스트+수정 / auto-test + auto-fix${NC}"
+echo -e "  ${GREEN}✔${NC}  domangcha-stop.sh        ${DIM}CEO 품질 검토 / CEO quality review${NC}"
+echo -e "  ${GREEN}✔${NC}  domangcha-ceo-enforcer.py  ${DIM}CEO 파이프라인 강제 / pipeline enforcer${NC}"
 
 # ── 11. settings.json ─────────────────────────────
 step "settings.json 훅 주입" "Injecting hooks into settings.json"
@@ -270,26 +270,26 @@ claude_dir = sys.argv[1]
 hooks_dir  = os.path.join(claude_dir, "hooks")
 settings_path = os.path.join(claude_dir, "settings.json")
 
-MACC_POST = {
+DOMANGCHA_POST = {
     "matcher": "Write|Edit|MultiEdit",
-    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-post-edit.sh"'}]
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/domangcha-post-edit.sh"'}]
 }
 # async: true — CEO quality review runs in background so session ends immediately
-MACC_STOP = {
-    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-stop.sh"', "timeout": 120, "async": True}]
+DOMANGCHA_STOP = {
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/domangcha-stop.sh"', "timeout": 120, "async": True}]
 }
-MACC_ENFORCER = {
+DOMANGCHA_ENFORCER = {
     "matcher": "",
-    "hooks": [{"type": "command", "command": f'python3 "{hooks_dir}/macc-ceo-enforcer.py"'}]
+    "hooks": [{"type": "command", "command": f'python3 "{hooks_dir}/domangcha-ceo-enforcer.py"'}]
 }
-# macc-stop-checks.js: TypeScript check + Playwright smoke test (ECC plugin)
+# domangcha-stop-checks.js: TypeScript check + Playwright smoke test (ECC plugin)
 # Runs FIRST so it can read the edited-files accumulator before format-typecheck clears it
-MACC_STOP_CHECKS_PATH = os.path.join(claude_dir, "scripts", "hooks", "macc-stop-checks.js")
-MACC_STOP_CHECKS = {
+DOMANGCHA_STOP_CHECKS_PATH = os.path.join(claude_dir, "scripts", "hooks", "domangcha-stop-checks.js")
+DOMANGCHA_STOP_CHECKS = {
     "matcher": "*",
-    "hooks": [{"type": "command", "command": f'node "{MACC_STOP_CHECKS_PATH}"', "timeout": 120}],
+    "hooks": [{"type": "command", "command": f'node "{DOMANGCHA_STOP_CHECKS_PATH}"', "timeout": 120}],
     "description": "DOMANGCHA Stop Guard: TypeScript BLOCKING check + Playwright smoke test"
-} if os.path.exists(MACC_STOP_CHECKS_PATH) else None
+} if os.path.exists(DOMANGCHA_STOP_CHECKS_PATH) else None
 
 settings = {}
 if os.path.exists(settings_path):
@@ -303,24 +303,24 @@ hooks = settings.get("hooks", {})
 
 # UserPromptSubmit — CEO pipeline enforcer (idempotent)
 upr = hooks.get("UserPromptSubmit", [])
-upr = [h for h in upr if not any("macc-ceo-enforcer" in sub.get("command","") for sub in h.get("hooks",[]))]
-upr.insert(0, MACC_ENFORCER)
+upr = [h for h in upr if not any("domangcha-ceo-enforcer" in sub.get("command","") for sub in h.get("hooks",[]))]
+upr.insert(0, DOMANGCHA_ENFORCER)
 hooks["UserPromptSubmit"] = upr
 
 # PostToolUse — remove old DOMANGCHA hook, append fresh
 post = hooks.get("PostToolUse", [])
-post = [h for h in post if not any("macc-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
-post.append(MACC_POST)
+post = [h for h in post if not any("domangcha-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
+post.append(DOMANGCHA_POST)
 hooks["PostToolUse"] = post
 
 # Stop — remove old DOMANGCHA hooks, re-inject in correct order
 stop = hooks.get("Stop", [])
 stop = [h for h in stop if not any(
-    "macc-stop" in sub.get("command","") for sub in h.get("hooks",[])
+    "domangcha-stop" in sub.get("command","") for sub in h.get("hooks",[])
 )]
-if MACC_STOP_CHECKS:
-    stop.insert(0, MACC_STOP_CHECKS)
-stop.append(MACC_STOP)
+if DOMANGCHA_STOP_CHECKS:
+    stop.insert(0, DOMANGCHA_STOP_CHECKS)
+stop.append(DOMANGCHA_STOP)
 hooks["Stop"] = stop
 
 settings["hooks"] = hooks
@@ -331,7 +331,7 @@ PYEOF
 
 # ── 12. Playwright ────────────────────────────────
 step "Playwright MCP 설정 (브라우저 테스트)" "Setting up Playwright MCP (browser testing)"
-bash "${SRC}/hooks/macc-playwright-setup.sh"
+bash "${SRC}/hooks/domangcha-playwright-setup.sh"
 
 # ── 13. Git hooks ─────────────────────────────────
 step "git 훅 설치 (자동 재설치)" "Installing git hooks (auto-reinstall)"

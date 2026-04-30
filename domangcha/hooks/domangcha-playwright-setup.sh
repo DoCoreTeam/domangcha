@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MACC — Playwright MCP setup (called from install.sh)
+# DOMANGCHA — Playwright MCP setup (called from install.sh)
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 
 if ! command -v node &>/dev/null; then

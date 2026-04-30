@@ -1,6 +1,6 @@
 # /ceo-ralph — 자율 반복 완료 루프
 
-Ralph Loop 패턴을 MACC 파이프라인에 통합한 자율 실행 명령.
+Ralph Loop 패턴을 DOMANGCHA 파이프라인에 통합한 자율 실행 명령.
 완료 조건을 CEO가 직접 정의하고, 조건 충족까지 루프를 돌림.
 
 ## 사용법

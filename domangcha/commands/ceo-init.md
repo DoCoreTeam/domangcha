@@ -37,7 +37,7 @@ project-registry.md에 초기 PROJECT 항목 생성
 
 ### Step 7: 프로젝트 hooks 설정 (.claude/settings.json)
 
-프로젝트 루트에 `.claude/settings.json`을 생성하여 MACC hooks를 프로젝트 레벨로도 추가:
+프로젝트 루트에 `.claude/settings.json`을 생성하여 DOMANGCHA hooks를 프로젝트 레벨로도 추가:
 
 ```bash
 mkdir -p .claude
@@ -47,12 +47,12 @@ import json, os
 settings_path = ".claude/settings.json"
 hooks_dir = os.path.expanduser("~/.claude/hooks")
 
-MACC_POST = {
+DOMANGCHA_POST = {
     "matcher": "Write|Edit|MultiEdit",
-    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-post-edit.sh"'}]
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/domangcha-post-edit.sh"'}]
 }
-MACC_STOP = {
-    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/macc-stop.sh"'}]
+DOMANGCHA_STOP = {
+    "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/domangcha-stop.sh"'}]
 }
 
 settings = {}
@@ -66,13 +66,13 @@ if os.path.exists(settings_path):
 hooks = settings.get("hooks", {})
 
 post = hooks.get("PostToolUse", [])
-post = [h for h in post if not any("macc-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
-post.append(MACC_POST)
+post = [h for h in post if not any("domangcha-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
+post.append(DOMANGCHA_POST)
 hooks["PostToolUse"] = post
 
 stop = hooks.get("Stop", [])
-stop = [h for h in stop if not any("macc-stop" in sub.get("command","") for sub in h.get("hooks",[]))]
-stop.append(MACC_STOP)
+stop = [h for h in stop if not any("domangcha-stop" in sub.get("command","") for sub in h.get("hooks",[]))]
+stop.append(DOMANGCHA_STOP)
 hooks["Stop"] = stop
 
 settings["hooks"] = hooks
@@ -82,7 +82,7 @@ print("✅ .claude/settings.json hooks configured")
 PYEOF
 ```
 
-MACC hooks 동작:
+DOMANGCHA hooks 동작:
 - `PostToolUse(Write|Edit)` → 관련 테스트 자동 실행 → 실패 시 Claude 자동수정
 - `Stop` → CEO 품질 리뷰 (보안 + 코드품질 + 테스트 + 버전 체크)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UserPromptSubmit hook — MACC CEO Pipeline Enforcer
+UserPromptSubmit hook — DOMANGCHA CEO Pipeline Enforcer
 1. Injects CEO pipeline reminder for task requests
 2. Loads domain-specific manual context based on keywords
 3. Checks for DOMANGCHA updates (cached, max 1x/hour — no npm calls on cache hit)
@@ -22,7 +22,7 @@ KW = {
 CEO_REMINDER = """
 [SYSTEM: CEO PIPELINE ENFORCER]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-당신은 MACC CEO입니다. 이 요청을 처리하기 전에 반드시:
+당신은 DOMANGCHA CEO입니다. 이 요청을 처리하기 전에 반드시:
 
 ▶ STEP 0: INTENT PARSE (항상 먼저 — 생략 불가)
   모든 입력을 구조화된 태스크로 변환 후 [INTENT PARSED] 블록 출력

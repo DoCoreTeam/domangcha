@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# MACC PostToolUse Hook — Auto-Test + Auto-Fix
+# DOMANGCHA PostToolUse Hook — Auto-Test + Auto-Fix
 # Triggered after: Write | Edit | MultiEdit
 # ============================================================
 INPUT=$(cat)
@@ -95,7 +95,7 @@ TEST_EXIT=$?
 [ $TEST_EXIT -eq 0 ] && exit 0
 
 # ── Auto-fix via Claude ────────────────────────────────────
-echo "[MACC] Tests failed for $FILE_PATH — auto-fixing..."
+echo "[DOMANGCHA] Tests failed for $FILE_PATH — auto-fixing..."
 
 PROMPT="Fix the test failure caused by a change to: $FILE_PATH
 

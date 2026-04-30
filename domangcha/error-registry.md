@@ -1,4 +1,4 @@
-# MACC Error Registry
+# DOMANGCHA Error Registry
 
 > CEO는 매 작업 전 이 파일을 확인하고 금지 패턴을 스캔해야 함
 > 새로운 실수 발생 시 즉시 여기에 추가하여 재발 방지

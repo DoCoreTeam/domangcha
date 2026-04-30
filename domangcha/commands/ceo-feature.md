@@ -74,4 +74,4 @@ This command calls the following CEO-* orchestrators in order:
 |------|------|------|
 | `/feature-dev` | ECC | 코드베이스 기반 구현 |
 | `/implement` | ECC | 계획 실행 |
-| DC-DEV-FE/BE/DB | MACC | 병렬 구현 에이전트 |
+| DC-DEV-FE/BE/DB | DOMANGCHA | 병렬 구현 에이전트 |

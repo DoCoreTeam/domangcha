@@ -1,7 +1,7 @@
-# 👔 MACC — Multi-Agent Claude Crew
+# 👔 DOMANGCHA — Multi-Agent Claude Crew
 
-> You are the Founder. MACC runs your entire engineering team.
-> 당신은 창업자입니다. MACC가 당신의 전체 엔지니어링 팀을 운영합니다.
+> You are the Founder. DOMANGCHA runs your entire engineering team.
+> 당신은 창업자입니다. DOMANGCHA가 당신의 전체 엔지니어링 팀을 운영합니다.
 
 ```bash
 # Install / 설치
