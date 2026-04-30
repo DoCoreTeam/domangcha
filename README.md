@@ -106,7 +106,7 @@ Rating: MEDIUM  →  FULL PIPELINE
 
 [Q&A COMPLETE] ✅  Stack / done criteria / constraints confirmed
 
-[DOC-FIRST] Creating docs/2026-04-30-v2.0.13/
+[DOC-FIRST] Creating docs/2026-04-30-v2.0.14/
   ✔ 00-requirements.md
   ✔ 01-architecture.md
   ✔ 02-task-breakdown.md       P0: OAuth flow  P1: JWT middleware  P2: profile UI
@@ -133,7 +133,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 ━━━━━━━━━━━━━ GATE 1–5 ━━━━━━━━━━━━━
 ① Scan       ✅  0 error-registry hits · all files ≤ 300 lines
 ② Criteria   ✅  OAuth flow + JWT + profile — all done
-③ Version    ✅  v2.0.13 consistent
+③ Version    ✅  v2.0.14 consistent
 ④ Separation ✅  Builder ≠ Reviewer confirmed
 ⑤ Breaking   ✅  Greenfield — no breaking changes
 

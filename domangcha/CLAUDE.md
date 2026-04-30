@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.13 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.14 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
