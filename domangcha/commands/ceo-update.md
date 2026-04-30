@@ -9,8 +9,14 @@
 ## 실행 / Execution
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
+# 1순위: npm 레지스트리 경유 (권장)
+npx domangcha
+
+# 위 실패 시 fallback: GitHub raw 직접
+# curl -fsSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
 ```
+
+> ⚠️ `npx domangcha` 실패 시 fallback 명령어의 `#`을 제거하여 수동 실행하세요.
 
 ## 업데이트 항목 / What Gets Updated
 

@@ -13,7 +13,7 @@
 
 **17 AI specialists. One command. From requirements to shipped code.**
 
-[![Version](https://img.shields.io/badge/version-2.0.35-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.36-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -307,6 +307,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 | Version | Feature |
 |---|---|
+| **v2.0.36** | **npx-first updates** — `/ceo-update` and `/ceo-version` now use `npx domangcha` as primary, `curl \| bash` as fallback. Fixes stale bin version + `curl -fsSL` safety flag. |
 | **v2.0.35** | **DC-ANA (17th Agent)** — DOMANGCHA's internal codebase analyst. Absorbs all ECC code-explorer capabilities. Auto-triggered for gap analysis, refactoring, and LARGE/HEAVY tasks. `code-explorer` (ECC) calls now banned. |
 | **v2.0.34** | **FAST PATH Lightweight DOC** — Every task, even small fixes, generates a `00-summary.md`. No more undocumented changes. |
 | **v2.0.33** | **Memory Sync** — rule memories auto-refresh on every `npx domangcha` update. User feedback and project context are never overwritten. |
@@ -417,7 +418,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 **17명 AI 전문가. 명령 하나. 요구사항부터 배포까지.**
 
-[![Version](https://img.shields.io/badge/version-2.0.35-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.36-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -492,6 +493,7 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**입니다. 1
 
 | 버전 | 기능 |
 |---|---|
+| **v2.0.36** | **npx 우선 업데이트** — `/ceo-update`, `/ceo-version`이 `npx domangcha`를 1순위, `curl \| bash`를 fallback으로 사용. bin 버전 싱크 + `curl -fsSL` 보안 플래그 통일. |
 | **v2.0.35** | **DC-ANA (17번째 에이전트)** — DOMANGCHA 전용 내부 코드베이스 분석가. ECC code-explorer 기능 완전 흡수. 갭분석·리팩터링·LARGE/HEAVY 업무 시 자동 소환. `code-explorer`(ECC) 직접 호출 금지. |
 | **v2.0.34** | **FAST PATH 경량 DOC** — 소규모 수정도 `00-summary.md` 자동 생성. 문서 없는 변경 원천 차단. |
 | **v2.0.33** | **메모리 자동 동기화** — `npx domangcha` 업데이트 시 규칙 메모리 자동 갱신. 사용자 피드백/프로젝트 컨텍스트는 절대 덮어쓰지 않음. |

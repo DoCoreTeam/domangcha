@@ -54,7 +54,10 @@ echo "최신 버전: ${LATEST:-가져오기 실패}"
 
 - **y / yes / 예 / ㅇ** → 즉시 실행:
   ```bash
-  curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
+  # 1순위: npm 레지스트리 경유 (권장)
+  npx domangcha
+  # 실패 시 fallback:
+  # curl -fsSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash
   ```
 
 - **n / no / 아니 / ㄴ** → 종료:
