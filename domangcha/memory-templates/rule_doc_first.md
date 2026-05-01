@@ -1,6 +1,6 @@
 ---
 name: DOC-FIRST 절대 불변 규칙 (PHASE 0.65)
-description: Q&A→TASK SYNTHESIS 완료 후 모든 스택에서 docs/YYYY-MM-DD-vX.X.X/ 생성 + 5개 기획 문서 필수. 건너뛰면 규칙 위반.
+description: Q&A→TASK SYNTHESIS 완료 후 모든 스택에서 docs/YYYY-MM-DD-vX.X.X-<task-slug>/ 생성 + 5개 기획 문서 필수. 건너뛰면 규칙 위반.
 type: project
 ---
 ## DOC-FIRST 규칙 (절대 불변)
@@ -11,7 +11,7 @@ type: project
 
 ### 실행 순서
 
-1. **폴더 생성**: `docs/YYYY-MM-DD-vX.X.X/` (오늘 날짜 + domangcha/VERSION)
+1. **폴더 생성**: `docs/YYYY-MM-DD-vX.X.X-<task-slug>/` (오늘 날짜 + domangcha/VERSION + slug: lowercase-kebab, EN, 1-3 words)
 2. **문서 작성** (5개 필수):
    - `00-requirements.md` — 기능/비기능 요구사항
    - `01-architecture.md` — 시스템 설계, 데이터 흐름, 컴포넌트 구조
@@ -23,7 +23,7 @@ type: project
 
 ### 완료 신호
 ```
-[DOC COMPLETE] ✅ docs/YYYY-MM-DD-vX.X.X/ 생성 완료
+[DOC COMPLETE] ✅ docs/YYYY-MM-DD-vX.X.X-<slug>/ 생성 완료
   요구사항 ✅ | 아키텍처 ✅ | 태스크 ✅ | 테스트전략 ✅ | 완료기준 ✅
 ```
 

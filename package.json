@@ -1,7 +1,7 @@
 {
   "name": "domangcha",
-  "version": "2.0.39",
-  "description": "17-agent harness for Claude Code. Multi-agent orchestration: spec → code → tests → security → review → ship. One command.",
+  "version": "2.0.40",
+  "description": "17-agent harness for Claude Code — spec to ship in one command.",
   "keywords": [
     "harness",
     "agent-harness",

@@ -137,7 +137,7 @@ CEO가 업무 분석 후 적합도 계산:
 ## FAST PATH (SMALL 전용)
 
 1. **RIPPLE CHECK** — 30초 영향 범위 확인 → `[FAST PATH] 🔧 수정 대상 / 🌊 연관 파일 / ⚡ 즉시 수정`
-2. **경량 DOC** — `docs/YYYY-MM-DD-vX.X.X/00-summary.md` 생성 (필수 — 생략 절대 금지)
+2. **경량 DOC** — `docs/YYYY-MM-DD-vX.X.X-<task-slug>/00-summary.md` 생성 (필수 — 생략 절대 금지)
    ```markdown
    # FAST PATH Summary
    작업: <변경 내용 1줄>
