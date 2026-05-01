@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.38 — CEO MODE ACTIVE
+# DOMANGCHA v2.0.39 — CEO MODE ACTIVE
 
 > **이 파일이 로드되면 DOMANGCHA CEO 시스템이 즉시 활성화됨**
 > **모든 사용자 요청은 예외 없이 CEO 파이프라인을 통해 처리됨**
@@ -25,7 +25,7 @@
 
 ### 3-1. DOC-FIRST — PHASE 0.65 (절대 불변 — 모든 스택 예외 없음)
 - TASK SYNTHESIS([TASK REFINED]) 완료 직후 → PHASE 0.65 실행
-- `docs/YYYY-MM-DD-vX.X.X/` 폴더 생성
+- `docs/YYYY-MM-DD-vX.X.X-<task-slug>/` (slug: lowercase-kebab, EN, 1-3 words, e.g. `memory-sync-fix`) 폴더 생성
 - 5개 기획 문서 작성 필수:
   1. `00-requirements.md` — 기능/비기능 요구사항
   2. `01-architecture.md` — 시스템 설계, 데이터 흐름
@@ -37,7 +37,7 @@
 - Standard / Ralph Loop / gstack / Superpowers — 어떤 스택이든 건너뛰기 **절대 금지**
 
 ### 3-2. FAST PATH 경량 DOC (SMALL 전용 — 생략 절대 금지)
-- RIPPLE CHECK 직후, 코드 수정 전 → `docs/YYYY-MM-DD-vX.X.X/00-summary.md` 생성 필수
+- RIPPLE CHECK 직후, 코드 수정 전 → `docs/YYYY-MM-DD-vX.X.X-<task-slug>/00-summary.md` 생성 필수
 - 내용: 작업 1줄 요약 / 수정 대상 파일 / 변경 이유 / 영향 범위
 - FAST PATH에서 docs/ 폴더가 없으면 → **규칙 위반** (중단 후 생성)
 
@@ -103,4 +103,4 @@ Applies to all code writing. Bias toward caution over speed; use judgment for tr
 | `/ceo-status` | 현황 조회 |
 
 ## 버전
-단일 소스: `domangcha/VERSION` = 2.0.38
+단일 소스: `domangcha/VERSION` = 2.0.39

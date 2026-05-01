@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.38 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.39 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
@@ -28,13 +28,13 @@
 - 질문 없이 바로 구현 시작 = **규칙 위반**
 
 ### 3-1. DOC-FIRST — PHASE 0.65 (절대 불변 — 모든 스택 예외 없음)
-- TASK SYNTHESIS 완료 직후 → `docs/YYYY-MM-DD-vX.X.X/` 폴더 생성
+- TASK SYNTHESIS 완료 직후 → `docs/YYYY-MM-DD-vX.X.X-<task-slug>/` (slug: lowercase-kebab, EN, 1-3 words, e.g. `memory-sync-fix`) 폴더 생성
 - 5개 기획 문서 필수: `00-requirements.md` / `01-architecture.md` / `02-task-breakdown.md` / `03-test-strategy.md` / `04-completion-criteria.md`
 - [DOC COMPLETE] 출력 후에만 PHASE 0.8 → PHASE 1 진입
 - Standard / Ralph Loop / gstack / Superpowers — 어떤 스택이든 건너뛰기 **절대 금지**
 
 ### 3-2. FAST PATH 경량 DOC (SMALL 전용 — 생략 절대 금지)
-- RIPPLE CHECK 직후, 코드 수정 전 → `docs/YYYY-MM-DD-vX.X.X/00-summary.md` 생성 필수
+- RIPPLE CHECK 직후, 코드 수정 전 → `docs/YYYY-MM-DD-vX.X.X-<task-slug>/00-summary.md` 생성 필수
 - 내용: 작업 1줄 요약 / 수정 대상 파일 / 변경 이유 / 영향 범위
 - FAST PATH에서 docs/ 폴더가 없으면 → **규칙 위반** (중단 후 생성)
 

@@ -9,15 +9,18 @@
 
 <div align="center">
 
-### 🚗💨 DOMANGCHA — *Your AI getaway car from development hell.*
+### 🚗💨 DOMANGCHA — 17-Agent Harness for Claude Code
 
-**17 AI specialists. One command. From requirements to shipped code.**
+**Claude Code without DOMANGCHA is half the toolkit.**
+One command orchestrates 17 AI specialists: spec → code → tests → security → review → ship.
 
-[![Version](https://img.shields.io/badge/version-2.0.38-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+*Your AI getaway car from development hell.*
+
+[![Version](https://img.shields.io/badge/version-2.0.39-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
-[![Agents](https://img.shields.io/badge/Agents-17-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-16-agents)
+[![Agents](https://img.shields.io/badge/Agents-17-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-17-agents)
 [![Gates](https://img.shields.io/badge/Gates-5-orange?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-5-gates)
 
 <br/>
@@ -42,7 +45,7 @@ npx domangcha
 
 ## ⚡ Why DOMANGCHA?
 
-DOMANGCHA is a **multi-agent system** that brings workflow automation to Claude Code. Unlike traditional developer tools, it orchestrates 17 specialized AI agents in parallel, delivering end-to-end project delivery with zero context-switching.
+Claude Code is powerful — but routing work between tools, enforcing quality gates, and keeping 17 workflows consistent adds real overhead. **DOMANGCHA eliminates that**: one command routes through **PLANNER → GENERATOR → EVALUATOR**, runs agents in parallel, and gates every output before shipping.
 
 <table>
 <tr>
@@ -307,6 +310,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 | Version | Feature |
 |---|---|
+| **v2.0.39** | **README + GitHub branding overhaul** — new hero "Claude Code without DOMANGCHA is half the toolkit", functional-first positioning, docs folder naming convention `YYYY-MM-DD-vX.X.X-<slug>`, npm keywords +4 (harness/agent-orchestration/vibe-coding/subagents). |
 | **v2.0.38** | **Memory sync moved to Step 5** — memory templates now refresh before Playwright/git-hooks, so `set -e` failures can never skip the sync. Adds `rule_grand_principles.md` template + memory row in `/ceo-update` table. |
 | **v2.0.37** | **Grand Principles (Karpathy)** — Andrej Karpathy's 4 coding grand principles merged into all CLAUDE.md files and `coding-style.md`. Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution — with DOMANGCHA context. |
 | **v2.0.36** | **npx-first updates** — `/ceo-update` and `/ceo-version` now use `npx domangcha` as primary, `curl \| bash` as fallback. Fixes stale bin version + `curl -fsSL` safety flag. |
@@ -416,11 +420,14 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝
 </pre></div>
 
-### 🚗💨 돔황차 — *개발 지옥에서 도망쳐*
+### 🚗💨 돔황차 — Claude Code용 17개 에이전트 하네스
 
-**17명 AI 전문가. 명령 하나. 요구사항부터 배포까지.**
+**DOMANGCHA 없는 Claude Code는 반쪽짜리입니다.**
+명령 하나로 17명 AI 전문가를 오케스트레이션 — 기획 → 구현 → 테스트 → 보안 → 리뷰 → 배포까지.
 
-[![Version](https://img.shields.io/badge/version-2.0.38-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+*개발 지옥에서 도망쳐 — 돔황차🚗💨*
+
+[![Version](https://img.shields.io/badge/version-2.0.39-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -447,7 +454,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 
 ### ⚡ 왜 DOMANGCHA인가?
 
-DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**입니다. 17명의 전문화된 AI 에이전트를 병렬로 조율하여 문맥 전환 없이 엔드-투-엔드 프로젝트를 완성합니다.
+Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개 워크플로 일관성 유지에는 오버헤드가 생깁니다. **DOMANGCHA가 그걸 없애줍니다**: 명령 하나로 **PLANNER → GENERATOR → EVALUATOR**를 병렬 실행하고, 모든 산출물을 게이트 후 배포합니다.
 
 <table>
 <tr>
@@ -495,6 +502,7 @@ DOMANGCHA는 Claude Code를 위한 **다중 에이전트 시스템**입니다. 1
 
 | 버전 | 기능 |
 |---|---|
+| **v2.0.39** | **README + GitHub 브랜딩 개편** — 새 히어로 "DOMANGCHA 없는 Claude Code는 반쪽짜리", 기능 중심 포지셔닝, docs 폴더명 컨벤션 `YYYY-MM-DD-vX.X.X-<slug>`, npm keywords +4 추가. |
 | **v2.0.38** | **메모리 동기화 Step 5로 이동** — Playwright/git-hooks 실패 전에 메모리 템플릿이 갱신됨. `set -e`로 인한 스킵 완전 차단. `rule_grand_principles.md` 템플릿 + `/ceo-update` 테이블 memory 항목 추가. |
 | **v2.0.37** | **대원칙 (Karpathy)** — Andrej Karpathy의 4대 코딩 원칙을 모든 CLAUDE.md와 `coding-style.md`에 병합. Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution — DOMANGCHA 컨텍스트 적용. |
 | **v2.0.36** | **npx 우선 업데이트** — `/ceo-update`, `/ceo-version`이 `npx domangcha`를 1순위, `curl \| bash`를 fallback으로 사용. bin 버전 싱크 + `curl -fsSL` 보안 플래그 통일. |
