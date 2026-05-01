@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.36 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.37 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
@@ -52,6 +52,37 @@
 | 🟦 DC-BIZ, 🟦 DC-OSS, 🟥 DC-SEC, 🟥 DC-REV | claude-opus-4-7 | 판단/보안/리뷰 |
 | 🟦 DC-RES, 🟦 DC-ANA, 🟥 DC-QA, 🟩 DC-DEV-* | claude-sonnet-4-6 | 리서치/탐색/검증/개발 |
 | 🟩 DC-WRT, 🟩 DC-DOC, 🟩 DC-SEO, 🟨 DC-TOK | claude-haiku-4-5-20251001 | 경량 작업 |
+
+## Grand Principles
+
+Applies to all code writing. Bias toward caution over speed; use judgment for trivial tasks.
+
+### 1. Think Before Coding
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+- State assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- *DOMANGCHA:* During INTENT PARSE, if scope is ambiguous, list interpretations before entering the pipeline.
+
+### 2. Simplicity First
+**Minimum code that solves the problem. Nothing speculative.**
+- No features beyond what was asked. No abstractions for single-use code.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+- *DOMANGCHA:* Don't add speculative GATE checks or over-engineer agent prompts beyond what the task requires.
+
+### 3. Surgical Changes
+**Touch only what you must. Clean up only your own mess.**
+- Don't "improve" adjacent code, comments, or formatting not related to the task.
+- Match existing style, even if you'd do it differently.
+- Remove only what YOUR changes made unused. Mention — don't delete — pre-existing dead code.
+- *DOMANGCHA:* When updating an agent file, don't reorganize unrelated sections or silently refactor neighboring agents.
+
+### 4. Goal-Driven Execution
+**Define success criteria. Loop until verified.**
+- Transform every task into a verifiable goal: "Fix bug" → "Write reproducing test, then make it pass."
+- For multi-step work, state a brief plan with verify steps before executing.
+- *DOMANGCHA:* "Update DC-REV" → "Prompt changed + GATE 3 version correct + DC-REV review passes." Don't mark complete without running GATE 1-5.
 
 ## 스킬
 

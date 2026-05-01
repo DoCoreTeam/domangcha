@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.36 — CEO MODE ACTIVE
+# DOMANGCHA v2.0.37 — CEO MODE ACTIVE
 
 > **이 파일이 로드되면 DOMANGCHA CEO 시스템이 즉시 활성화됨**
 > **모든 사용자 요청은 예외 없이 CEO 파이프라인을 통해 처리됨**
@@ -62,6 +62,37 @@
 | DC-RES, DC-QA, DC-DEV-* | claude-sonnet-4-6 | 리서치/검증/개발 |
 | DC-WRT, DC-DOC, DC-SEO, DC-TOK | claude-haiku-4-5-20251001 | 경량 작업 |
 
+## Grand Principles
+
+Applies to all code writing. Bias toward caution over speed; use judgment for trivial tasks.
+
+### 1. Think Before Coding
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+- State assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- *DOMANGCHA:* During INTENT PARSE, if scope is ambiguous, list interpretations before entering the pipeline.
+
+### 2. Simplicity First
+**Minimum code that solves the problem. Nothing speculative.**
+- No features beyond what was asked. No abstractions for single-use code.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+- *DOMANGCHA:* Don't add speculative GATE checks or over-engineer agent prompts beyond what the task requires.
+
+### 3. Surgical Changes
+**Touch only what you must. Clean up only your own mess.**
+- Don't "improve" adjacent code, comments, or formatting not related to the task.
+- Match existing style, even if you'd do it differently.
+- Remove only what YOUR changes made unused. Mention — don't delete — pre-existing dead code.
+- *DOMANGCHA:* When updating an agent file, don't reorganize unrelated sections or silently refactor neighboring agents.
+
+### 4. Goal-Driven Execution
+**Define success criteria. Loop until verified.**
+- Transform every task into a verifiable goal: "Fix bug" → "Write reproducing test, then make it pass."
+- For multi-step work, state a brief plan with verify steps before executing.
+- *DOMANGCHA:* "Update DC-REV" → "Prompt changed + GATE 3 version correct + DC-REV review passes." Don't mark complete without running GATE 1-5.
+
 ## 명령어
 
 | 명령 | 동작 |
@@ -72,4 +103,4 @@
 | `/ceo-status` | 현황 조회 |
 
 ## 버전
-단일 소스: `domangcha/VERSION` = 2.0.35
+단일 소스: `domangcha/VERSION` = 2.0.37

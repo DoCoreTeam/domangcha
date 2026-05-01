@@ -467,3 +467,30 @@
 | 2026-05-01 04:13 | `domangcha/README.md` | Edit |
 | 2026-05-01 04:13 | `domangcha/README.md` | Edit |
 | 2026-05-01 04:14 | `../../.claude/projects/-Users-dohyeonkim-dev-docore/memory/change-log.md` | Edit |
+| 2026-05-01 04:17 | `docs/2026-05-01-v2.0.36/00-summary.md` | Write |
+| 2026-05-01 04:17 | `domangcha/commands/ceo-update.md` | Edit |
+| 2026-05-01 04:17 | `domangcha/commands/ceo-version.md` | Edit |
+| 2026-05-01 04:18 | `bin/domangcha.sh` | Edit |
+| 2026-05-01 04:18 | `bin/domangcha.sh` | Edit |
+| 2026-05-01 04:18 | `domangcha/commands/ceo-update.md` | Edit |
+| 2026-05-01 04:18 | `domangcha/commands/ceo-version.md` | Edit |
+| 2026-05-01 04:19 | `README.md` | Edit |
+| 2026-05-01 04:19 | `README.md` | Edit |
+| 2026-05-01 11:54 | `docs/2026-05-01-v2.0.37/00-requirements.md` | Write |
+| 2026-05-01 11:55 | `docs/2026-05-01-v2.0.37/01-architecture.md` | Write |
+| 2026-05-01 11:55 | `docs/2026-05-01-v2.0.37/02-task-breakdown.md` | Write |
+| 2026-05-01 11:55 | `docs/2026-05-01-v2.0.37/03-test-strategy.md` | Write |
+| 2026-05-01 11:55 | `docs/2026-05-01-v2.0.37/04-completion-criteria.md` | Write |
+| 2026-05-01 11:56 | `../../.claude/CLAUDE.md` | Edit |
+| 2026-05-01 11:57 | `CLAUDE.md` | Edit |
+| 2026-05-01 11:57 | `domangcha/CLAUDE.md` | Edit |
+| 2026-05-01 11:57 | `../../.claude/rules/common/coding-style.md` | Write |
+| 2026-05-01 11:58 | `../../.claude/rules/zh/coding-style.md` | Write |
+| 2026-05-01 12:02 | `README.md` | Edit |
+| 2026-05-01 12:02 | `README.md` | Edit |
+| 2026-05-01 | `~/.claude/CLAUDE.md` | Grand Principles 섹션 추가 (v2.0.37) |
+| 2026-05-01 | `CLAUDE.md` (root) | Grand Principles 섹션 추가 (v2.0.37) |
+| 2026-05-01 | `domangcha/CLAUDE.md` | Grand Principles 섹션 추가 (v2.0.37) |
+| 2026-05-01 | `~/.claude/rules/common/coding-style.md` | Karpathy 4원칙 구조로 재작성, 기존 내용 통합 |
+| 2026-05-01 | `~/.claude/rules/zh/coding-style.md` | 동일 구조 중국어 재작성 |
+| 2026-05-01 | `domangcha/VERSION` | 2.0.36 → 2.0.37 |
