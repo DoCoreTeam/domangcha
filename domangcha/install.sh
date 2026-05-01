@@ -230,6 +230,28 @@ for file in error-registry skill-registry project-registry decision-log; do
     fi
 done
 
+# Auto-add docs/*/ to user's project .gitignore (opt-out: DOMANGCHA_SKIP_GITIGNORE=1)
+if [ "${DOMANGCHA_SKIP_GITIGNORE:-0}" = "1" ]; then
+    echo -e "  ${DIM}·${NC}  .gitignore 자동 추가 비활성화됨 / auto-gitignore disabled"
+else
+    USER_GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+    if [ -z "$USER_GIT_ROOT" ]; then
+        echo -e "  ${DIM}·${NC}  git 레포 없음 — .gitignore 건너뜀 / no git repo"
+    elif [ "$USER_GIT_ROOT" = "$HOME" ]; then
+        echo -e "  ${YELLOW}⏭${NC}  cwd가 \$HOME — .gitignore 건너뜀 / skipping (\$HOME)"
+    elif [ -f "${USER_GIT_ROOT}/domangcha/VERSION" ]; then
+        echo -e "  ${YELLOW}⏭${NC}  DOMANGCHA 레포 자체 — 건너뜀 / skipping (DOMANGCHA repo)"
+    else
+        GITIGNORE_PATH="${USER_GIT_ROOT}/.gitignore"
+        if [ -f "$GITIGNORE_PATH" ] && grep -qE "^/?docs/(\*|\*\*)/?$" "$GITIGNORE_PATH"; then
+            echo -e "  ${YELLOW}⏭${NC}  .gitignore — docs 패턴 존재 / docs pattern present (${GITIGNORE_PATH})"
+        else
+            printf '\n# DOMANGCHA: user planning docs (local only)\ndocs/*/\n' >> "$GITIGNORE_PATH"
+            echo -e "  ${GREEN}✔${NC}  .gitignore — docs/*/ 추가 / added (${GITIGNORE_PATH})"
+        fi
+    fi
+fi
+
 # ── 7. ECC ────────────────────────────────────────
 step "ECC 183개 스킬 설치" "Installing 183 ECC skills"
 echo -e "  ${DIM}명령어 제외 — /ceo-* 오케스트레이터로 접근 / commands excluded — use /ceo-* orchestrators${NC}"
