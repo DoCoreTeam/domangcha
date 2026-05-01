@@ -249,6 +249,17 @@ else
             printf '\n# DOMANGCHA: user planning docs (local only)\ndocs/*/\n' >> "$GITIGNORE_PATH"
             echo -e "  ${GREEN}✔${NC}  .gitignore — docs/*/ 추가 / added (${GITIGNORE_PATH})"
         fi
+        # Untrack already-tracked docs/ subdirs (safe on both fresh install and update)
+        TRACKED_SUBDIRS=$(git -C "$USER_GIT_ROOT" -c core.quotepath=false ls-files "docs/" 2>/dev/null \
+            | grep -E "^docs/[^/]+/" \
+            | sed 's|docs/\([^/]*\)/.*|docs/\1|' \
+            | sort -u || true)
+        if [ -n "$TRACKED_SUBDIRS" ]; then
+            echo "$TRACKED_SUBDIRS" | while IFS= read -r subdir; do
+                git -C "$USER_GIT_ROOT" rm -r --cached "$subdir" 2>/dev/null || true
+            done
+            echo -e "  ${GREEN}✔${NC}  docs/ 하위 폴더 언트래킹 완료 / untracked existing docs/ subdirs"
+        fi
     fi
 fi
 
