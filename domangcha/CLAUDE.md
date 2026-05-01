@@ -110,10 +110,10 @@ Applies to all code writing. Bias toward caution over speed; use judgment for tr
 
 - `skills/ceo-system/SKILL.md` — CEO 오케스트레이션 + 하네스 + 보안 + 코딩 표준 전체
 
-## 에이전트 (17개)
+## 에이전트 (18개)
 
 `agents/` 디렉토리의 모든 Worker Agent를 참조:
-- 🟦 PLANNER: DC-BIZ, DC-RES, DC-OSS, DC-ANA
+- 🟦 PLANNER: DC-BIZ, DC-RES, DC-OSS, DC-ANA, DC-KNW
 - 🟩 GENERATOR: DC-DEV-FE, DC-DEV-BE, DC-DEV-DB, DC-DEV-MOB, DC-DEV-OPS, DC-DEV-INT, DC-WRT, DC-DOC, DC-SEO
 - 🟥 EVALUATOR: DC-QA, DC-SEC, DC-REV
 - 🟨 SUPPORT: DC-TOK

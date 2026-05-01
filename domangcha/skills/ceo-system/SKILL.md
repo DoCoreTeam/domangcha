@@ -2,7 +2,7 @@
 name: ceo-system
 description: >
   CEO Agent orchestration router. Activate on EVERY user request.
-  Routes ALL tasks through 17 specialized DC-* agents in fixed pipeline order.
+  Routes ALL tasks through 18 specialized DC-* agents in fixed pipeline order.
   PLANNER (DC-BIZ, DC-RES, DC-OSS, DC-ANA) → GENERATOR (DC-DEV-*) → EVALUATOR (DC-QA/SEC/REV) → GATE 1-5.
   No agent is ever skipped. Full pipeline always runs for MEDIUM+.
   SMALL tasks use FAST PATH (CEO direct + 경량DOC(00-summary.md) + DC-REV + GATE).

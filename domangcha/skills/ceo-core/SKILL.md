@@ -4,7 +4,7 @@ description: >
   CEO Router — Phase 0: intake, Q&A, size assessment, ripple analysis.
   Load this when routing a new task or clarifying requirements.
 ---
-  PLANNER (DC-BIZ, DC-RES, DC-OSS) then GENERATOR (DC-DEV-FE, DC-DEV-BE, DC-DEV-DB,
+  PLANNER (DC-BIZ, DC-RES, DC-OSS, DC-KNW) then GENERATOR (DC-DEV-FE, DC-DEV-BE, DC-DEV-DB,
   DC-DEV-MOB, DC-DEV-OPS, DC-DEV-INT, DC-WRT, DC-DOC, DC-SEO) then EVALUATOR
   (DC-QA, DC-SEC, DC-REV) then GATE 1-5 then CEO REPORT.
   No agent is ever skipped. Full pipeline always runs.

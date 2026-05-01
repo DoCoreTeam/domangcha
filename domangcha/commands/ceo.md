@@ -2,7 +2,7 @@
 
 사용자가 입력한 업무를 받아 규모를 판정하고 최적 경로로 실행함
 - **SMALL** (버그픽스/수정): FAST PATH — 질문 없이 즉시 수정 → 🟥 DC-REV → GATE
-- **MEDIUM+** (새 기능/아키텍처): FULL PIPELINE — Q&A → 17 에이전트 → GATE
+- **MEDIUM+** (새 기능/아키텍처): FULL PIPELINE — Q&A → 18 에이전트 → GATE
 
 ## 에이전트 Tier & 인라인 컬러 규칙 (CRITICAL)
 
@@ -10,7 +10,7 @@
 
 | 그룹 | 이모지 | 에이전트 |
 |------|--------|---------|
-| PLANNER | 🟦 | DC-BIZ · DC-RES · DC-OSS · DC-ANA |
+| PLANNER | 🟦 | DC-BIZ · DC-RES · DC-OSS · DC-ANA · DC-KNW |
 | GENERATOR | 🟩 | DC-DEV-BE · DC-DEV-FE · DC-DEV-DB · DC-DEV-OPS · DC-DEV-MOB · DC-DEV-INT · DC-WRT · DC-DOC · DC-SEO |
 | EVALUATOR | 🟥 | DC-QA · DC-SEC · DC-REV |
 | SUPPORT | 🟨 | DC-TOK |
@@ -18,7 +18,7 @@
 예: `🟦 DC-BIZ`, `🟩 DC-DEV-BE`, `🟥 DC-REV`, `🟨 DC-TOK`
 
 **CORE (항상 실행 — 생략 불가):**
-🟦 DC-BIZ, 🟦 DC-RES, 🟦 DC-OSS, 🟩 DC-DEV-DB, 🟩 DC-DEV-BE, 🟩 DC-DEV-FE, 🟩 DC-DEV-OPS, 🟥 DC-QA, 🟥 DC-SEC, 🟥 DC-REV, 🟩 DC-DOC, 🟨 DC-TOK
+🟦 DC-BIZ, 🟦 DC-RES, 🟦 DC-OSS, 🟦 DC-KNW, 🟩 DC-DEV-DB, 🟩 DC-DEV-BE, 🟩 DC-DEV-FE, 🟩 DC-DEV-OPS, 🟥 DC-QA, 🟥 DC-SEC, 🟥 DC-REV, 🟩 DC-DOC, 🟨 DC-TOK
 
 **EXTENDED (업무 분석 후 CEO가 판단):**
 🟦 DC-ANA (키워드: "갭분석"·"현황 파악"·"리팩터링"·"아키텍처 분석"·"어떻게 동작"·"코드 구조"·"의존성" / 규모: LARGE·HEAVY 자동), 🟩 DC-DEV-MOB (모바일), 🟩 DC-DEV-INT (외부 API), 🟩 DC-WRT (마케팅), 🟩 DC-SEO (웹 공개)

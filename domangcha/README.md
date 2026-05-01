@@ -13,9 +13,9 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 
 ## Why CEO is different / CEO가 다른 이유
 
-**EN** — Every other AI tool starts writing code the moment you press Enter. CEO stops and asks the right questions first. Then 17 specialists build in parallel — planners, developers, QA engineers, security reviewers — all coordinated, all accountable, all running through 5 mandatory quality gates before anything reaches you.
+**EN** — Every other AI tool starts writing code the moment you press Enter. CEO stops and asks the right questions first. Then 18 specialists build in parallel — planners, developers, QA engineers, security reviewers — all coordinated, all accountable, all running through 5 mandatory quality gates before anything reaches you.
 
-**KO** — 다른 AI 도구는 Enter를 누르는 순간 코드를 씁니다. CEO는 먼저 올바른 질문을 합니다. 그리고 17명의 전문가가 병렬로 빌드합니다 — 기획자, 개발자, QA 엔지니어, 보안 리뷰어 — 모두 조율되고, 모두 책임지며, 모두 5개의 필수 게이트를 통과한 후 당신에게 전달됩니다.
+**KO** — 다른 AI 도구는 Enter를 누르는 순간 코드를 씁니다. CEO는 먼저 올바른 질문을 합니다. 그리고 18명의 전문가가 병렬로 빌드합니다 — 기획자, 개발자, QA 엔지니어, 보안 리뷰어 — 모두 조율되고, 모두 책임지며, 모두 5개의 필수 게이트를 통과한 후 당신에게 전달됩니다.
 
 ## How it works / 작동 방식
 
@@ -47,7 +47,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 
 | Command / 커맨드 | What it does (EN) | 설명 (KO) | Tools |
 |-----------------|------------------|-----------|-------|
-| `/ceo "task"` | Q&A → full 17-agent pipeline | Q&A 후 17개 에이전트 전체 파이프라인 | All 17 agents |
+| `/ceo "task"` | Q&A → full 18-agent pipeline | Q&A 후 18개 에이전트 전체 파이프라인 | All 18 agents |
 | `/ceo-feature "feature"` | Full feature lifecycle end-to-end | 기능 처음부터 끝까지 | plan+test+review+ship |
 | `/ceo-plan "feature"` | Q&A + BIZ + research + OSS + plan | 기획 전체 오케스트레이터 | DC-BIZ/RES/OSS + ECC + gstack |
 | `/ceo-review` | Security + quality + PR review | 리뷰 전체 오케스트레이터 | ECC + gstack + DC-SEC/REV |
@@ -98,7 +98,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 | Browser / 브라우저 | `/browse` `/connect-chrome` `/setup-browser-cookies` |
 | Misc / 기타 | `/codex` `/cso` `/gstack-upgrade` |
 
-## 17 Agents / 17개 에이전트
+## 18 Agents / 18개 에이전트
 
 | Phase | Agent | Role (EN) | 역할 (KO) | Model |
 |-------|-------|-----------|-----------|-------|
@@ -163,7 +163,7 @@ Every agent name in CEO output is prefixed with its group emoji — renders nati
 domangcha/
 ├── CLAUDE.md                    ← CEO brain entry point / CEO 두뇌 진입점
 ├── install.sh                   ← One-line installer / 원라인 설치 스크립트
-├── agents/                      ← 17 agent definitions / 17개 에이전트 정의
+├── agents/                      ← 18 agent definitions / 18개 에이전트 정의
 │   └── dc-biz.md ... dc-tok.md
 ├── commands/                    ← 14 CEO commands / 14개 CEO 커맨드
 │   ├── ceo.md ceo-feature.md ceo-plan.md ceo-review.md

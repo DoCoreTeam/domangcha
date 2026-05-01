@@ -9,10 +9,10 @@
 
 <div align="center">
 
-### 🚗💨 DOMANGCHA — 17-Agent Harness for Claude Code
+### 🚗💨 DOMANGCHA — 18-Agent Harness for Claude Code
 
 **Claude Code without DOMANGCHA is half the toolkit.**
-One command orchestrates 17 AI specialists: spec → code → tests → security → review → ship.
+One command orchestrates 18 AI specialists: spec → code → tests → security → review → ship.
 
 *Your AI getaway car from development hell.*
 
@@ -20,7 +20,7 @@ One command orchestrates 17 AI specialists: spec → code → tests → security
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
-[![Agents](https://img.shields.io/badge/Agents-17-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-17-agents)
+[![Agents](https://img.shields.io/badge/Agents-18-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-18-agents)
 [![Gates](https://img.shields.io/badge/Gates-5-orange?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-5-gates)
 
 <br/>
@@ -45,7 +45,7 @@ npx domangcha
 
 ## ⚡ Why DOMANGCHA?
 
-Claude Code is powerful — but routing work between tools, enforcing quality gates, and keeping 17 workflows consistent adds real overhead. **DOMANGCHA eliminates that**: one command routes through **PLANNER → GENERATOR → EVALUATOR**, runs agents in parallel, and gates every output before shipping.
+Claude Code is powerful — but routing work between tools, enforcing quality gates, and keeping 18 workflows consistent adds real overhead. **DOMANGCHA eliminates that**: one command routes through **PLANNER → GENERATOR → EVALUATOR**, runs agents in parallel, and gates every output before shipping.
 
 <table>
 <tr>
@@ -69,7 +69,7 @@ You press Enter
 You press Enter
 └── "Hold on — I have questions"
     └── 12 sharp questions
-        └── Risk check → 17 specialists
+        └── Risk check → 18 specialists
             → 5 gates → ship
 ```
 
@@ -81,7 +81,7 @@ You press Enter
 |---|:---:|:---:|
 | Requirements before code | ✅ Up to 12 questions | ❌ Codes immediately |
 | Tradeoff check before building | ✅ Catches risks upfront | ❌ None |
-| Role separation by specialist | ✅ 17 agents, parallel | ❌ Single model |
+| Role separation by specialist | ✅ 18 agents, parallel | ❌ Single model |
 | Builder ≠ Reviewer (enforced) | ✅ Always | ❌ None |
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
 | Mistakes → permanent patterns | ✅ error-registry | ❌ None |
@@ -208,7 +208,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
     ┌─────────────┐
     │  STACK SEL  │  CEO analyzes your task and recommends the best stack
     └──────┬──────┘
-           │  [1] Standard    ████████ 80%  17 agents, full pipeline
+           │  [1] Standard    ████████ 80%  18 agents, full pipeline
            │  [2] Ralph Loop  ██████   60%  autonomous until done
            │  [3] gstack      ████     40%  web E2E + browser QA
            │  [4] Superpowers ██       25%  design-first, plan-heavy
@@ -256,7 +256,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 ---
 
-## 👥 The 17 Agents
+## 👥 The 18 Agents
 
 <table>
 <thead>
@@ -310,6 +310,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 | Version | Feature |
 |---|---|
+| **v2.0.45** | **Knowledge Registry (DC-KNW — 18th Agent)** — `domangcha/knowledge-registry/` with 5 type folders (error/pattern/decision/workflow/skill), `.knw-queue/` approval pipeline, 3 seed entries from error-registry, and `/ceo-knowledge /ceo-learn /ceo-promote /ceo-forget` command suite. DC-KNW added to CORE (runs GUARD mode at every PHASE 1 as advisory). |
 | **v2.0.44** | **DOC-FIRST enforced on all 4 stacks** — Ralph Loop now creates `docs/` before the autonomous loop starts (Phase 0 in `fix_plan.md`). Superpowers routes `writing-plans → approval → DOC-FIRST → executing-plans → GATE → deploy`. gstack DOC-FIRST via FULL PIPELINE made explicit. Standard also marked. Knowledge Registry system designed (DC-KNW, 18th agent) — implementation sprint in v2.0.45+. |
 | **v2.0.43** | **Dynamic Stack Selection Rubric** — PHASE 0.3 now uses a 12-condition scoring table (`stack-selection-rubric.md`) instead of hardcoded 80/60/45/25 scores. Standard no longer always wins — each stack earns points based on actual task characteristics. |
 | **v2.0.42** | **Gap Analysis + §6 Full Propagation** — §6 EXEC-001~004 rules added to `ceo-core/SKILL.md` and `ceo-sprint/SKILL.md`. Version update procedure now includes `~/.claude/CLAUDE.md` step in all 3 CLAUDE.md files. `ceo-system/SKILL.md` version procedure expanded to full 11-step list (was 6, missing `package.json` + root files). |
@@ -355,7 +356,7 @@ Every command triggers the multi-agent system to orchestrate tasks across planni
 
 | Command | What it does |
 |---|---|
-| `/ceo "[task]"` | 🚀 Full pipeline — version check → Q&A → 17 agents → GATE → ship |
+| `/ceo "[task]"` | 🚀 Full pipeline — version check → Q&A → 18 agents → GATE → ship |
 | `/ceo-ralph "[task]"` | 🔁 Autonomous loop until completion criteria met |
 | `/ceo-init` | 🔧 Project harness setup |
 | `/ceo-debug "[bug]"` | 🐛 Investigate → fix → verify |
@@ -425,10 +426,10 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝
 </pre></div>
 
-### 🚗💨 돔황차 — Claude Code용 17개 에이전트 하네스
+### 🚗💨 돔황차 — Claude Code용 18개 에이전트 하네스
 
 **DOMANGCHA 없는 Claude Code는 반쪽짜리입니다.**
-명령 하나로 17명 AI 전문가를 오케스트레이션 — 기획 → 구현 → 테스트 → 보안 → 리뷰 → 배포까지.
+명령 하나로 18명 AI 전문가를 오케스트레이션 — 기획 → 구현 → 테스트 → 보안 → 리뷰 → 배포까지.
 
 *개발 지옥에서 도망쳐 — 돔황차🚗💨*
 
@@ -436,7 +437,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
-[![Agents](https://img.shields.io/badge/에이전트-17명-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
+[![Agents](https://img.shields.io/badge/에이전트-18명-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
 [![Gates](https://img.shields.io/badge/게이트-5개-orange?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
 
 > **명령 하나 쳤더니 인증, 결제, 대시보드가 돌아왔다. 테스트 통과, 보안 감사 완료, 코드 리뷰까지.**
@@ -459,7 +460,7 @@ curl -sSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/
 
 ### ⚡ 왜 DOMANGCHA인가?
 
-Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개 워크플로 일관성 유지에는 오버헤드가 생깁니다. **DOMANGCHA가 그걸 없애줍니다**: 명령 하나로 **PLANNER → GENERATOR → EVALUATOR**를 병렬 실행하고, 모든 산출물을 게이트 후 배포합니다.
+Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 18개 워크플로 일관성 유지에는 오버헤드가 생깁니다. **DOMANGCHA가 그걸 없애줍니다**: 명령 하나로 **PLANNER → GENERATOR → EVALUATOR**를 병렬 실행하고, 모든 산출물을 게이트 후 배포합니다.
 
 <table>
 <tr>
@@ -483,7 +484,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
 엔터를 치는 순간
 └── "잠깐, 질문이 있어요"
     └── 12개 핵심 질문
-        └── 리스크 체크 → 17명 전문가
+        └── 리스크 체크 → 18명 전문가
             → 5 게이트 → 출시
 ```
 
@@ -495,7 +496,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
 |---|:---:|:---:|
 | 코드 전 요구사항 분석 | ✅ 최대 12개 질문 | ❌ 바로 코딩 |
 | 구현 전 트레이드오프 체크 | ✅ 리스크 사전 발굴 | ❌ 없음 |
-| 전문가 역할 분리 | ✅ 17명 병렬 운영 | ❌ 단일 모델 |
+| 전문가 역할 분리 | ✅ 18명 병렬 운영 | ❌ 단일 모델 |
 | 빌더 ≠ 리뷰어 강제 | ✅ 항상 분리 | ❌ 없음 |
 | 파괴적 변경 보호 | ✅ Gate 5 차단 | ❌ 없음 |
 | 실수 → 영구 패턴 등록 | ✅ error-registry | ❌ 없음 |
@@ -507,6 +508,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
 
 | 버전 | 기능 |
 |---|---|
+| **v2.0.45** | **Knowledge Registry (DC-KNW — 18번째 직원)** — `domangcha/knowledge-registry/` 5개 타입 폴더(error/pattern/decision/workflow/skill), `.knw-queue/` 승인 파이프라인, error-registry 시드 3개 엔트리, `/ceo-knowledge /ceo-learn /ceo-promote /ceo-forget` 명령어. DC-KNW가 CORE 에이전트로 매 PHASE 1마다 GUARD 모드 자동 실행 (advisory only). |
 | **v2.0.44** | **전체 4개 스택 DOC-FIRST 강제화** — Ralph Loop: fix_plan.md Phase 0에 docs/ 생성 단계 추가, Superpowers: writing-plans → 승인 → DOC-FIRST → executing-plans → GATE → deploy 흐름 명시, gstack/Standard도 DOC-FIRST 표기 일관화. Knowledge Registry(DC-KNW 18번째 직원) 설계 완료 → v2.0.45에서 구현. |
 | **v2.0.43** | **동적 스택 선택 루브릭** — PHASE 0.3에 12개 조건 × 4 스택 점수 테이블(`stack-selection-rubric.md`) 도입. 하드코딩 80/60/45/25 대신 업무 특성에 따라 점수 계산 → Standard 자동 1위 편향 제거. |
 | **v2.0.42** | **갭분석 + §6 전체 전파** — `ceo-core/SKILL.md`와 `ceo-sprint/SKILL.md`에 §6 EXEC-001~004 추가. 버전 업데이트 절차에 `~/.claude/CLAUDE.md` 항목 명시 (3개 CLAUDE.md 전부). `ceo-system/SKILL.md` 버전 절차 6개→11개 확장 (`package.json` 및 루트 파일 누락 수정). |
@@ -543,7 +545,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
     ┌─────────────┐
     │  스택 선택  │  CEO가 업무 분석 후 최적 스택 추천
     └──────┬──────┘
-           │  [1] 스탠다드    ████████ 80%  17명 풀 파이프라인 (기본)
+           │  [1] 스탠다드    ████████ 80%  18명 풀 파이프라인 (기본)
            │  [2] 랄프루프    ██████   60%  완료 기준 정의 후 자율 반복
            │  [3] gstack     ████     40%  웹 E2E + 브라우저 QA 강화
            │  [4] 슈퍼파워   ██       25%  설계 중심, 계획 먼저
@@ -591,7 +593,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
 
 ---
 
-### 👥 17명의 에이전트
+### 👥 18명의 에이전트
 
 <table>
 <thead>
@@ -645,7 +647,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
 
 | 명령어 | 동작 |
 |---|---|
-| `/ceo "[업무]"` | 🚀 전체 파이프라인 — Q&A → 17명 → GATE → 출시 |
+| `/ceo "[업무]"` | 🚀 전체 파이프라인 — Q&A → 18명 → GATE → 출시 |
 | `/ceo-ralph "[업무]"` | 🔁 완료 기준 충족까지 자율 반복 루프 |
 | `/ceo-init` | 🔧 프로젝트 하네스 초기화 |
 | `/ceo-debug "[버그]"` | 🐛 조사 → 수정 → 검증 |

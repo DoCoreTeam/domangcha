@@ -119,7 +119,7 @@ Applies to all code writing. Bias toward caution over speed; use judgment for tr
 
 | 명령 | 동작 |
 |------|------|
-| `/ceo "업무"` | FULL PIPELINE (Q&A → 17 에이전트 → GATE) |
+| `/ceo "업무"` | FULL PIPELINE (Q&A → 18 에이전트 → GATE) |
 | `/ceo-ralph "업무"` | 자율 반복 루프 (완료 기준 정의 → 루프 → EXIT_SIGNAL) |
 | `/ceo-init` | 프로젝트 최초 셋업 |
 | `/ceo-status` | 현황 조회 |
