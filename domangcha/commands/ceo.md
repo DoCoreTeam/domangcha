@@ -126,10 +126,10 @@ CEO 추천: [N] — <이유>  → 사용자 선택 대기
 ```
 
 **스택별 실행:**
-- [1] Standard: FULL PIPELINE (🟦 DC-BIZ/RES/OSS → 🟩 DC-DEV-* → 🟥 EVALUATOR → GATE)
-- [2] Ralph Loop: `ceo-ralph.md` — `.ralph/` 초기화 → PROMPT.md → 자율 루프
-- [3] gstack: FULL PIPELINE + `Skill("gstack")` E2E 추가
-- [4] Superpowers: brainstorming → writing-plans → 승인 → executing-plans
+- [1] Standard: FULL PIPELINE (🟦 DC-BIZ/RES/OSS → **DOC-FIRST** → 🟩 DC-DEV-* → 🟥 EVALUATOR → GATE)
+- [2] Ralph Loop: `ceo-ralph.md` — `.ralph/` 초기화 → PROMPT.md → **DOC-FIRST** → 루프 → GATE → deploy
+- [3] gstack: FULL PIPELINE + `Skill("gstack")` E2E — **DOC-FIRST** PHASE 0.65 포함
+- [4] Superpowers: brainstorming → writing-plans → 승인 → **DOC-FIRST (docs/)** → executing-plans → GATE → deploy
 **실패 처리:** 에러 시 "🔧 수정 중..." 조용히 수정. 3회 후만 "[에스컬레이션]". 보고만 하고 멈추기 **절대 금지**.
 
 ---

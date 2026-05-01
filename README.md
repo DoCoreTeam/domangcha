@@ -16,7 +16,7 @@ One command orchestrates 17 AI specialists: spec → code → tests → security
 
 *Your AI getaway car from development hell.*
 
-[![Version](https://img.shields.io/badge/version-2.0.43-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.44-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -310,6 +310,7 @@ DC-REV  ✔  Code approved · no logic duplication · types sound
 
 | Version | Feature |
 |---|---|
+| **v2.0.44** | **DOC-FIRST enforced on all 4 stacks** — Ralph Loop now creates `docs/` before the autonomous loop starts (Phase 0 in `fix_plan.md`). Superpowers routes `writing-plans → approval → DOC-FIRST → executing-plans → GATE → deploy`. gstack DOC-FIRST via FULL PIPELINE made explicit. Standard also marked. Knowledge Registry system designed (DC-KNW, 18th agent) — implementation sprint in v2.0.45+. |
 | **v2.0.43** | **Dynamic Stack Selection Rubric** — PHASE 0.3 now uses a 12-condition scoring table (`stack-selection-rubric.md`) instead of hardcoded 80/60/45/25 scores. Standard no longer always wins — each stack earns points based on actual task characteristics. |
 | **v2.0.42** | **Gap Analysis + §6 Full Propagation** — §6 EXEC-001~004 rules added to `ceo-core/SKILL.md` and `ceo-sprint/SKILL.md`. Version update procedure now includes `~/.claude/CLAUDE.md` step in all 3 CLAUDE.md files. `ceo-system/SKILL.md` version procedure expanded to full 11-step list (was 6, missing `package.json` + root files). |
 | **v2.0.41** | **Execution Integrity Rules (§6)** — 4 hard rules added to all CLAUDE.md files: no unverified completion, no mid-implementation stops, CLI direct execution, session report mandatory. EXEC-001~004 added to error-registry. GATE 2 now outputs a line-by-line checklist from `04-completion-criteria.md`. |
@@ -431,7 +432,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 *개발 지옥에서 도망쳐 — 돔황차🚗💨*
 
-[![Version](https://img.shields.io/badge/version-2.0.43-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.44-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -506,6 +507,7 @@ Claude Code는 강력하지만 — 작업 배분, 품질 게이트 강제, 17개
 
 | 버전 | 기능 |
 |---|---|
+| **v2.0.44** | **전체 4개 스택 DOC-FIRST 강제화** — Ralph Loop: fix_plan.md Phase 0에 docs/ 생성 단계 추가, Superpowers: writing-plans → 승인 → DOC-FIRST → executing-plans → GATE → deploy 흐름 명시, gstack/Standard도 DOC-FIRST 표기 일관화. Knowledge Registry(DC-KNW 18번째 직원) 설계 완료 → v2.0.45에서 구현. |
 | **v2.0.43** | **동적 스택 선택 루브릭** — PHASE 0.3에 12개 조건 × 4 스택 점수 테이블(`stack-selection-rubric.md`) 도입. 하드코딩 80/60/45/25 대신 업무 특성에 따라 점수 계산 → Standard 자동 1위 편향 제거. |
 | **v2.0.42** | **갭분석 + §6 전체 전파** — `ceo-core/SKILL.md`와 `ceo-sprint/SKILL.md`에 §6 EXEC-001~004 추가. 버전 업데이트 절차에 `~/.claude/CLAUDE.md` 항목 명시 (3개 CLAUDE.md 전부). `ceo-system/SKILL.md` 버전 절차 6개→11개 확장 (`package.json` 및 루트 파일 누락 수정). |
 | **v2.0.41** | **실행 신뢰성 원칙 §6** — 모든 CLAUDE.md에 4개 강제 규칙 추가: 완료 미검증 금지, 중간 멈춤 금지, CLI 직접 실행, 세션 리포트 필수. EXEC-001~004 error-registry 등록. GATE 2에 `04-completion-criteria.md` 라인별 체크리스트 강화. |
