@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.54 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.55 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
@@ -33,6 +33,13 @@
 - **LARGE/HEAVY**: 5개 문서 필수 (`00-requirements.md` / `01-architecture.md` / `02-task-breakdown.md` / `03-test-strategy.md` / `04-completion-criteria.md`)
 - [DOC COMPLETE] 출력 후에만 PHASE 0.8 → PHASE 1 진입
 - 건너뛰기 **절대 금지**
+
+### 3-2. 기능 구현 기본 정책 (Feature Defaults — 자동 적용)
+- 기능 구현 = 엔티티 수명주기 전체. 명시 제외(PHASE 0.5 Q&A)가 없으면 **기본 자동 포함**:
+  - **CRUD 4개 전부** (Create/Read/Update/Delete) — 권한·입력검증·소프트삭제 기본
+  - 컬렉션 엔티티는 **List 필수** + 리스트형 4어포던스: **검색·정렬·필터 + 성능 로딩(기본 서버 페이지네이션)**
+- CEO는 DOC-FIRST 완료기준에 위 항목을 **자동 전개** → 🟩 DC-DEV-DB/BE/FE 구현 → 🟥 DC-REV/QA 누락 시 FAIL
+- 상세 규격: `skills/ceo-standards/SKILL.md` "기능 구현 기본 정책"
 
 ### 4. GATE — 자동화 검증만
 - 자동으로 실행 가능한 검증만: typecheck / lint / test / build

@@ -800,3 +800,15 @@
 | 2026-06-08 18:59 | `CLAUDE.md` | Edit |
 | 2026-06-08 19:00 | `README.md` | Edit |
 | 2026-06-08 19:00 | `README.md` | Edit |
+| 2026-06-08 22:45 | `domangcha/skills/ceo-standards/SKILL.md` | Edit |
+| 2026-06-08 22:46 | `domangcha/agents/dc-dev-be.md` | Edit |
+| 2026-06-08 22:46 | `domangcha/agents/dc-dev-fe.md` | Edit |
+| 2026-06-08 22:46 | `domangcha/agents/dc-dev-db.md` | Edit |
+| 2026-06-08 22:47 | `domangcha/CLAUDE.md` | Edit |
+| 2026-06-08 22:47 | `../../.claude/CLAUDE.md` | Edit |
+| 2026-06-08 22:48 | `README.md` | Edit |
+| 2026-06-08 22:48 | `README.md` | Edit |
+| 2026-06-08 22:52 | `domangcha/skills/ceo-standards/SKILL.md` | Edit |
+| 2026-06-08 22:52 | `domangcha/agents/dc-dev-be.md` | Edit |
+| 2026-06-08 22:53 | `domangcha/agents/dc-dev-db.md` | Edit |
+| 2026-06-08 22:53 | `domangcha/commands/ceo.md` | Edit |

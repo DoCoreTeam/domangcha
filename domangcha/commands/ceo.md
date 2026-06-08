@@ -198,6 +198,16 @@ Q&A 핵심 답변: <스택 / 완료기준 / 제약 / 맥락 요약>
 
 5개 문서 필수: `00-requirements.md` · `01-architecture.md` · `02-task-breakdown.md` · `03-test-strategy.md` · `04-completion-criteria.md`
 
+**[Feature Defaults Checklist] — 신규 엔티티 도입 기능이면 완료기준에 자동 박제 (MEDIUM+ 기본 ON):**
+> 트리거: 신규 DB 테이블/리소스 도입 시. (버그픽스·필드추가·UI변경·SMALL FAST PATH 비대상 — SMALL은 사용자 명시 시에만)
+> `04-completion-criteria.md`(또는 MEDIUM의 `00-summary.md` 완료조건)에 아래를 **체크박스로 그대로 전개**:
+> - [ ] CRUD 전체 (Create/Read/Update/Delete, 소프트삭제, 각 연산 권한)
+> - [ ] List 엔드포인트/화면 (컬렉션 엔티티인 경우) + **행 수준 권한/RLS·테넌트 필터(default-deny)**
+> - [ ] 검색(`q`, 서버 sanitization) · 정렬(`sort`, 화이트리스트) · 필터(`filter[]`, 화이트리스트)
+> - [ ] 성능 로딩 = 서버 페이지네이션(`page/limit` 또는 `cursor/limit`) + 메타
+> - [ ] 검색/정렬/필터/페이지 상태 URL 동기화 + 로딩/빈/에러 3종 UI
+> 상세 규격: `ceo-standards` SKILL "기능 구현 기본 정책". 제외는 Q&A에서 명시.
+
 기획자 자가점검 → 갭 해소 → `[DOC COMPLETE] ✅` 출력 → PHASE 0.8 진입
 
 **건너뛰기 절대 금지** — 모든 스택 동일

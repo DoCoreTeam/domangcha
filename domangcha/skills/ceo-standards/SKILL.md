@@ -439,6 +439,59 @@ generic div 스택 대신 semantic element 사용.
 
 ---
 
+## 기능 구현 기본 정책 (Feature Implementation Defaults) — 모든 기능 구현 시 자동 적용
+
+> **원칙: "기능 = 엔티티 하나의 완전한 수명주기."** 사용자가 "X 기능 만들어줘"라고만 해도,
+> 우리 시스템은 아래를 **자동 포함**한다.
+>
+> **발동 조건 (트리거):** 이 정책은 **신규 DB 테이블/리소스(엔티티)를 도입하는 기능**에만 적용된다.
+> 기존 엔티티 필드 추가, 버그픽스, UI 토글/스타일 변경, 라이브러리 wrapper/SDK 등 **엔티티 도입이 아닌 작업은 비대상**.
+>
+> **적용 강도 (규모별):**
+> - **MEDIUM+ (FULL PIPELINE)**: **기본 ON(default)**. Q&A(PHASE 0.5)에서 **명시적으로 제외**해야만 빠진다.
+> - **SMALL (FAST PATH)**: **opt-in(기본 OFF)**. 사용자가 "리스트도/CRUD 전체로"를 명시할 때만 적용 — 단순/빠른 수정의 무게를 늘리지 않는다(Simplicity First).
+>
+> 적용 시 DOC-FIRST `04-completion-criteria.md`(LARGE/HEAVY) 또는 `00-summary.md`(MEDIUM)의 완료기준에
+> **자동 전개**되고(ceo-core DOC-FIRST 템플릿의 [Feature Defaults Checklist]), 🟩 DC-DEV-BE/FE/DB 가 구현, 🟥 DC-REV/DC-QA 가 누락을 FAIL 처리한다.
+> **적용 시점:** v2.0.55 이후 신규 docs/ 스프린트부터 — 진행 중 스프린트는 grandfather(소급 FAIL 금지).
+
+### 1. CRUD 전체 필수 (Create / Read / Update / Delete)
+엔티티를 도입하는 기능은 4개 연산을 **모두** 구현한다 (요청에 "조회만" 같은 명시 제한이 없는 한):
+- **Create** — 입력 검증(스키마) + 권한 + 성공/실패 피드백
+- **Read** — 단건 조회(detail) + 권한(소유자/역할)
+- **Update** — 부분 수정 + 동시성/버전 충돌 처리. 낙관적 업데이트는 **비금융·비권한 표시 필드 한정**, 금융/권한/잔액 변경은 pessimistic(서버 확정 후 반영 — §3-4·§1-5 준수)
+- **Delete** — 소프트 삭제 기본(`deleted_at`) + 확인 단계 + 권한
+- 누락된 연산이 있으면 완료기준 ❌ → 재작업. ("이것만" 요청도 RIPPLE로 연관 연산 점검)
+
+### 2. List(L) 필수 — 엔티티가 "둘 이상 존재/탐색 가능"하면 자동 포함
+컬렉션으로 존재하는 엔티티는 목록 화면/엔드포인트를 **기본 포함**한다.
+- **List 비대상 (예외):** 싱글턴 설정, 본인 단일 리소스(내 프로필 등), 1:1 소유 관계의 단일 자식. 회색지대는 Q&A로 1문항 확인.
+- **🔒 List 권한 필수(기존 "RLS 필수"와 동일):** 목록 응답은 **항상 행 수준 권한/RLS·소유권·멀티테넌트(`organizationId`) 필터**를 적용한다. **default-deny** — 명시 허용 필드만 노출. 권한 없는 전체 목록 노출은 완료기준 ❌.
+
+### 3. 리스트형 화면 4종 어포던스 — 기본 자동 탑재
+List가 있으면 아래 4가지가 **기본으로** 따라온다 (UI + API 양쪽).
+**표준 쿼리 파라미터:** `q`(검색) · `sort`(예: `created_at:desc`) · `filter[키]` · `page`/`limit` 또는 `cursor`/`limit`. (세 빌더 에이전트는 이 표준만 사용)
+
+| 어포던스 | 기본 동작 | 비고 |
+|---------|----------|------|
+| **검색(Search)** | 주요 텍스트 필드 키워드 검색 (debounce, URL 동기화) | **🔒 서버측 sanitization 필수**: parameterized query만, LIKE 와일드카드(`%_`)·정규식 메타문자 이스케이프, ReDoS/NoSQL `$` 차단 (§2-2 준수) |
+| **정렬(Sort)** | 최소 1개 컬럼 정렬(기본: `created_at:desc`) + 사용자 토글 | 허용 컬럼 화이트리스트만 (임의 컬럼 정렬 금지) |
+| **필터(Filter)** | 상태/카테고리/기간 등 핵심 축 1개 이상 | 허용 필터 키 화이트리스트 |
+| **성능 로딩** | **기본 = 서버 페이지네이션** (offset; 대용량은 **cursor 권장**) | 피드/카드형은 Q&A로 무한스크롤+가상화 전환 |
+
+- 검색/정렬/필터/페이지 상태는 **URL 쿼리스트링에 보존**(공유·뒤로가기 — web/patterns "URL As State").
+  - **무한스크롤 채택 시:** 검색/정렬/필터만 URL 동기화, 스크롤 위치는 cursor 또는 sessionStorage (page=N URL 동기화 부적용).
+- 서버 응답은 페이지네이션 메타 포함(`total`/`page`/`limit` 또는 `nextCursor`) — common/patterns API 엔벨로프 준수.
+- 로딩/빈 상태/에러 상태 3종 UI 필수. 접근성: 리스트는 적절한 시맨틱/ARIA(`role="list"`/`role="grid"`)와 키보드 탐색. N+1 금지(JOIN/배치), 목록 쿼리 LIMIT 필수.
+
+### 4. 적용 흐름 (자동)
+1. PHASE 0.5 Q&A 에서 "제외할 연산/어포던스"를 명시적으로 확인 — MEDIUM+는 없으면 전부 포함, SMALL은 명시 시에만.
+2. DOC-FIRST 완료기준에 위 항목을 **체크리스트로 자동 전개**(ceo-core DOC-FIRST 템플릿 [Feature Defaults Checklist]).
+3. 🟩 DC-DEV-DB(스키마+인덱스: 정렬/필터/검색/cursor 컬럼 인덱싱) **선행** → 🟩 DC-DEV-BE(목록 API+권한+sanitization) · 🟩 DC-DEV-FE(리스트 UI+4어포던스+URL 상태) **병렬**.
+4. 🟥 DC-SEC(검색 sanitization·List RLS) + 🟥 DC-REV/DC-QA(CRUD·List·4어포던스 누락)를 **완료기준 미달(FAIL)**로 판정.
+
+---
+
 ## 테스트 요구사항
 
 ### 최소 커버리지: 80%
@@ -593,7 +646,7 @@ Step 7: 초기화 보고
 mkdir -p ~/.claude/reports
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "[CEO SYSTEM INITIALIZED] v2.0.54"
+echo "[CEO SYSTEM INITIALIZED] v2.0.55"
 echo "ERROR-REGISTRY : $(grep -c 'ERROR-ID' ~/.claude/error-registry.md 2>/dev/null || echo 0)건"
 echo "SKILL-REGISTRY : $(grep -c 'SKILL-ID' ~/.claude/skill-registry.md 2>/dev/null || echo 0)건"
 echo "DECISION-LOG   : $(grep -c 'DEC-' ~/.claude/decision-log.md 2>/dev/null || echo 0)건"

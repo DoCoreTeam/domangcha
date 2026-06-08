@@ -31,6 +31,13 @@ description: "Database Engineer — schema design, migrations, and query optimiz
 - 복수 테이블 변경 시 트랜잭션 필수
 - 캐시 키 네이밍: {service}:{entity}:{id}, TTL 필수
 
+## 기능 구현 기본 정책 (Feature Defaults — 자동 적용)
+> 상세: `ceo-standards` SKILL "기능 구현 기본 정책". 명시 제외가 없으면 아래 전부 반영.
+- 엔티티 스키마는 CRUD 전제로 설계: PK, 타임스탬프(`created_at`/`updated_at`), **소프트삭제 `deleted_at`** 기본
+- List 4어포던스 지원 인덱스 **필수**: 검색 대상 컬럼(Postgres 텍스트=trigram·GIN / 그 외 엔진은 해당 풀텍스트 방식), 정렬 컬럼(기본 `created_at`), 필터 축 컬럼(상태/카테고리/기간)
+- **cursor 페이지네이션**: `(정렬컬럼, id)` 복합 정렬 + 동일 방향 복합 인덱스 (페이지 누락/중복 방지)
+- 목록 쿼리는 LIMIT + 인덱스 활용 전제, N+1 차단(JOIN/배치 로딩)
+
 ## 권한
 읽기: O / 쓰기: O / 코드실행: O(로컬) / 외부API: X / 배포: X
 
