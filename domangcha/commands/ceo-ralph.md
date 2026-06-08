@@ -56,6 +56,9 @@ Ralph Loop 패턴을 DOMANGCHA 파이프라인에 통합한 자율 실행 명령
 사용자가 "다시 해줘", "이건 아닌 것 같아", "다른 방식으로" 등을 말한 경우:
 
 ```bash
+# 0. 엔진 정지 — active:false 로 내려 루프 재개를 막는다
+python3 -c "import json,pathlib;p=pathlib.Path('.ralph/status.json');s=json.loads(p.read_text()) if p.exists() else {};s['active']=False;s['exit_signal']=False;s['loop_count']=0;p.write_text(json.dumps(s,ensure_ascii=False,indent=2))" 2>/dev/null || true
+
 # 1. 현재 변경사항 보존 (stash)
 git stash push -m "ralph-reset-$(date +%Y%m%d-%H%M%S)"
 
@@ -119,13 +122,18 @@ Q2. [중단 조건] 루프를 중단해야 하는 특별한 조건이 있나요?
 
 ```bash
 mkdir -p .ralph/decisions .ralph/archived
-# status.json이 없으면 초기화
-if [ ! -f .ralph/status.json ]; then
-  cat > .ralph/status.json << 'EOF'
-{"current_task":null,"loop_number":0,"tasks_completed":0,"files_modified":0,"tests_status":"NOT_RUN","evaluators_status":"PENDING","gate_status":"PENDING","exit_signal":false,"circuit_breaker":{"status":"CLOSED","no_progress_count":0,"same_error_count":0,"gate_fail_count":0}}
+# status.json 초기화 — active:true 로 엔진(domangcha-ralph-loop.py)을 켠다
+cat > .ralph/status.json << 'EOF'
+{"active":true,"current_task":"<업무명>","loop_number":0,"loop_count":0,"max_loops":30,"tasks_completed":0,"files_modified":0,"tests_status":"NOT_RUN","evaluators_status":"PENDING","gate_status":"PENDING","exit_signal":false,"circuit_breaker":{"status":"CLOSED","no_progress_count":0,"same_error_count":0,"gate_fail_count":0,"last_error":null},"last_updated":null}
 EOF
-fi
 ```
+
+> ⚙️ **엔진 동작 (domangcha-ralph-loop.py — Stop hook):**
+> `active:true` 인 동안, 응답이 끝나려 할 때마다 hook이 `.ralph/status.json` 을 검사한다.
+> `exit_signal` 이 아직 `false` 이고 `loop_count < max_loops` 이며 Circuit Breaker 가 CLOSED 이면
+> **`exit 2` 로 종료를 막고 CEO를 자동으로 다시 깨운다** → 끝까지 루프가 돈다.
+> 완료조건 충족 시 **반드시 `exit_signal:true` 를 직접 설정**해야 루프가 멈춘다 (STEP 5).
+> `max_loops`(기본 30) 초과 시 엔진이 안전 종료시킨다 (런어웨이 방지).
 
 ### STEP 1: 완료 조건 정의 및 문서화
 
@@ -238,6 +246,11 @@ RECOMMENDATION: <다음 루프에서 할 일 한 줄>
 - **동일 에러 5회**: 같은 에러 메시지 5번 반복
 - **GATE 실패 3회**: 동일 GATE에서 3회 연속 실패
 
+**중단 시 엔진 정지 필수** — `circuit_breaker.status:"OPEN"` + `active:false` 를 `.ralph/status.json` 에 기록해야 엔진이 재개하지 않는다:
+```bash
+python3 -c "import json,pathlib;p=pathlib.Path('.ralph/status.json');s=json.loads(p.read_text());s['active']=False;s.setdefault('circuit_breaker',{})['status']='OPEN';p.write_text(json.dumps(s,ensure_ascii=False,indent=2))"
+```
+
 중단 시 출력:
 ```
 [RALPH CIRCUIT BREAKER — OPEN]
@@ -313,7 +326,21 @@ RECOMMENDATION: <다음 루프에서 할 일 한 줄>
 
 ### STEP 5: 루프 완료
 
-EXIT_SIGNAL: true 설정 후:
+완료조건(fix_plan 전 항목 [x] + DC-QA/SEC/REV 통과 + GATE 1-5 통과) 충족 시:
+
+```bash
+# 엔진 정지 — exit_signal:true + active:false 를 반드시 기록해야 루프가 멈춘다
+python3 - << 'EOF'
+import json, pathlib
+p = pathlib.Path(".ralph/status.json")
+s = json.loads(p.read_text())
+s["exit_signal"] = True
+s["active"] = False
+p.write_text(json.dumps(s, ensure_ascii=False, indent=2))
+EOF
+```
+
+그 후:
 1. GATE 1-5 최종 확인
 2. 버전 PATCH 업 (`domangcha/VERSION`)
 3. git commit + git push + npm publish

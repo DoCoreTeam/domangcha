@@ -342,12 +342,15 @@ mkdir -p "${CLAUDE_DIR}/hooks"
 cp "${SRC}/hooks/domangcha-post-edit.sh" "${CLAUDE_DIR}/hooks/domangcha-post-edit.sh"
 cp "${SRC}/hooks/domangcha-stop.sh"      "${CLAUDE_DIR}/hooks/domangcha-stop.sh"
 cp "${SRC}/hooks/domangcha-ceo-enforcer.py" "${CLAUDE_DIR}/hooks/domangcha-ceo-enforcer.py"
+cp "${SRC}/hooks/domangcha-ralph-loop.py" "${CLAUDE_DIR}/hooks/domangcha-ralph-loop.py"
 chmod +x "${CLAUDE_DIR}/hooks/domangcha-post-edit.sh"
 chmod +x "${CLAUDE_DIR}/hooks/domangcha-stop.sh"
 chmod +x "${CLAUDE_DIR}/hooks/domangcha-ceo-enforcer.py"
+chmod +x "${CLAUDE_DIR}/hooks/domangcha-ralph-loop.py"
 echo -e "  ${GREEN}✔${NC}  domangcha-post-edit.sh  ${DIM}자동 테스트+수정 / auto-test + auto-fix${NC}"
 echo -e "  ${GREEN}✔${NC}  domangcha-stop.sh        ${DIM}CEO 품질 검토 / CEO quality review${NC}"
 echo -e "  ${GREEN}✔${NC}  domangcha-ceo-enforcer.py  ${DIM}CEO 파이프라인 강제 / pipeline enforcer${NC}"
+echo -e "  ${GREEN}✔${NC}  domangcha-ralph-loop.py  ${DIM}ralph 자율 루프 엔진 / ralph loop engine${NC}"
 
 # ── 11. settings.json ─────────────────────────────
 step "settings.json 훅 주입" "Injecting hooks into settings.json"
@@ -365,6 +368,10 @@ DOMANGCHA_POST = {
 # async: true — CEO quality review runs in background so session ends immediately
 DOMANGCHA_STOP = {
     "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/domangcha-stop.sh"', "timeout": 120, "async": True}]
+}
+# ralph loop engine — BLOCKING (no async) so exit 2 can force loop continuation
+DOMANGCHA_RALPH_LOOP = {
+    "hooks": [{"type": "command", "command": f'python3 "{hooks_dir}/domangcha-ralph-loop.py"', "timeout": 30}]
 }
 DOMANGCHA_ENFORCER = {
     "matcher": "",
@@ -404,10 +411,12 @@ hooks["PostToolUse"] = post
 # Stop — remove old DOMANGCHA hooks, re-inject in correct order
 stop = hooks.get("Stop", [])
 stop = [h for h in stop if not any(
-    "domangcha-stop" in sub.get("command","") for sub in h.get("hooks",[])
+    ("domangcha-stop" in sub.get("command","") or "domangcha-ralph-loop" in sub.get("command",""))
+    for sub in h.get("hooks",[])
 )]
 if DOMANGCHA_STOP_CHECKS:
     stop.insert(0, DOMANGCHA_STOP_CHECKS)
+stop.append(DOMANGCHA_RALPH_LOOP)  # ralph engine (blocking) — must run to force loop
 stop.append(DOMANGCHA_STOP)
 hooks["Stop"] = stop
 

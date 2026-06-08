@@ -1,6 +1,9 @@
 {
+  "active": false,
   "current_task": null,
   "loop_number": 0,
+  "loop_count": 0,
+  "max_loops": 30,
   "tasks_completed": 0,
   "files_modified": 0,
   "tests_status": "NOT_RUN",

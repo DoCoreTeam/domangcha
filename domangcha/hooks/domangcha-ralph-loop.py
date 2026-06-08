@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""
+Stop hook — DOMANGCHA Ralph Loop Engine
+=========================================
+ceo-ralph 자율 루프의 실제 "엔진". 프롬프트 prose가 아니라 기계가 강제한다.
+
+동작:
+  .ralph/status.json 을 읽어 루프 계속/종료를 결정한다.
+  - active != true           → exit 0  (ralph 루프 중 아님 — 일반 세션, 영향 없음)
+  - exit_signal == true       → active 내림 + exit 0  (완료)
+  - circuit_breaker OPEN       → exit 0  (차단기 작동 — 정상 중단)
+  - loop_count >= max_loops    → active 내림 + breaker OPEN + exit 0  (런어웨이 방지 캡)
+  - 그 외                      → loop_count++ 기록 후 exit 2  (재진입 강제)
+
+exit 2 = stderr 내용을 모델에 주입하고 종료를 막아 루프를 계속시킨다.
+exit 0 = 정상 종료 허용.
+
+안전 가드:
+  - active 플래그가 없으면 절대 재진입하지 않음 → 전역 세션에 영향 없음
+  - max_loops 하드캡 → 무한 루프 불가
+  - exit_signal 은 모델이 완료조건(fix_plan 전체 체크 + GATE 통과)을 충족했을 때 설정
+"""
+from __future__ import annotations  # Path | None 등 union 힌트를 py3.9에서도 허용
+
+import json
+import os
+import sys
+from pathlib import Path
+
+DEFAULT_MAX_LOOPS = 30
+ABSOLUTE_MAX_LOOPS = 100  # status.json의 max_loops가 아무리 커도 이 값을 넘지 못함 (런어웨이 절대 상한)
+
+
+def _find_status() -> Path | None:
+    """CLAUDE_PROJECT_DIR 또는 cwd 기준으로 .ralph/status.json 을 찾는다."""
+    root = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
+    candidate = Path(root) / ".ralph" / "status.json"
+    if candidate.exists():
+        return candidate
+    # cwd 폴백
+    alt = Path(os.getcwd()) / ".ralph" / "status.json"
+    return alt if alt.exists() else None
+
+
+def _read_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return {}
+
+
+def _write_json(path: Path, data: dict) -> None:
+    # atomic write: 임시파일에 쓰고 os.replace 로 교체 → 동시쓰기 중 손상 방지
+    try:
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+        os.replace(tmp, path)
+    except Exception:
+        pass
+
+
+CONTINUE_MSG = """\
+[RALPH ENGINE] 루프 미완료 — 계속 진행하세요 (loop #{loop}/{maxl}).
+
+1. .ralph/PROMPT.md 와 .ralph/fix_plan.md 를 읽으세요.
+2. fix_plan.md 의 미체크([ ]) 항목 중 최우선 1개를 실행하세요.
+3. 기술/접근법 선택이 필요하면 멈추지 말고 WEIGHTED DECISION 으로 즉시 결정 →
+   .ralph/decisions/DECISION-<날짜>-<주제>.md 에 기록하세요 (LOOP-002/004).
+4. 사용자에게 질문하려고 멈추지 마세요 (LOOP-001/003). Circuit Breaker 조건만 중단 허용.
+5. 매 루프 끝에 RALPH_STATUS 블록을 출력하고 .ralph/status.json 의 loop 상태를 갱신하세요.
+
+⚠️ 완료 판정: fix_plan.md 전 항목 [x] + DC-QA/SEC/REV 통과 + GATE 1-5 통과 일 때에만
+   .ralph/status.json 의 "exit_signal" 을 true 로 설정하세요.
+   그 전에는 이 엔진이 계속 루프를 재개합니다. "여기까지만" 금지 [EXEC-002].
+"""
+
+CAP_MSG = """\
+[RALPH ENGINE] 루프 상한(max_loops={maxl}) 도달 — 안전 종료합니다.
+fix_plan.md 미완료 항목이 남아 있다면 사용자에게 Circuit Breaker 보고를 출력하세요.
+재개하려면 .ralph/status.json 의 loop_count 를 낮추거나 /ceo-ralph reset 하세요.
+"""
+
+
+def main() -> int:
+    # Stop hook 입력 (stop_hook_active 등) — 읽되 의존하지 않음
+    try:
+        json.load(sys.stdin)
+    except Exception:
+        pass
+
+    status_path = _find_status()
+    if status_path is None:
+        return 0  # ralph 상태 없음 → 일반 세션, 종료 허용
+
+    st = _read_json(status_path)
+    if not st:
+        return 0
+
+    # 1) active 가드 — ralph 루프가 실제로 켜져 있을 때만 엔진 작동
+    if not st.get("active"):
+        return 0
+
+    # 2) 완료 신호 — 모델이 완료조건 충족 시 설정
+    if st.get("exit_signal") is True:
+        st["active"] = False
+        _write_json(status_path, st)
+        return 0
+
+    # 3) Circuit Breaker OPEN → 정상 중단
+    breaker = st.get("circuit_breaker", {})
+    if isinstance(breaker, dict) and breaker.get("status") == "OPEN":
+        return 0
+
+    # 4) 런어웨이 방지 하드캡
+    max_loops = int(st.get("max_loops", DEFAULT_MAX_LOOPS) or DEFAULT_MAX_LOOPS)
+    max_loops = min(max_loops, ABSOLUTE_MAX_LOOPS)  # status.json 조작으로도 절대 상한 우회 불가
+    loop_count = int(st.get("loop_count", 0) or 0)
+    if loop_count >= max_loops:
+        st["active"] = False
+        breaker = breaker if isinstance(breaker, dict) else {}
+        breaker["status"] = "OPEN"
+        st["circuit_breaker"] = breaker
+        _write_json(status_path, st)
+        sys.stderr.write(CAP_MSG.format(maxl=max_loops))
+        return 0  # 캡 도달은 정상 종료(종료 허용) — 무한루프 차단
+
+    # 5) 그 외 → 루프 카운트 증가 후 재진입 강제
+    loop_count += 1
+    st["loop_count"] = loop_count
+    _write_json(status_path, st)
+    sys.stderr.write(CONTINUE_MSG.format(loop=loop_count, maxl=max_loops))
+    return 2  # exit 2 = 종료 막고 모델 재진입
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except Exception:
+        # 엔진 오류로 세션이 막히면 안 됨 → 안전하게 종료 허용
+        sys.exit(0)

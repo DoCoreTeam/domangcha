@@ -127,6 +127,33 @@ CEO_REMINDER = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
+# ── Ralph loop 전용 reminder — 일반 CEO 1회성 파이프라인 규칙(Q&A 7-12개,
+#    GATE 전 보고 금지 등)과 충돌하므로 ralph 일 때는 이것만 주입한다.
+RALPH_REMINDER = """
+[SYSTEM: RALPH LOOP MODE — DOMANGCHA]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/ceo-ralph 는 "자율 반복 완료 루프"입니다. 일반 CEO 1회성 파이프라인 규칙
+(Q&A 7-12개 · INTENT PARSED 강제 · GATE 전 보고 금지)을 여기 적용하지 마세요.
+ceo-ralph.md STEP 0(명령 파싱)부터 시작하고 아래를 절대 준수:
+
+■ 시작 (신규 루프):
+  • 종료조건 Q&A 는 **최대 2개만** (7-12개 아님)
+  • .ralph/ 초기화 → PROMPT.md / fix_plan.md 작성 → status.json 의 "active": true 설정
+  • DOC-FIRST: docs/<slug>/ 생성
+
+■ 루프 중 (RALPH INTEGRITY RULES — 절대 금지):
+  ❌ LOOP-001 사용자 질문하려 멈추기 금지 → CEO 직접 판단 + DECISION 기록
+  ❌ LOOP-002 선택지에서 멈추기 금지 → WEIGHTED DECISION 즉시 실행 후 계속
+  ❌ LOOP-003 Circuit Breaker(무진행3/동일에러5/GATE실패3) 외 중단 금지
+  ✅ LOOP-004 모든 결정 .ralph/decisions/ 즉시 기록 + 완료 시 일괄 보고
+
+■ 엔진 (domangcha-ralph-loop.py Stop hook):
+  • fix_plan.md 전 항목 [x] + DC-QA/SEC/REV 통과 + GATE 1-5 통과 일 때에만
+    .ralph/status.json 의 "exit_signal": true 설정 → 그래야 루프 종료
+  • 그 전에 멈추면 엔진이 자동 재개합니다 (최대 max_loops 회). "여기까지만" 금지 [EXEC-002]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+
 def load(d):
     for b in [R, U]:
         f = b / d / 'index.md'
@@ -215,7 +242,11 @@ try:
     p_lower = prompt.lower()
     parts = []
 
-    if is_task_request(prompt):
+    # /ceo-ralph 는 자율 루프 — 충돌하는 1회성 파이프라인 블록 대신 ralph 전용 reminder
+    is_ralph = bool(re.search(r'/ceo-ralph\b', p_lower))
+    if is_ralph:
+        parts.append(RALPH_REMINDER + update_notice())
+    elif is_task_request(prompt):
         parts.append(CEO_REMINDER + update_notice())
 
     found = set()

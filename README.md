@@ -16,7 +16,7 @@ One command orchestrates 18 AI specialists: spec → code → tests → security
 
 *Your AI getaway car from development hell.*
 
-[![Version](https://img.shields.io/badge/version-2.0.53-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.54-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Required-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -399,6 +399,7 @@ DC-REV  ✔  Fix is surgical and correct. Raw buffer pattern is the documented S
 
 | Version | Feature |
 |---|---|
+| **v2.0.54** | **Ralph Loop is now a real engine, not a prompt** — `/ceo-ralph` used to be markdown instructions with no driver, so it stopped mid-task. v2.0.54 adds `domangcha-ralph-loop.py`, a **blocking Stop hook** that re-reads `.ralph/status.json` and forces continuation (`exit 2`) while `active && !exit_signal && loop_count < max_loops && breaker CLOSED`. Safety guards: `active` flag (zero effect outside a ralph loop), `max_loops` (default 30, hard ceiling 100), Circuit Breaker, atomic status writes. The CEO enforcer no longer injects the conflicting one-shot pipeline block for `/ceo-ralph` — it injects a ralph-specific reminder (max 2 Q&A, never stop, autonomous decisions). The loop now actually runs to completion. |
 | **v2.0.51** | **FAST PATH Bug-Fix Demo (EN + KO)** — "Watch a Bug Fix" and "버그 수정 현장" sections added. Shows the full FAST PATH flow: RIPPLE CHECK → 00-summary.md → surgical fix → DC-REV → GATE 1-5 → deploy. EN scenario: Stripe webhook raw-body bug. KO scenario: 카카오페이 `tid` undefined guard. |
 | **v2.0.50** | **README Sprint Demo — full agent detail + Korean scenario** — EN "Watch a Real Sprint" now shows DC-KNW GUARD advisory output, DC-DOC, and DC-TOK for every sprint. All agents have concrete, role-specific output (not just ✔). Korean "실제 스프린트 보기" section added with a KakaoPay-powered running crew app scenario. `error-registry` ERR-007 added: mandatory 7-point README section checklist on every update. |
 | **v2.0.48** | **Auto-untrack existing `docs/` subdirs on update** — `install.sh` now runs `git rm -r --cached` on already-tracked `docs/` subdirectories when you `npx domangcha` on an existing project. Supports Korean/Unicode folder names via `core.quotepath=false`. Works on both fresh installs and updates. |
@@ -531,7 +532,7 @@ Re-running always pulls the latest. Your registries (errors, instincts, history)
 
 *개발 지옥에서 도망쳐 — 돔황차🚗💨*
 
-[![Version](https://img.shields.io/badge/version-2.0.53-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-2.0.54-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-필수-5865F2?style=for-the-badge)](https://claude.ai/code)
@@ -795,6 +796,7 @@ DC-REV  ✔  수정 정확. undefined 방어 패턴은 카카오페이 공식 �
 
 | 버전 | 기능 |
 |---|---|
+| **v2.0.54** | **Ralph Loop이 진짜 엔진이 됨 (프롬프트 → 코드)** — 기존 `/ceo-ralph`는 드라이버 없는 마크다운 지침이라 중간에 멈췄음. v2.0.54에서 **Stop hook 루프 엔진** `domangcha-ralph-loop.py` 추가: `.ralph/status.json`을 읽어 `active && !exit_signal && loop_count<max_loops && breaker CLOSED`면 `exit 2`로 재진입을 강제해 **끝까지 루프**. 안전가드 — `active` 플래그(루프 밖 세션엔 무영향), `max_loops`(기본30·절대상한100), Circuit Breaker, atomic status 쓰기. enforcer는 `/ceo-ralph`에 충돌하던 1회성 파이프라인 블록 대신 **ralph 전용 reminder**(질문 최대2·멈춤금지·자율결정) 주입. 이제 루프가 실제로 완료까지 돈다. |
 | **v2.0.51** | **FAST PATH 버그 수정 데모 (EN + KO)** — "Watch a Bug Fix"와 "버그 수정 현장" 신규 추가. RIPPLE CHECK → 00-summary.md → 외과적 수정 → 🟥 DC-REV → GATE 1-5 → 배포 전체 흐름 시각화. EN: Stripe webhook raw-body 버그. KO: 카카오페이 `tid` undefined 가드 누락. |
 | **v2.0.50** | **README 스프린트 데모 전면 강화 + 한국 시나리오** — EN "Watch a Real Sprint"에 DC-KNW GUARD 어드바이저리 블록, DC-DOC, DC-TOK 출력 추가. 전 에이전트 출력이 역할별 구체적 내용으로 확장. 한국 시나리오 "실제 스프린트 보기" 신규 작성(동네 러닝 크루 앱, 카카오페이 회비 정산). `error-registry` ERR-007 추가: 업데이트마다 7개 README 섹션 전수 점검 필수. |
 | **v2.0.49** | **docs/ 자동 언트래킹 개선** — `install.sh` 캐시 무효화 + `update_notice` semver 방향 비교 수정. 버전 배지 자동 갱신 보강. |
