@@ -1,6 +1,6 @@
 ---
 name: dc-dev-fe
-model: claude-sonnet-4-6
+model: claude-opus-4-8
 description: "Frontend Developer — UI components, pages, and client-side logic"
 ---
 

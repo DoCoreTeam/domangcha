@@ -1,6 +1,6 @@
 ---
 name: dc-dev-db
-model: claude-sonnet-4-6
+model: claude-opus-4-8
 description: "Database Engineer — schema design, migrations, and query optimization"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: dc-dev-be
-model: claude-sonnet-4-6
+model: claude-opus-4-8
 description: "Backend Developer — API endpoints, business logic, and server-side code"
 ---
 

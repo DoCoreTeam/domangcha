@@ -1,6 +1,6 @@
 ---
 name: dc-dev-int
-model: claude-sonnet-4-6
+model: claude-opus-4-8
 description: "Integration Developer — external API connectors and third-party service integrations"
 ---
 

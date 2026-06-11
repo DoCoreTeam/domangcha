@@ -1,6 +1,6 @@
 ---
 name: dc-dev-mob
-model: claude-sonnet-4-6
+model: claude-opus-4-8
 description: "Mobile Developer — iOS/Android/cross-platform mobile features"
 ---
 

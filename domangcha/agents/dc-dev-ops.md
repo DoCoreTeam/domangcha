@@ -1,6 +1,6 @@
 ---
 name: dc-dev-ops
-model: claude-sonnet-4-6
+model: claude-opus-4-8
 description: "DevOps Engineer — CI/CD pipelines, infrastructure, and harness setup"
 ---
 

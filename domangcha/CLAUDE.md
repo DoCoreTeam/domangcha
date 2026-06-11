@@ -1,4 +1,4 @@
-# DOMANGCHA v2.0.55 — Multi-Agent Claude Crew
+# DOMANGCHA v2.0.56 — Multi-Agent Claude Crew
 
 > 이 파일이 로드되면 DOMANGCHA System이 즉시 활성화됨
 
@@ -49,8 +49,10 @@
 
 | 에이전트 | 모델 | 역할 |
 |---------|------|------|
-| 🟦 DC-BIZ, 🟦 DC-OSS, 🟥 DC-SEC, 🟥 DC-REV | claude-opus-4-7 | 판단/보안/리뷰 |
-| 🟦 DC-RES, 🟦 DC-ANA, 🟥 DC-QA, 🟩 DC-DEV-* | claude-sonnet-4-6 | 리서치/탐색/검증/개발 |
+| 🟩 DC-DEV-BE/FE/DB/OPS/MOB/INT | claude-opus-4-8 | 개발(코드) |
+| 🟥 DC-SEC, 🟥 DC-REV | claude-opus-4-7 | 보안/리뷰 |
+| 🟦 DC-BIZ, 🟦 DC-RES, 🟦 DC-OSS | claude-fable-5 | 기획/판단 |
+| 🟦 DC-ANA, 🟦 DC-KNW, 🟥 DC-QA | claude-sonnet-4-6 | 탐색/지식/검증 |
 | 🟩 DC-WRT, 🟩 DC-DOC, 🟩 DC-SEO, 🟨 DC-TOK | claude-haiku-4-5-20251001 | 경량 작업 |
 
 ### 6. 실행 신뢰성 원칙 (EXECUTION INTEGRITY — 4개 모두 절대 금지)

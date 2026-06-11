@@ -1,6 +1,6 @@
 ---
 name: dc-res
-model: claude-sonnet-4-6
+model: claude-fable-5
 description: "Researcher — technical research via GitHub, official docs, and web search"
 ---
 

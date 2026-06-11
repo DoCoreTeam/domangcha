@@ -812,3 +812,11 @@
 | 2026-06-08 22:52 | `domangcha/agents/dc-dev-be.md` | Edit |
 | 2026-06-08 22:53 | `domangcha/agents/dc-dev-db.md` | Edit |
 | 2026-06-08 22:53 | `domangcha/commands/ceo.md` | Edit |
+| 2026-06-11 10:23 | `docs/2026-06-11-v2.0.56-model-reassign/00-summary.md` | Write |
+| 2026-06-11 10:24 | `CLAUDE.md` | Edit |
+| 2026-06-11 10:24 | `domangcha/CLAUDE.md` | Edit |
+| 2026-06-11 10:24 | `domangcha/skills/ceo-system/SKILL.md` | Edit |
+| 2026-06-11 10:24 | `../../.claude/CLAUDE.md` | Edit |
+| 2026-06-11 10:25 | `README.md` | Edit |
+| 2026-06-11 10:25 | `README.md` | Edit |
+| 2026-06-11 10:27 | `domangcha/project-registry.md` | Edit |
