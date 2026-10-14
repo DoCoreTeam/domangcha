@@ -41,6 +41,9 @@ Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit h
 - Validate ordinary facts—schemas, files, versions, tests, budgets, route enums—in code.
 - Never commit, push, publish, deploy, or perform irreversible work without task-specific authority.
 - Persist no secrets in checkpoints or structured logs.
+- Keep the always-loaded and per-prompt surface small: a loop project loads a core `CLAUDE.md`
+  and reads `LOOP.md` by section; the prompt hooks never resend the static reporting contract,
+  which lives once in the installed `CLAUDE.md` and in session-start output. Tests pin the budget.
 - A user-facing feature is complete only when `domangcha/policies/evidence.md` passes: the four
   states (loading, empty, error, no-permission) forced and captured, one marker traced browser →
   server log → stored row, and every claim tagged observation/derivation/inference/unknown.
@@ -56,7 +59,7 @@ Shared policy is under `domangcha/policies/`; `evidence.md` governs whether a us
 
 ## Commands
 
-Loop projects need no slash command — the prompt hook injects the protocol and the
+Loop projects need no slash command — the prompt hook prints the next action and the
 active policies on every prompt. The commands below belong to the full harness.
 
 - `/ceo "task"`: automatic route

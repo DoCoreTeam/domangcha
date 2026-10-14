@@ -18,7 +18,7 @@ REPORTING_CONTRACT = """Status reporting is on by default. Report progress to th
 - Say failures plainly, together with the next action. Never hide a stalled loop."""
 
 
-def control_context(state, control: Path, card: str = "") -> str:
+def control_context(state, control: Path, card: str = "", with_contract: bool = True) -> str:
     reasons = "; ".join(
         reason
         for item in state.get("route_history", [])
@@ -30,16 +30,15 @@ task_id={task_id} route={route}
 reasons={reasons}
 control=python3 \"{control}\"
 
-{contract}
-
-The lifecycle hook already selected the canonical route. Use the DOMANGCHA skill workflow, record progress, run relevant validation, and call the exact control command with `complete` before claiming completion. Do not create another router. Destructive or irreversible work still requires explicit user approval.
+{contract}The lifecycle hook already selected the canonical route. Use the DOMANGCHA skill workflow, record progress, run relevant validation, and call the exact control command with `complete` before claiming completion. Do not create another router. Destructive or irreversible work still requires explicit user approval.
 """.format(
         card=(card + "\n") if card else "",
         task_id=state["task_id"],
         route=state["route"],
         reasons=reasons,
         control=control,
-        contract=REPORTING_CONTRACT,
+        # The contract is static: send it on a session's first prompt, not on every prompt.
+        contract=(REPORTING_CONTRACT + "\n\n") if with_contract else "",
     )
 
 
@@ -68,7 +67,7 @@ def main() -> int:
             print(json.dumps({
                 "hookSpecificOutput": {
                     "hookEventName": "UserPromptSubmit",
-                    "additionalContext": control_context(persisted, control, status_card(root, persisted)),
+                    "additionalContext": control_context(persisted, control, status_card(root, persisted), False),
                 }
             }, ensure_ascii=False))
             return 0
@@ -90,7 +89,7 @@ def main() -> int:
     card = renderer.route_card({"route": state.route.value, "reasons": [
         reason for item in state.route_history for reason in item.get("reasons", [])
     ]}) if renderer else ""
-    context = control_context(state.to_dict(), control, card)
+    context = control_context(state.to_dict(), control, card, with_contract=not existing)
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "UserPromptSubmit",

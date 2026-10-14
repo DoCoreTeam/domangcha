@@ -29,6 +29,20 @@ class CodexPluginTests(unittest.TestCase):
         self.assertIn("UserPromptSubmit", hooks["hooks"])
         self.assertIn("Stop", hooks["hooks"])
 
+    def test_the_reporting_contract_is_sent_once_per_session(self):
+        """Static rules re-sent with every prompt only burn context."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            base = {"cwd": folder, "session_id": "session-c"}
+            def context(prompt):
+                out = invoke("user_prompt.py", {**base, "prompt": prompt}, root)
+                self.assertEqual(out.returncode, 0, out.stderr)
+                return json.loads(out.stdout)["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Status reporting is on by default", context("Fix this bug and run tests"))
+            follow = context("also check the edge case")
+            self.assertNotIn("Status reporting is on by default", follow)
+            self.assertIn("route=", follow)
+
     def test_hook_driven_loop_completion(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

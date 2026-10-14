@@ -92,6 +92,8 @@ You press Enter
 | Builder ≠ Reviewer (enforced) | ✅ Always | ❌ None |
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
 | Completion proven, not claimed | ✅ forced states + browser → DB trace | ❌ "build passed" |
+| Feature extraction from other products | ✅ REA (`rea` MCP) in, evidence out | ❌ copy by eye |
+| Lean context | ✅ 1.4 KB core, one line per DIRECT prompt | ❌ whole rulebook every turn |
 | Checkpoint / resume | ✅ LOOP and GRAPH | ❌ Context-window dependent |
 | Claude + Codex policy parity | ✅ Shared policy source | ❌ Runtime-specific drift |
 
@@ -116,8 +118,9 @@ you  ▸ add a login screen with email and password
 Questions and lookups are answered directly. Anything that changes the repository goes
 through plan → item → self-audit → pass, and every pass reports where it stands.
 
-**Run it again to update.** The CLI is refreshed; your `LOOP.md`, `CLAUDE.md` and `.loop/`
-state are never overwritten.
+**Run it again to update.** The CLI is refreshed; your `LOOP.md` and `.loop/` state are never
+overwritten, and `CLAUDE.md` is replaced only when it is the untouched old edition that loaded
+the whole rulebook every session.
 
 <details>
 <summary><b>Details — where it installs, other package managers, options</b></summary>
@@ -145,7 +148,7 @@ pnpm dlx domangcha            # pnpm project
 yarn dlx domangcha            # Yarn project
 npx domangcha --lang en       # English documents and CLI (default is Korean)
 npx domangcha --no-migrate    # keep an existing CLAUDE.md where it is
-npx domangcha --agents        # also symlink AGENTS.md and GEMINI.md to LOOP.md
+npx domangcha --agents        # also symlink AGENTS.md and GEMINI.md to the CLAUDE.md core
 ```
 
 Requires Node 22.13+ for the loop (`node:sqlite`, no dependencies). The harness needs
@@ -258,6 +261,20 @@ GRAPH work runs through the native Workflow tool: phases in a pipeline, independ
 A user-facing feature is done when its evidence run passes (`domangcha/policies/evidence.md`). `engine.py evidence {init,start,record,state,trace,check,close,diff}` forces loading, empty, error and no-permission and captures each inside its window; traces one marker from the browser request through the server log to the stored database row; and tags every claim observation, derivation, inference or unknown, diffing against the previous run. The Stop hook blocks while an open run fails `check`.
 
 To copy or benchmark a feature from another product, [REA](https://github.com/morluto/rea) (MIT) is connected as the `rea` MCP server (`npx rea-agents setup`). REA extracts from the other product, native Claude Code builds, DOMANGCHA evidence proves it works in ours.
+
+### Token budget: small by default
+
+What reaches the model on every turn is kept to what it needs right then. Measured on this release against v4.0.0's first cut:
+
+| Surface | Before | Now |
+|---|---|---|
+| loop project, loaded every session | 31.8 KB (`@LOOP.md`, the whole rulebook) | 1.4 KB core; `LOOP.md` is read by section when it applies |
+| loop project, per prompt | 1.7 KB (next action + full reporting contract) | 0.4 KB (next action + active policies) |
+| harness, per DIRECT prompt | 1.8 KB (card + contract) | one line, under 0.1 KB |
+| harness, per LOOP / GRAPH prompt | 1.8 KB | 0.4 KB (card + one line) |
+| Codex plugin, per follow-up prompt | card + full contract | card + control line; contract on the session's first prompt only |
+
+The reporting contract did not go away: it lives once in the installed `CLAUDE.md` and rides on session start and post-compaction resume. Running `npx domangcha` again replaces an untouched old `CLAUDE.md` that imported the whole rulebook; an edited one is left alone and you are told how to slim it.
 
 ### Status reporting is on by default
 
@@ -376,7 +393,7 @@ Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAP
 
 | Version | What changed |
 |---|---|
-| **v4.0.0** | Native delegation: loops, graphs, memory, search, reviewers, and the browser are Claude Code's own; DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Breaking: 10 agents and 14 commands removed |
+| **v4.0.0** | Native delegation: loops, graphs, memory, search, reviewers, and the browser are Claude Code's own; DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
 | **v3.0.5** | Terminal output paints English bright and Korean dim, so one language carries and the other confirms |
 | **v3.0.4** | No slash command is required: the loop asks the harness router itself; README usage cut to one block |
 | **v3.0.3** | Install-time output is bilingual, English first, everywhere |
@@ -546,8 +563,8 @@ npx domangcha
 질문이나 조회는 바로 답합니다. 저장소를 바꾸는 일만 플랜 → 항목 → 자가감사 → 통과를
 거치고, 매 패스마다 지금 어디쯤인지 보고합니다.
 
-**업데이트도 같은 명령입니다.** CLI 만 갱신되고 `LOOP.md`, `CLAUDE.md`, `.loop/` 상태는
-덮어쓰지 않습니다.
+**업데이트도 같은 명령입니다.** CLI 만 갱신되고 `LOOP.md` 와 `.loop/` 상태는 덮어쓰지 않습니다.
+`CLAUDE.md` 는 규정 전체를 매 세션 불러오던 손대지 않은 옛 판일 때만 핵심판으로 바뀝니다.
 
 <details>
 <summary><b>자세히 — 어디에 설치되는지, 다른 패키지 매니저, 옵션</b></summary>
@@ -576,7 +593,7 @@ pnpm dlx domangcha            # pnpm 프로젝트
 yarn dlx domangcha            # Yarn 프로젝트
 npx domangcha --lang en       # 문서와 CLI 를 영어로 (기본은 한국어)
 npx domangcha --no-migrate    # 기존 CLAUDE.md 를 그 자리에 그대로 둠
-npx domangcha --agents        # AGENTS.md, GEMINI.md 를 LOOP.md 로 심볼릭 링크
+npx domangcha --agents        # AGENTS.md, GEMINI.md 를 CLAUDE.md 핵심판으로 심볼릭 링크
 ```
 
 루프는 Node 22.13 이상이 필요합니다 (`node:sqlite`, 의존성 없음). 하네스는 Python 3.10 이상,
@@ -668,6 +685,8 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 | 빌더 ≠ 리뷰어 강제 | ✅ 항상 분리 | ❌ 없음 |
 | 파괴적 변경 보호 | ✅ Gate 5 차단 | ❌ 없음 |
 | 주장이 아닌 증거로 완료 | ✅ 강제 상태 + 브라우저 → DB 추적 | ❌ "빌드 통과" |
+| 다른 제품 기능 추출 | ✅ REA(`rea` MCP)로 추출, 증거로 검증 | ❌ 눈대중 복제 |
+| 가벼운 컨텍스트 | ✅ 1.4 KB 핵심판, DIRECT 는 프롬프트당 한 줄 | ❌ 매 턴 규정 전체 |
 | 체크포인트 / 재개 | ✅ LOOP와 GRAPH | ❌ 컨텍스트 창에 종속 |
 | Claude + Codex 정책 동등성 | ✅ 공통 정책 원본 | ❌ 런타임별 드리프트 |
 
@@ -677,7 +696,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 
 | 버전 | 바뀐 것 |
 |---|---|
-| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 기본 기능으로, DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 호환성 변경: 에이전트 10개·명령 14개 제거 |
+| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 기본 기능으로, DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
 | **v3.0.5** | 터미널 출력에서 영어는 또렷하게, 한글은 흐리게 — 한쪽만 읽어도 되게 |
 | **v3.0.4** | 슬래시 커맨드 불필요 — 루프가 하네스 라우터에 직접 질의, README 사용법 한 곳으로 압축 |
 | **v3.0.3** | 설치 시점 출력 전부 이중언어, 영어 우선 |
@@ -730,6 +749,20 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 
 다른 제품의 기능을 가져오거나 벤치마킹할 때는 [REA](https://github.com/morluto/rea)(MIT)를 `rea` MCP 서버로 연결해 씁니다 (`npx rea-agents setup`).
 REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거가 우리 제품에서 동작함을 증명합니다.
+
+### 🪶 토큰 예산 — 기본이 가볍게
+
+매 턴 모델에 들어가는 것은 그 순간 필요한 것만 남겼습니다. 이번 릴리스에서 v4.0.0 첫 판과 같은 입력으로 잰 값입니다.
+
+| 지점 | 전 | 지금 |
+|---|---|---|
+| 루프 프로젝트, 매 세션 상시 로드 | 31.8 KB (`@LOOP.md` 규정 전체) | 1.4 KB 핵심판, `LOOP.md` 는 필요한 절만 그때 읽음 |
+| 루프 프로젝트, 프롬프트마다 | 1.7 KB (다음 행동 + 보고 계약 전체) | 0.4 KB (다음 행동 + 활성 정책) |
+| 하네스, DIRECT 프롬프트마다 | 1.8 KB (카드 + 계약) | 한 줄, 0.1 KB 미만 |
+| 하네스, LOOP / GRAPH 프롬프트마다 | 1.8 KB | 0.4 KB (카드 + 한 줄) |
+| Codex 플러그인, 후속 프롬프트마다 | 카드 + 계약 전체 | 카드 + 제어 줄, 계약은 세션 첫 프롬프트에만 |
+
+보고 계약은 없어지지 않았습니다. 설치된 `CLAUDE.md` 에 한 번만 있고 세션 시작과 컨텍스트 압축 뒤 재개 때 함께 나갑니다. `npx domangcha` 를 다시 실행하면 규정 전체를 불러오던 손대지 않은 옛 `CLAUDE.md` 는 핵심판으로 바뀌고, 직접 고친 파일은 그대로 두고 줄이는 방법만 알려줍니다.
 
 ---
 
