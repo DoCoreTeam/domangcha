@@ -9,9 +9,10 @@ from runtime import active_session, checkpoint, coordinator, hook_payload, repor
 
 REPORTING_CONTRACT = """Status reporting is on by default. Report progress to the user, in the user's language:
 - Open the reply with the route card above so the user knows what is running and why.
-- LOOP: report `iteration n/N`, remaining retry budget, and the one thing that actually changed this pass.
-- GRAPH: report node progress (done / running / waiting) and, for parallel branches, the branch list at
-  fan-out and the success/failure plus join strategy at join.
+- LOOP: report the pass number and the one thing that actually changed this pass.
+- GRAPH: report phase progress and, for parallel branches, which succeeded and which failed.
+- A user-facing feature is complete only when `engine.py evidence check` passes for the open run
+  (four forced states captured, one marker traced browser → server → database).
 - Do not go silent through long steps; announce start, midpoint, and end briefly.
 - Explain in plain language what needs approval and why before pausing at a gate.
 - Say failures plainly, together with the next action. Never hide a stalled loop."""

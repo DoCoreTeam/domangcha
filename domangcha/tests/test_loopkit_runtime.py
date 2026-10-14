@@ -34,6 +34,11 @@ def node_available():
     return (major, minor) >= (22, 13)
 
 
+def isolated_env():
+    """Hooks export CLAUDE_PROJECT_DIR; inheriting it would point loop.mjs at the real repo."""
+    return {k: v for k, v in os.environ.items() if k not in {"CLAUDE_PROJECT_DIR", "LOOP_ROOT"}}
+
+
 @unittest.skipUnless(node_available(), "Node 22.13+ required for node:sqlite")
 class LoopRuntimeTests(unittest.TestCase):
     def setUp(self):
@@ -50,6 +55,7 @@ class LoopRuntimeTests(unittest.TestCase):
         result = subprocess.run(
             ["node", "scripts/loop.mjs", *args],
             cwd=self.project,
+            env=isolated_env(),
             input=stdin,
             text=True,
             capture_output=True,
@@ -126,7 +132,7 @@ class BilingualTests(unittest.TestCase):
     def loop(self, *args, stdin="", expect=0):
         result = subprocess.run(
             ["node", "scripts/loop.mjs", *args],
-            cwd=self.project, input=stdin, text=True, capture_output=True, check=False,
+            cwd=self.project, env=isolated_env(), input=stdin, text=True, capture_output=True, check=False,
         )
         self.assertEqual(result.returncode, expect, result.stderr or result.stdout)
         return result.stdout

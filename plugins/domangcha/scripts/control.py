@@ -14,6 +14,23 @@ def evidence(root: Path, task_id: str):
     return session_path, read_json(session_path) if session_path else {}
 
 
+def evidence_gaps(root: Path) -> list:
+    """An open evidence run must pass its check before Codex may claim completion."""
+    if not (root / ".domangcha" / "evidence" / "current.json").exists():
+        return []
+    try:
+        from domangcha.evidence.config import ConfigError, EvidenceConfig
+        from domangcha.evidence.gate import check
+        from domangcha.evidence.ledger import ClaimError, Ledger
+    except ImportError:
+        return ["evidence gate unavailable — the installed engine predates it; rerun the installer"]
+    try:
+        verdict = check(Ledger(root).current(), EvidenceConfig.load(root))
+    except (ConfigError, ClaimError, ValueError) as exc:
+        return ["evidence run unreadable: %s" % exc]
+    return ["evidence %s" % item for item in verdict["missing"]]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="DOMANGCHA Codex control plane")
     parser.add_argument("action", choices=("status", "resume", "progress", "complete"))
@@ -52,6 +69,7 @@ def main() -> int:
         missing.append("successful validation command")
     if route == "GRAPH" and session.get("mutation_observed") and not (session.get("review_observed") or args.review):
         missing.append("independent review evidence")
+    missing += evidence_gaps(root)
     if missing:
         print(json.dumps({"ok": False, "missing": missing}, ensure_ascii=False))
         return 2

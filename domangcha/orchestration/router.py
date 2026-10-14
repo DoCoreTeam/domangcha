@@ -12,7 +12,7 @@ class TaskRouter:
     SCORE = {
         "mutation": 2, "database": 4, "api": 2, "frontend": 2,
         "security": 5, "destructive": 5, "architecture": 5,
-        "parallel": 4, "resume": 5, "external": 3, "iterative": 2,
+        "parallel": 4, "resume": 5, "external": 3, "iterative": 2, "trivial": 0,
     }
 
     def route(
@@ -45,6 +45,9 @@ class TaskRouter:
         if files == 1 and signals == {"mutation"}:
             score -= 2
             reasons.append("isolated one-file deterministic mutation")
+        elif "trivial" in signals and signals <= {"mutation", "trivial"}:
+            score -= 2
+            reasons.append("trivial wording-level edit")
         elif 2 <= files <= 3:
             score += 1
         elif 4 <= files <= 7:

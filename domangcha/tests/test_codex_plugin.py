@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -62,6 +63,27 @@ class CodexPluginTests(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
             stopped = invoke("stop.py", {**base, "hook_event_name": "Stop"}, root)
             self.assertEqual(json.loads(stopped.stdout), {})
+
+    def test_completion_is_refused_while_an_evidence_run_is_incomplete(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            base = {"cwd": folder, "session_id": "session-ev"}
+            started = invoke("user_prompt.py", {**base, "prompt": "Explain this"}, root)
+            context = json.loads(started.stdout)["hookSpecificOutput"]["additionalContext"]
+            task_id = context.split("task_id=", 1)[1].split(" ", 1)[0]
+            run = root / ".domangcha/evidence/current.json"
+            run.parent.mkdir(parents=True)
+            run.write_text(json.dumps({"run_id": "r1", "claims": [], "active_states": []}))
+            (root / ".domangcha/evidence.json").write_text(json.dumps({"required_states": ["empty"]}))
+            completed = subprocess.run([
+                "python3", str(PLUGIN / "scripts/control.py"), "complete",
+                "--task-id", task_id, "--workspace", folder, "--summary", "done",
+            ], text=True, capture_output=True, cwd=root, check=False,
+                env=dict(os.environ, HOME=folder))  # resolve this repo's engine, not an older install
+            self.assertEqual(completed.returncode, 2, completed.stdout + completed.stderr)
+            missing = json.loads(completed.stdout)["missing"]
+            self.assertIn("evidence state:empty", missing)
+            self.assertIn("evidence trace", missing)
 
     def test_stop_continues_without_evidence(self):
         with tempfile.TemporaryDirectory() as folder:

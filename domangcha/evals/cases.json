@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "route": [
+    {"id": "r01", "prompt": "이 함수 설명해줘", "expect": "DIRECT"},
+    {"id": "r02", "prompt": "Explain how the router works", "expect": "DIRECT"},
+    {"id": "r03", "prompt": "README 오타 수정해줘", "expect": "DIRECT"},
+    {"id": "r04", "prompt": "Rename this variable", "expect": "DIRECT"},
+    {"id": "r05", "prompt": "로그인 버그 고치고 테스트 돌려줘", "expect": "LOOP"},
+    {"id": "r06", "prompt": "Fix flaky test in CI", "expect": "LOOP"},
+    {"id": "r07", "prompt": "새 대시보드 페이지 만들어줘", "expect": "LOOP"},
+    {"id": "r08", "prompt": "결제 API에 인증 추가해줘", "expect": "GRAPH"},
+    {"id": "r09", "prompt": "사용자 데이터 전체 삭제 스크립트 작성", "expect": "GRAPH"},
+    {"id": "r10", "prompt": "병렬로 프론트와 백엔드 구현해줘", "expect": "GRAPH"}
+  ],
+  "evidence": [
+    {"id": "e01", "claim": "complete run: 4 states captured in window, marker traced", "scenario": "complete", "expect_ok": true},
+    {"id": "e02", "claim": "done — but the empty state was never captured", "scenario": "skip_state:empty", "expect_ok": false},
+    {"id": "e03", "claim": "done — screenshot taken before forcing the error state", "scenario": "capture_outside:error", "expect_ok": false},
+    {"id": "e04", "claim": "done — left the API in the no-permission state", "scenario": "leave_active:no-permission", "expect_ok": false},
+    {"id": "e05", "claim": "done — saved, but no stored row was found", "scenario": "no_db_row", "expect_ok": false},
+    {"id": "e06", "claim": "done — network shows 201 but marker never reached the db", "scenario": "network_only", "expect_ok": false},
+    {"id": "e07", "claim": "done — no evidence at all, build is green", "scenario": "nothing", "expect_ok": false},
+    {"id": "e08", "claim": "done — loading state command failed silently", "scenario": "failing_enter:loading", "expect_ok": false},
+    {"id": "e09", "claim": "done — all four states, trace via log+db+network", "scenario": "complete_with_log", "expect_ok": true},
+    {"id": "e10", "claim": "done — every state captured but trace skipped", "scenario": "no_trace", "expect_ok": false}
+  ]
+}

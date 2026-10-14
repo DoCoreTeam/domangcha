@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// DOMANGCHA v3.0.5  bin/domangcha-loop.mjs
+// DOMANGCHA v4.0.0  bin/domangcha-loop.mjs
 // 경량 설치기: 현재 작업 디렉터리에 자율개발 루프를 설치한다.
 // 하네스 설치는 domangcha.sh 가 프로젝트 밖에서 판단해 맡으며, 이 파일은 ~/.claude 를 건드리지 않는다.
 
@@ -82,8 +82,13 @@ console.log(`  ${bright('target')}${dim(' / 대상')}: ${ROOT}`);
 console.log('');
 
 if (!fs.existsSync(path.join(ROOT, '.git'))) {
-  execSync('git init -q', { cwd: ROOT, stdio: 'ignore' });
-  say('initialised a git repository', 'git 저장소를 초기화했습니다');
+  try {
+    execSync('git init -q', { cwd: ROOT, stdio: 'ignore' });
+    say('initialised a git repository', 'git 저장소를 초기화했습니다');
+  } catch (e) {
+    fail(`git is required and could not run here: ${String(e.message || e).split('\n')[0]}`,
+      `git 이 필요한데 실행되지 않았습니다: ${String(e.message || e).split('\n')[0]}`);
+  }
 }
 
 // 기존 CLAUDE.md 자동 이관 (기본 동작, --no-migrate 로 끔)
@@ -155,13 +160,30 @@ if (migrated) say(`moved your CLAUDE.md to ${migrated}, read back for heavy item
 const name = path.basename(ROOT);
 execSync(`node scripts/loop.mjs init --project ${JSON.stringify(name)} --lang ${LANG} --cursor --quiet`, { cwd: ROOT, stdio: 'inherit' });
 
+// 삼킨 커밋 실패는 성공과 똑같아 보인다. 커밋했는지, 커밋할 게 없었는지, 실패했는지를 구분해 말한다.
+// A swallowed commit failure looks exactly like a success: say which of the three happened.
+let commit = 'none';
 try {
   execSync('git add -A', { cwd: ROOT, stdio: 'ignore' });
-  execSync(`git commit -qm "v${VERSION}: DOMANGCHA 프로젝트 루프 설치"`, { cwd: ROOT, stdio: 'ignore' });
-} catch { /* 변경 없음 또는 git author 미설정, 무시 */ }
+  if (execSync('git status --porcelain', { cwd: ROOT, encoding: 'utf8' }).trim()) {
+    execSync(`git commit -qm "v${VERSION}: install DOMANGCHA project loop"`, { cwd: ROOT, stdio: 'pipe' });
+    commit = 'made';
+  }
+} catch (e) {
+  // git's own stderr says why far better than "Command failed" does.
+  const reason = String(e.stderr || '').trim() || String(e.message || e);
+  commit = reason.split('\n').filter(Boolean)[0] || 'unknown error';
+}
 
 console.log('');
 say(`installed · project ${name}`, `설치 완료 · 프로젝트 ${name}`);
+if (commit === 'made') say(`committed as v${VERSION}`, `v${VERSION} 로 커밋했습니다`);
+else if (commit !== 'none') {
+  say(`the files are in place, but the commit did not run: ${commit}`,
+    `파일은 제자리에 있지만 커밋은 실행되지 않았습니다: ${commit}`);
+  say('commit them yourself when you are ready: git add -A && git commit',
+    '준비되면 직접 커밋하세요: git add -A && git commit');
+}
 say('next: open Claude Code and just say what you want in plain language, no slash command needed',
   '다음 단계: Claude Code 를 열고 하고 싶은 일을 자연어로 그냥 말하면 됩니다 (슬래시 커맨드 불필요)');
 say('start a bigger request with /ceo to raise it to the harness, which offers to install itself when needed',

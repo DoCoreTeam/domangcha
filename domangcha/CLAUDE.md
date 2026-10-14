@@ -1,6 +1,6 @@
-# DOMANGCHA v3.0.5 — Claude Code Adapter
+# DOMANGCHA v4.0.0 — Claude Code Adapter
 
-This file contains Claude-specific integration only. Shared execution policy lives in `policies/` and deterministic control lives in `engine.py`.
+This file contains Claude-specific integration only. Shared execution policy lives in `domangcha/policies/` in the repository, installed at `~/.domangcha/domangcha/policies/`; deterministic control lives in `engine.py`. `evidence.md` decides when a user-facing feature is complete, on every route.
 
 ## Two install shapes
 
@@ -11,12 +11,14 @@ This file contains Claude-specific integration only. Shared execution policy liv
 ## Claude integration
 
 - `hooks/domangcha-ceo-enforcer.py` calls the canonical TaskRouter.
-- `hooks/domangcha-ralph-loop.py` adapts Claude Stop events to canonical LOOP state and injects the live loop card.
-- `orchestration/status.py` is the single renderer for route, loop, graph, and parallel-branch cards. Status reporting is on by default; both hooks inject the card plus the reporting contract.
-- `agents/dc-*.md` preserve the 18 logical roles and are resolved through `manifests/agents.json`.
-- Claude-in-Chrome may be used for interactive live-browser verification; Playwright remains the headless/CI regression fallback.
-- Interactive approvals implement HUMAN_GATE. A rejected approval aborts the relevant branch.
+- LOOP runs through the native `/loop` skill and ScheduleWakeup; GRAPH runs through the native Workflow tool (pipeline/parallel/phase, `resumeFromRunId`). Memory is native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`); search is native WebSearch/WebFetch.
+- `orchestration/status.py` renders the route, checkpoint, and drift cards. Status reporting is on by default.
+- `agents/dc-*.md` hold the 8 logical roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt), resolved through `manifests/agents.json`. Review, security, and QA use native code-reviewer, security-reviewer, and e2e-runner.
+- Browser verification uses Claude-in-Chrome.
+- Approvals go through AskUserQuestion. A rejected approval aborts the relevant branch.
+- Evidence adapters: `engine.py evidence {init,start,record,state,trace,check,close,diff}` force and capture the four states, trace a marker browser → server log → stored row, and tag every claim by provenance. The Stop hook blocks while an open run fails `check`.
+- REA (`rea` MCP server, `npx rea-agents setup`) extracts features from other products; DOMANGCHA evidence proves the result in ours.
 
 Do not reconstruct the legacy mandatory CEO/FULL PIPELINE from prompts. Follow DIRECT, LOOP, or GRAPH returned by `engine.py`.
 
-Official version source: `VERSION` = 3.0.5.
+Official version source: `VERSION` = 4.0.0.

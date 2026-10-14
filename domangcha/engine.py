@@ -10,6 +10,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from domangcha.adapters.runtime import RuntimeDetector
+from domangcha.evidence import cli as evidence_cli
 from domangcha.orchestration.contracts import Route
 from domangcha.orchestration.deployment import DeploymentInspector
 from domangcha.orchestration.intent import IntentNormalizer
@@ -82,7 +83,10 @@ def main() -> int:
     approve.add_argument("node_id")
     approve.add_argument("decision", choices=("approve", "reject"))
     approve.add_argument("--workspace", default=".")
+    evidence_cli.register(sub)
     args = parser.parse_args()
+    if args.command == "evidence":
+        return evidence_cli.run(args)
     if args.command == "route":
         request = args.request if args.request is not None else sys.stdin.read()
         result = route_request(request)
@@ -112,7 +116,7 @@ def main() -> int:
         _emit(report, args, StatusReporter(args.lang).drift_card(report))
         return 0
     validator = RepositoryValidator(Path(args.root).resolve())
-    errors = validator.validate_manifests() + validator.validate_versions() + validator.validate_graphs()
+    errors = validator.validate_manifests() + validator.validate_versions()
     print(json.dumps({"ok": not errors, "errors": errors}, ensure_ascii=False, indent=2))
     return 1 if errors else 0
 

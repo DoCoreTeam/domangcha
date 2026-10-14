@@ -5,8 +5,6 @@ import re
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List
 
-from .graph import GraphDefinition, GraphDefinitionError
-
 
 class ValidationError(RuntimeError):
     pass
@@ -72,20 +70,11 @@ class RepositoryValidator:
                 errors.append(name + " version mismatch")
         return errors
 
-    def validate_graphs(self) -> List[str]:
-        errors = []
-        for path in sorted((self.root / "domangcha/graphs").glob("*.json")):
-            try:
-                GraphDefinition.from_path(path)
-            except (GraphDefinitionError, KeyError, TypeError, ValueError) as exc:
-                errors.append(path.name + ": " + str(exc))
-        return errors
-
     def validate_line_limits(self, paths: Iterable[Path], limit: int = 300) -> List[str]:
         exempt = {"install.sh"}
         errors = []
         for path in paths:
-            if "insane-search" in path.parts or path.name in exempt or path.suffix not in {".py", ".js", ".ts", ".tsx", ".sh"}:
+            if path.name in exempt or path.suffix not in {".py", ".js", ".ts", ".tsx", ".sh"}:
                 continue
             count = len(path.read_text(errors="replace").splitlines())
             if count > limit:

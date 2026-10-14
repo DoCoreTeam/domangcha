@@ -13,15 +13,15 @@
 
 **Your coding agent is powerful. DOMANGCHA gives it the right amount of orchestration.**
 One command, nothing to memorise: `npx domangcha` reads where you are and installs what that place needs.
-Then just say what you want — the loop plans, audits and reports, and calls for the 18 specialists on its own.
+Then just say what you want — the loop plans, audits and reports, and proves user-facing work with evidence, not claims.
 
 *Your AI getaway car from development hell.*
 
-[![Version](https://img.shields.io/badge/version-3.0.5-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-4.0.0-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Runtimes](https://img.shields.io/badge/Runtimes-Claude%20Code%20%7C%20Codex-5865F2?style=for-the-badge)](#runtime-compatibility)
-[![Agents](https://img.shields.io/badge/Agents-18-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-18-agents)
+[![Agents](https://img.shields.io/badge/Agents-8-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-8-agent-roles)
 [![Gates](https://img.shields.io/badge/Gates-5-orange?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha#the-5-gates)
 [![Node](https://img.shields.io/badge/Node-22.13%2B-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org)
 
@@ -52,7 +52,7 @@ Refactor payments end to end and ship it
 
 ## ⚡ Why DOMANGCHA?
 
-Claude Code and OpenAI Codex are powerful, but a trivial edit should not pay for an 18-agent pipeline—and a risky cross-cutting change should not rely on one unbounded prompt. **DOMANGCHA selects the minimum reliable execution shape**: DIRECT for simple work, LOOP for iterative correction, and GRAPH for explicit multi-stage topology. One deterministic router owns the decision; agents and models may advise, but code controls transitions.
+Claude Code and OpenAI Codex are powerful, but a trivial edit should not pay for a multi-agent pipeline—and a risky cross-cutting change should not rely on one unbounded prompt. **DOMANGCHA selects the minimum reliable execution shape**: DIRECT for simple work, LOOP for iterative correction, and GRAPH for explicit multi-stage topology. One deterministic router owns the decision and evidence adapters own completion; loops, graphs, memory, search, reviewers and the browser are native Claude Code.
 
 <table>
 <tr>
@@ -88,10 +88,10 @@ You press Enter
 |---|:---:|:---:|
 | Complexity-aware execution | ✅ DIRECT / LOOP / GRAPH | ❌ One workflow for everything |
 | Deterministic control flow | ✅ Typed routes and guarded edges | ❌ Prompt-only decisions |
-| Role separation by specialist | ✅ Up to 18 logical roles | ❌ Single writer/reviewer |
+| Role separation by specialist | ✅ 8 builder roles + native reviewers | ❌ Single writer/reviewer |
 | Builder ≠ Reviewer (enforced) | ✅ Always | ❌ None |
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
-| Mistakes → permanent patterns | ✅ error-registry | ❌ None |
+| Completion proven, not claimed | ✅ forced states + browser → DB trace | ❌ "build passed" |
 | Checkpoint / resume | ✅ LOOP and GRAPH | ❌ Context-window dependent |
 | Claude + Codex policy parity | ✅ Shared policy source | ❌ Runtime-specific drift |
 
@@ -129,7 +129,7 @@ state are never overwritten.
 | Where you run it | What it installs |
 |---|---|
 | inside a project | the loop, right there — offline, never writes to `~/.claude` |
-| outside a project | the 18-agent harness into `~/.claude` and `~/.domangcha` |
+| outside a project | the harness into `~/.claude` and `~/.domangcha` |
 
 A project is a directory carrying `.git`, `package.json`, `pyproject.toml`, `go.mod`,
 `Cargo.toml`, `pom.xml`, `build.gradle`, `Gemfile`, `composer.json`, `Makefile` or
@@ -166,7 +166,7 @@ waiting for a magic word:
 you  ▸ rewrite auth and run the migration
 
      ▸ harness router says: GRAPH (hard graph invariant: security)
-     ▸ the loop can carry this as usual; if the 18 agents and gates would genuinely
+     ▸ the loop can carry this as usual; if the harness and its gates would genuinely
        help, offer that to the user and escalate only once they agree
 ```
 
@@ -208,12 +208,9 @@ TaskRouter (deterministic first)
      ├── Tier 1 · DIRECT
      ├── Tier 2 · LOOP
      └── Tier 3 · GRAPH
-                    ├── deterministic edges
-                    ├── agent/tool/validator nodes
-                    ├── parallel branches and joins
-                    ├── bounded retry/fallback
-                    ├── checkpoint/resume
-                    └── explicit human approval
+                    ├── native Workflow tool (pipeline / parallel / phase)
+                    ├── resume with resumeFromRunId
+                    └── approval through AskUserQuestion
 ```
 
 | Route | Use it for | What DOMANGCHA deliberately avoids |
@@ -224,20 +221,22 @@ TaskRouter (deterministic first)
 
 Routing is deterministic first. Complexity scoring considers mutation scope, file and subsystem breadth, iteration, security, destructive effects, parallelism, approval, and resumability. An LLM can propose a route only at an ambiguous boundary; schema validation and code-owned invariants decide the final route. DIRECT may escalate to LOOP and LOOP to GRAPH while preserving task state.
 
-### One orchestration authority
+### What DOMANGCHA owns, what is native
 
-DOMANGCHA v2.1 does not add a Graph Router beside the CEO and Ralph routers. It promotes the existing architecture:
+DOMANGCHA keeps routing and evidence. Everything Claude Code already does natively is delegated, not re-implemented:
 
-| Existing DOMANGCHA concept | v2.1 canonical responsibility |
+| Concern | Where it runs |
 |---|---|
-| CEO SIZE ASSESSMENT | deterministic `TaskRouter` |
-| FAST PATH | true Tier 1 DIRECT execution |
-| Ralph Loop | bounded Tier 2 LOOP executor |
-| FULL PIPELINE | versioned Tier 3 GRAPH definition |
-| DC-* agents | logical roles invoked as graph/loop nodes |
-| GATE 1–5 | task-relevant deterministic validators and approval boundaries |
-| hooks | thin runtime adapters; never a second router |
-| error/knowledge registries | repeated-failure evidence and reusable guidance |
+| route selection | DOMANGCHA `TaskRouter` (deterministic) |
+| LOOP iteration | native `/loop` skill + ScheduleWakeup |
+| GRAPH topology | native Workflow tool — pipeline / parallel / phase, `resumeFromRunId` |
+| human approval | native AskUserQuestion |
+| review, security, QA, research, docs, SEO | native code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose |
+| memory | native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`) |
+| web search | native WebSearch / WebFetch |
+| browser | Claude-in-Chrome |
+| completion of user-facing work | DOMANGCHA evidence adapters |
+| checkpoints for Codex | DOMANGCHA `orchestration/checkpoint.py` |
 
 ### LOOP: bounded iteration
 
@@ -248,32 +247,30 @@ PLAN → EXECUTE → VALIDATE → ACT
                          └── topology discovered → escalate to GRAPH
 ```
 
-LOOP tracks termination criteria, max iterations, retry budget, no-progress hashes, repeated-error fingerprints, validator feedback, decision history, and compact checkpoints. A model-written “done” flag is not sufficient without completion evidence.
+LOOP runs through the native `/loop` skill. Termination needs completion evidence — tests, validators, an independent reviewer for meaningful code, and a passing evidence check for user-facing work. A model-written “done” is not sufficient.
 
 ### GRAPH: explicit topology
 
-A graph contains typed state, nodes, guarded edges, branches, joins, retry and fallback paths, checkpoints, budgets, and terminal states. Node types include `DETERMINISTIC`, `LLM`, `AGENT`, `TOOL`, `VALIDATOR`, `HUMAN_GATE`, and `JOIN`. Side effects are classified as `PURE`, `IDEMPOTENT`, or `NON_IDEMPOTENT`; unsafe side effects are not blindly retried.
+GRAPH work runs through the native Workflow tool: phases in a pipeline, independent branches in parallel, resumable with `resumeFromRunId`. Destructive, security-sensitive, or irreversible steps stop for AskUserQuestion approval.
 
-Dynamic fan-out supports `ALL`, `ANY`, `QUORUM`, and `BEST_EFFORT` joins with concurrency, branch timeout, wave timeout, token, tool-call, and retry budgets. Human approval is persisted as `WAITING_FOR_APPROVAL`, so cloud/delegated runs can pause and return a reviewable checkpoint.
+### Evidence: proof, not claims
+
+A user-facing feature is done when its evidence run passes (`domangcha/policies/evidence.md`). `engine.py evidence {init,start,record,state,trace,check,close,diff}` forces loading, empty, error and no-permission and captures each inside its window; traces one marker from the browser request through the server log to the stored database row; and tags every claim observation, derivation, inference or unknown, diffing against the previous run. The Stop hook blocks while an open run fails `check`.
+
+To copy or benchmark a feature from another product, [REA](https://github.com/morluto/rea) (MIT) is connected as the `rea` MCP server (`npx rea-agents setup`). REA extracts from the other product, native Claude Code builds, DOMANGCHA evidence proves it works in ours.
 
 ### Status reporting is on by default
 
-An engine that works silently feels like an engine that is stuck. Every surface — the CLI, the Claude hooks, and the Codex control plane — renders the same cards from `orchestration/status.py`, so you can see the route, the loop, and the parallel branches while they run.
+An engine that works silently feels like an engine that is stuck. The route card comes from `orchestration/status.py`; progress after that shows on native surfaces — TodoWrite, Workflow phases, `/loop` iterations.
 
 ```text
-🚂 DOMANGCHA · GRAPH 🧭 (score 10)        🔁 LOOP 5/30  ▓▓░░░░░░░░ 17%
-├ why: hard graph invariant: parallel      ├ retry left 5 · no progress 0/3
-├ plan: typed node graph, branches, join   ├ budget: model 7/12 · tool 31/80
-└ next: report per node and per branch     └ state: RUNNING ⏳
-
-🧭 GRAPH full_pipeline@1  ▓▓▓▓▓░░░░░ 50% 3/6 nodes
-├ done: intake ✅ · plan ✅ · build ✅
-├ running: review ⏳ (attempt 1)
-├ parallel(build): dc-dev-be ✅ | dc-dev-fe ✅ | dc-sec ❌ · join=ALL
-└ awaiting approval: gate 🙋
+🚂 DOMANGCHA · GRAPH 🧭 (score 11)
+├ why: database + API + frontend invariant
+├ plan: Workflow tool · parallel branches · join · approval gate
+└ next: report per node and per branch
 ```
 
-`engine.py route|status` prints a card by default; `--format json` returns the raw state and `--lang en` switches language (`DOMANGCHA_STATUS_LANG` sets the default). The reporting contract itself is injected by the hooks: announce the route and why, report loop iteration and budget every pass, show branch results and the join strategy at fan-in, explain in plain language what a gate is asking to approve, and never go silent through a long step or hide a stalled loop.
+`engine.py route|status` prints a card by default (route, checkpoint, and drift cards); `--format json` returns the raw state and `--lang en` switches language (`DOMANGCHA_STATUS_LANG` sets the default). Announce the route and why, explain in plain language what an approval is for, and never go silent through a long step or hide a stall.
 
 ### Runtime compatibility
 
@@ -283,7 +280,7 @@ An engine that works silently feels like an engine that is stuck. Every surface 
 | Native attachment | hooks + commands | plugin skill + lifecycle hooks | plugin skill + checkpoints |
 | Logical agent roles | Claude subagents | runtime-native agents | delegated agents when available |
 | Human approval | interactive | interactive when supported | checkpoint and review |
-| Browser verification | Claude-in-Chrome; Playwright fallback | capability-resolved | CI/headless capability |
+| Browser verification | Claude-in-Chrome | capability-resolved | CI/headless capability |
 | Checkpoint format | shared | shared | shared |
 
 Runtime behavior is capability-based—not hard-coded to provider model names. Model policies express `HIGH_REASONING`, `BALANCED`, `FAST_CHEAP`, `LONG_CONTEXT`, or `REVIEW`; each adapter maps them to what is actually available. Unknown runtime or model names do not fail by default.
@@ -299,194 +296,6 @@ Installing the harness (run `npx domangcha` outside a project) puts the bundled 
 - state survives under the workspace `.domangcha/` directory, so follow-ups and continuation prompts reuse the same task instead of restarting.
 
 The hooks are code control, not another prompt-only router: they call the same `ExecutionCoordinator` and `TaskRouter` used by Claude and the CLI.
-
----
-
-## 🎬 Watch a Real Sprint
-
-> `/ceo "Build a Stripe-powered invoicing tool for freelancers — create invoices, send via email, track paid/overdue"`
-
-```
-[INTENT PARSED]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Input:   Build a Stripe-powered invoicing tool for freelancers —
-         create invoices, send via email, track paid/overdue
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Parsed:  Freelancer creates an invoice for a client, emails it with a
-         Stripe payment link, tracks real-time payment status
-         (draft → sent → paid/overdue) in a dashboard
-Goal:    Invoice create → email send → Stripe pay → dashboard auto-update (3 flows)
-Scope:   IN  — invoice CRUD, Stripe Payment Links, email via Resend, webhook status sync
-         OUT — tax calculation, multi-currency, accounting software sync, PDF export
-Context: Web app / greenfield / Stripe confirmed / stack TBD → Q&A needed
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[TASKROUTER]
-Task:   Freelancer invoicing tool (Stripe + email + status dashboard)
-Route:  GRAPH — DB + API + UI + payments + independent validation
-
-[TRADEOFF CHECK] ✅ CLEAR — No architectural risks detected. Proceeding to Q&A.
-
-[CEO] Q1: What's your stack? (Next.js / Express / other?)
-> Next.js 14 + Supabase
-
-[CEO] Q2: Should freelancers manage multiple clients, each with their own invoice history?
-> Yes — each client has a profile, invoices are linked to a client
-
-[CEO] Q3: When a client pays via Stripe, should the invoice status update automatically (webhook)?
-> Yes, paid status should flip in real time — no manual refresh
-
-[CEO] Q4: What does "done" look like? Which flows need to work end-to-end in the browser?
-> ① Create invoice → send to client email  ② Client clicks link → pays via Stripe
-> ③ Dashboard shows "Paid" automatically. All 3 in Stripe test mode.
-
-[CEO] Q5: Auth for the freelancer — GitHub OAuth, email/password, or something else?
-> GitHub OAuth — quickest to set up
-
-[Q&A COMPLETE] ✅  Stack / data model / Stripe webhook / done criteria / auth confirmed
-
-[TASK REFINED]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Original Input:  Stripe-powered invoicing tool for freelancers
-Q&A Summary:     Next.js 14 + Supabase / clients table per user /
-                 Stripe Payment Links + webhook / Resend email / GitHub OAuth /
-                 3 E2E flows in Stripe test mode
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Final Task:   Next.js 14 + Supabase + Stripe + Resend.
-              GitHub OAuth login, RLS on all tables.
-              clients + invoices + stripe_events tables.
-              CRUD invoices → generate Stripe Payment Link →
-              send email via Resend → webhook flips status to "paid".
-Done When:    ① Freelancer creates invoice → client receives email with pay link
-              ② Client pays via Stripe (test mode) → webhook fires
-              ③ Dashboard shows invoice status "Paid" without page refresh
-Out of Scope: Tax calculation, multi-currency, PDF export, accounting integrations
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[DOC-FIRST] Creating docs/2026-05-01-v2.0.33/
-  ✔ 00-requirements.md       (invoice lifecycle + Stripe webhook + Resend SLA)
-  ✔ 01-architecture.md       (GitHub OAuth → Supabase RLS + Stripe webhook flow)
-  ✔ 02-task-breakdown.md     P0: Auth+RLS+Stripe  P1: Invoice CRUD+email  P2: Dashboard UI
-  ✔ 03-test-strategy.md      (Stripe test mode E2E + webhook signature security test)
-  ✔ 04-completion-criteria.md  (3-flow checklist + rollback criteria)
-[DOC COMPLETE]
-
-━━━━━━━━━━━━━━━ PHASE 1: PLANNER ━━━━━━━━━━━━━━━
-[DC-KNW GUARD] Scanning knowledge registry for relevant patterns...
-  └── KNW-001 [HIGH]     File 300-line limit — keep webhook handler in its own file
-  └── KNW-002 [CRITICAL] No hardcoded secrets — Stripe keys via env only, never source
-  → advisory only, proceeding
-
-DC-BIZ  ✔  Freelancer invoicing is a proven pain point. Stripe + Resend is the right v1 wedge.
-            Revenue model is clear (usage-based SaaS potential). Build.
-DC-RES  ✔  Stripe Payment Links (no custom checkout) cuts implementation by ~60%.
-            Resend DX > SendGrid for developer onboarding. Supabase Realtime handles live status.
-DC-OSS  ✔  stripe-node (39k★, official) · resend (5k★, clean API) · @supabase/ssr (SSR-safe auth).
-            All actively maintained, MIT-compatible.
-DC-KNW  ✔  GUARD scan complete. 2 relevant advisories surfaced. Registry up to date.
-
-━━━━━━━━━━━━━━━ PHASE 2: BUILDER ━━━━━━━━━━━━━━━
-DC-DEV-DB   ✔  4 migrations: users (OAuth, UUID PK) · clients (per-user, RLS policy) ·
-                invoices (status: draft/sent/paid/overdue, FK → clients) ·
-                stripe_events (webhook log, idempotency key)
-DC-DEV-BE   ✔  /api/invoices (GET/POST/PATCH/DELETE) · /api/invoices/[id]/send (Resend trigger)
-                /api/stripe/webhook (sig verify → status flip) — 3 routes, 0 N+1 queries
-DC-DEV-FE   ✔  ClientList · InvoiceForm · InvoiceTable · StatusBadge · SendButton · Dashboard
-                6 components · Supabase Realtime subscription on invoice status
-DC-DEV-OPS  ✔  .env.example (STRIPE_SECRET · STRIPE_WEBHOOK_SECRET · RESEND_API_KEY ·
-                NEXT_PUBLIC_SUPABASE_URL) · Vercel config · webhook endpoint registered
-DC-DOC      ✔  API reference (3 endpoints) · Setup guide: Stripe webhook + Resend onboarding ·
-                .env.example field annotations · architecture diagram
-
-━━━━━━━━━━━━━━━ PHASE 3: EVALUATOR ━━━━━━━━━━━━━
-DC-QA   ✔  22 unit tests (invoice CRUD + webhook handler) · 3 E2E flows in Stripe test mode ·
-            edge cases: duplicate webhook event, expired payment link
-DC-SEC  ✔  Stripe webhook sig verified (stripe.webhooks.constructEvent) · RLS on all 4 tables ·
-            0 hardcoded secrets · NEXT_PUBLIC prefix audit passed · 0 vulnerabilities
-DC-REV  ✔  93/100 · no logic duplication · types sound · webhook idempotency confirmed
-
-━━━━━━━━━━━━━━━━━━ GATE 1–5 ━━━━━━━━━━━━━━━━━━━
-① Scan       ✅  0 error-registry hits · all files ≤ 300 lines
-② Criteria   ✅  3 E2E flows passing in Stripe test mode
-③ Version    ✅  v2.0.49 consistent across all files
-④ Separation ✅  Builder ≠ Reviewer confirmed
-⑤ Breaking   ✅  Greenfield — no breaking changes
-
-DC-TOK  ✔  Context: 34% used (44k / 128k tokens)
-
-[CEO REPORT] ✅ Done in 31 minutes.
-  Files: 19 new  ·  Tests: 22 passing  ·  Security: Stripe sig + RLS  ·  Deploy: Vercel ready
-```
-
-**A complete invoicing tool with real Stripe payments. You didn't write a line.**
-
----
-
-## 🐛 Watch a Bug Fix
-
-> `/ceo "Freelancers say invoices stay 'Pending' forever after the client pays — Stripe dashboard shows the payment went through"`
-
-```
-[INTENT PARSED]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Input:   Invoices stuck on "Pending" after Stripe payment — confirmed paid in Stripe dashboard
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Parsed:  Stripe webhook fires successfully (Stripe logs show 200 expected) but the invoice
-         status in Supabase never flips from "sent" → "paid"
-Goal:    Identify root cause, fix webhook handler, confirm status auto-updates end-to-end
-Scope:   IN  — webhook handler bug only
-         OUT — UI changes, new features, unrelated refactors
-Context: Next.js 14 + Supabase · existing codebase · Stripe test mode · 1-2 files affected
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[TASKROUTER]
-Task:   Fix webhook signature verification / status update bug
-Route:  LOOP  (1-2 files, iterative fix + regression validation)
-
-[LOOP — ITERATION 1]
-🔧 Fix target:  app/api/stripe/webhook/route.ts  (signature verify + status flip)
-🌊 Ripple:      app/api/invoices/[id]/route.ts   (PATCH endpoint called by webhook)
-                components/StatusBadge.tsx        (reads invoice.status — no change needed)
-⚡ Root cause hunt: webhook handler uses req.json() instead of raw body buffer
-                    → stripe.webhooks.constructEvent() always throws SignatureVerificationError
-                    → catch block silently returns 200 → Stripe stops retrying → status never flips
-
-[DOC] docs/2026-05-02-v2.0.51-webhook-sig-fix/00-summary.md  ✔ created
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-// BEFORE — req.json() destroys the raw body Stripe needs to verify the signature
-export async function POST(req: Request) {
-  const body = await req.json()              // ❌ parsed JSON, sig check fails
-  const sig  = req.headers.get('stripe-signature')!
-  const event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!)
-
-// AFTER — read raw Buffer so Stripe's HMAC check passes
-export async function POST(req: Request) {
-  const rawBody = Buffer.from(await req.arrayBuffer())  // ✅ raw bytes preserved
-  const sig     = req.headers.get('stripe-signature')!
-  const event   = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET!)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-DC-REV  ✔  Fix is surgical and correct. Raw buffer pattern is the documented Stripe approach.
-            No other callers affected. Idempotency key logic untouched. APPROVED.
-            Suggestion (non-blocking): add an integration test that sends a real Stripe test event
-            to cover this path in CI — logged as improvement ticket.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━ GATE 1–5 ━━━━━━━━━━━━━━━━━━━━━━━━━
-
-① Scan       ✅  0 error-registry hits · webhook/route.ts 38 lines (≤ 300)
-② Criteria   ✅  Stripe test webhook fired → invoice status flips to "paid" in < 1 s
-③ Version    ✅  v2.0.51 consistent across all files
-④ Separation ✅  CEO fixed · DC-REV reviewed — roles separated
-⑤ Breaking   ✅  Internal handler only — no API contract change
-
-[CEO LOOP REPORT] ⚡ Done in 4 minutes.
-  1 file changed (2-line fix) · Stripe webhook now verifies correctly · Status flips live
-```
-
-**One bug, one function, four minutes. The rest of the codebase didn't move.**
 
 ---
 
@@ -509,55 +318,43 @@ DC-REV  ✔  Fix is surgical and correct. Raw buffer pattern is the documented S
     ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │ DIRECT                 LOOP                       GRAPH              │
-│ answer / small edit     PLAN → EXECUTE             typed state       │
-│ focused validation     → VALIDATE → ACT            guarded edges     │
-│                        bounded retry                fan-out / join    │
-│                        Ralph memory                 checkpoint / HITL │
+│ answer / small edit     PLAN → EXECUTE             Workflow tool     │
+│ focused validation     → VALIDATE → ACT            pipeline/parallel │
+│                        bounded retry                resumeFromRunId   │
+│                        native /loop                 AskUserQuestion   │
 └───────────┬──────────────────┬──────────────────────────┬─────────────┘
             └──────────────────┴──────────────────────────┘
                                ▼
-                    task-relevant validators
+                    task-relevant validators + evidence check
                                ▼
                     COMPLETE / PAUSED / FAILED
 ```
 
-Complex feature requests still use the familiar PLANNER → BUILDER → EVALUATOR flow inside GRAPH. Small read-only requests do not create planning documents or invoke all agents. Meaningful implementation preserves Builder ≠ Reviewer; destructive, security-sensitive, or irreversible steps require an explicit approval edge.
+Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAPH, with native agents as evaluators. Small read-only requests do not create planning documents or invoke all agents. Meaningful implementation preserves Builder ≠ Reviewer; destructive, security-sensitive, or irreversible steps require an explicit approval edge.
 
 ---
 
-## 👥 The 18 Agents
+## 👥 The 8 Agent Roles
 
 <table>
 <thead>
 <tr><th>Phase</th><th>Agent</th><th>Role</th><th>Model Policy</th></tr>
 </thead>
 <tbody>
-<tr><td rowspan="5"><b>🧠 PLANNER</b></td>
-  <td><code>DC-BIZ</code></td><td>Business Judge</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><code>DC-RES</code></td><td>Researcher</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-OSS</code></td><td>OSS Scout</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><code>DC-ANA</code></td><td>Codebase Analyst</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-KNW</code></td><td>Knowledge Curator</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td rowspan="9"><b>🔨 BUILDER</b></td>
-  <td><code>DC-DEV-DB</code></td><td>Database Engineer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-BE</code></td><td>Backend Developer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-FE</code></td><td>Frontend Developer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-OPS</code></td><td>DevOps Engineer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-MOB</code></td><td>Mobile Developer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-INT</code></td><td>Integration Engineer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DOC</code></td><td>Documentation Writer</td><td>FAST_CHEAP</td></tr>
+<tr><td><b>🧠 PLANNER</b></td>
+  <td><code>DC-BIZ</code></td><td>Business Judge</td><td>HIGH_REASONING</td></tr>
+<tr><td rowspan="7"><b>🔨 BUILDER</b></td>
+  <td><code>DC-DEV-DB</code></td><td>Database Engineer</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-BE</code></td><td>Backend Developer</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-FE</code></td><td>Frontend Developer</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-OPS</code></td><td>DevOps Engineer</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-MOB</code></td><td>Mobile Developer</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-INT</code></td><td>Integration Engineer</td><td>HIGH_REASONING</td></tr>
 <tr><td><code>DC-WRT</code></td><td>Copywriter</td><td>FAST_CHEAP</td></tr>
-<tr><td><code>DC-SEO</code></td><td>SEO / AEO / GEO</td><td>FAST_CHEAP</td></tr>
-<tr><td rowspan="3"><b>🔍 EVALUATOR</b></td>
-  <td><code>DC-QA</code></td><td>QA Engineer</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-SEC</code></td><td>Security Reviewer</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><code>DC-REV</code></td><td>Code Reviewer</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><b>⚙️ SUPPORT</b></td>
-  <td><code>DC-TOK</code></td><td>Token Optimizer</td><td>FAST_CHEAP</td></tr>
 </tbody>
 </table>
 
-> Roles are selected by route and task needs. DIRECT normally invokes none. LOOP uses only the roles needed for iteration. GRAPH may fan out across independent roles. `domangcha/manifests/agents.json` is the authoritative 18-role manifest.
+> Evaluation and support use native Claude Code agents: code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose. DIRECT normally invokes none. `domangcha/manifests/agents.json` is the authoritative manifest.
 
 ---
 
@@ -579,6 +376,7 @@ Complex feature requests still use the familiar PLANNER → BUILDER → EVALUATO
 
 | Version | What changed |
 |---|---|
+| **v4.0.0** | Native delegation: loops, graphs, memory, search, reviewers, and the browser are Claude Code's own; DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Breaking: 10 agents and 14 commands removed |
 | **v3.0.5** | Terminal output paints English bright and Korean dim, so one language carries and the other confirms |
 | **v3.0.4** | No slash command is required: the loop asks the harness router itself; README usage cut to one block |
 | **v3.0.3** | Install-time output is bilingual, English first, everywhere |
@@ -603,7 +401,7 @@ Complex feature requests still use the familiar PLANNER → BUILDER → EVALUATO
 
 Files are installed to `~/.claude/` on first run. They do **not** auto-update while a project is in progress — the version at install time is what runs.
 
-**To update the harness:** run `curl -fsSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash`, or `npx domangcha` from outside a project. Your error registry and project registries are preserved. Rule memories in `~/.claude/projects/*/memory/` are automatically refreshed with the latest version's rule definitions — user feedback and project context are never overwritten.
+**To update the harness:** run `curl -fsSL https://raw.githubusercontent.com/DoCoreTeam/domangcha/main/domangcha/install.sh | bash`, or `npx domangcha` from outside a project. Your error registry and project registries are preserved. Memory is native Claude Code file memory and is never overwritten.
 
 **Auto-update prompt (built-in):** Every `/ceo` call silently checks the npm registry for a newer version. If one exists, you'll see:
 
@@ -628,10 +426,10 @@ item, `/policy` checks active policies against your diff. The CLI behind them is
 `node scripts/loop.mjs` — run `help` for every subcommand, `resume` for what to do next,
 `status --all` for every registered project.
 
-With the harness: `/ceo "task"` routes explicitly, and 18 more `/ceo-*` intents
-(`-ralph -debug -test -review -security -ship -plan -design -feature -doc -clarify -init
--quality -status -update -version -knowledge -learn`) name a workflow. They are adapters
-into the same TaskRouter, which already reads plain prompts — so none of them is required.
+With the harness: `/ceo "task"` routes explicitly, and four more `/ceo-*` intents
+(`-ralph -debug -security -ship`) set a minimum route. `/ceo-ralph` runs on native `/loop`;
+`/ceo-ship` runs `evidence check` before anything ships. They are adapters into the same
+TaskRouter, which already reads plain prompts — so none of them is required.
 
 ---
 
@@ -696,15 +494,15 @@ Nothing breaks and nothing was removed.
 
 **강력한 코딩 에이전트에 필요한 만큼의 오케스트레이션만 더합니다.**
 명령 하나, 외울 것 없음: `npx domangcha` 가 실행한 자리를 보고 필요한 것을 설치합니다.
-그다음엔 그냥 말하면 됩니다 — 루프가 계획하고 감사하고 보고하며, 필요하면 18명 크루를 스스로 부릅니다.
+그다음엔 그냥 말하면 됩니다 — 루프가 계획하고 감사하고 보고하며, 사용자 화면은 주장 대신 증거로 완료를 증명합니다.
 
 *개발 지옥에서 도망쳐 — 돔황차🚗💨*
 
-[![Version](https://img.shields.io/badge/version-3.0.5-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-4.0.0-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Runtimes](https://img.shields.io/badge/런타임-Claude%20Code%20%7C%20Codex-5865F2?style=for-the-badge)](#runtime-compatibility)
-[![Agents](https://img.shields.io/badge/에이전트-18명-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
+[![Agents](https://img.shields.io/badge/에이전트-8명-FF6B6B?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
 [![Gates](https://img.shields.io/badge/게이트-5개-orange?style=for-the-badge)](https://github.com/DoCoreTeam/domangcha)
 [![Node](https://img.shields.io/badge/Node-22.13%2B-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org)
 
@@ -761,7 +559,7 @@ npx domangcha
 | 어디서 실행했나 | 무엇을 설치하나 |
 |---|---|
 | 프로젝트 안 | 그 자리에 루프 — 오프라인, `~/.claude` 무접촉 |
-| 프로젝트 밖 | `~/.claude` 와 `~/.domangcha` 에 18 에이전트 하네스 |
+| 프로젝트 밖 | `~/.claude` 와 `~/.domangcha` 에 하네스 |
 
 프로젝트로 인정하는 기준은 `.git`, `package.json`, `pyproject.toml`, `go.mod`,
 `Cargo.toml`, `pom.xml`, `build.gradle`, `Gemfile`, `composer.json`, `Makefile`,
@@ -799,7 +597,7 @@ bash, git 이 필요하고 네트워크로 설치됩니다.
 당신 ▸ 인증 갈아엎고 마이그레이션 돌려줘
 
      ▸ 하네스 라우터 분류: GRAPH (hard graph invariant: security)
-     ▸ 루프로 그대로 진행해도 됩니다. 18 에이전트와 게이트가 정말 도움이 되겠다 싶으면
+     ▸ 루프로 그대로 진행해도 됩니다. 하네스와 게이트가 정말 도움이 되겠다 싶으면
        사용자에게 제안하고 승인받은 뒤에만 올리세요
 ```
 
@@ -830,7 +628,7 @@ policy add ▸ P001 i18n 키 강제
 
 ### ⚡ 왜 DOMANGCHA인가?
 
-Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 18개 에이전트 전체 파이프라인을 돌릴 이유는 없습니다. 반대로 보안·DB·API·UI가 얽힌 변경을 단일 프롬프트에 맡겨서도 안 됩니다. **DOMANGCHA는 신뢰성에 필요한 최소 실행 구조**인 DIRECT, LOOP, GRAPH를 결정론적으로 선택합니다.
+Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에이전트 파이프라인을 돌릴 이유는 없습니다. 반대로 보안·DB·API·UI가 얽힌 변경을 단일 프롬프트에 맡겨서도 안 됩니다. **DOMANGCHA는 신뢰성에 필요한 최소 실행 구조**인 DIRECT, LOOP, GRAPH를 결정론적으로 선택하고, 완료는 증거 어댑터가 판정합니다. 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 네이티브 기능을 씁니다.
 
 <table>
 <tr>
@@ -866,201 +664,12 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 18개 에이
 |---|:---:|:---:|
 | 복잡도별 실행 | ✅ DIRECT / LOOP / GRAPH | ❌ 모든 일에 같은 워크플로 |
 | 결정론적 제어 흐름 | ✅ 타입 라우트 + 가드 엣지 | ❌ 프롬프트 전용 판단 |
-| 전문가 역할 분리 | ✅ 최대 18개 논리 역할 | ❌ 작성자 단독 검토 |
+| 전문가 역할 분리 | ✅ 8개 빌더 역할 + 네이티브 리뷰어 | ❌ 작성자 단독 검토 |
 | 빌더 ≠ 리뷰어 강제 | ✅ 항상 분리 | ❌ 없음 |
 | 파괴적 변경 보호 | ✅ Gate 5 차단 | ❌ 없음 |
-| 실수 → 영구 패턴 등록 | ✅ error-registry | ❌ 없음 |
+| 주장이 아닌 증거로 완료 | ✅ 강제 상태 + 브라우저 → DB 추적 | ❌ "빌드 통과" |
 | 체크포인트 / 재개 | ✅ LOOP와 GRAPH | ❌ 컨텍스트 창에 종속 |
 | Claude + Codex 정책 동등성 | ✅ 공통 정책 원본 | ❌ 런타임별 드리프트 |
-
----
-
-### 🎬 실제 스프린트 보기
-
-> `/ceo "동네 러닝 크루 관리 앱 만들어줘 — 모임 생성, 카카오페이 회비 정산, 출석 체크"`
-
-```
-[INTENT PARSED]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-입력:   동네 러닝 크루 — 모임 생성, 카카오페이 회비 정산, 출석 체크
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-정제:   크루 멤버가 모임을 생성하고, 카카오페이로 회비를 요청·정산하며,
-        출석을 기록해 개인 참여 통계를 확인하는 서비스
-목표:   모임 생성 → 회비 요청(카카오페이) → 출석 체크 → 대시보드 (3개 플로)
-범위:   포함 — 모임 CRUD, 카카오페이 결제 요청, 출석·통계
-        제외 — 실시간 채팅, GPS 경로, 이미지 업로드, Apple Watch 연동
-맥락:   웹앱 / 그린필드 / 카카오 API 확정 / 스택 미정 → Q&A 필요
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[TASKROUTER]
-업무:   러닝 크루 관리 (카카오페이 + 출석 + 대시보드)
-라우트: GRAPH — DB + API + UI + 결제 + 독립 검증
-
-[TRADEOFF CHECK] ✅ 이상 없음. Q&A 진행.
-
-[CEO] Q1: 스택은 어떻게 할까요?
-> Next.js 14 + Supabase
-
-[CEO] Q2: 카카오 로그인도 쓸까요?
-> 네 — 회비도 카카오페이라 자연스러움
-
-[CEO] Q3: 회비 정산 방식은?
-> 크루장이 금액 설정 후 요청 → 멤버가 카카오페이로 개별 납부
-
-[CEO] Q4: "완료" 기준이 뭔가요?
-> ① 모임 생성 → 멤버 초대  ② 회비 요청 → 카카오페이 납부 → 상태 자동 업데이트
-> ③ 출석 체크 → 대시보드 참여율 표시 (카카오페이 테스트 모드)
-
-[CEO] Q5: 모임 최대 규모는?
-> 30명 이하 소모임
-
-[Q&A COMPLETE] ✅  스택 / 카카오 로그인·페이 / 완료 기준 / 규모 확인
-
-[TASK REFINED]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-원본 입력:  동네 러닝 크루 관리 앱
-Q&A 핵심:  Next.js 14 + Supabase / 카카오 로그인 + 카카오페이 /
-            모임·멤버·회비·출석 테이블 / 최대 30인 / 3 E2E 플로
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-최종 태스크: Next.js 14 + Supabase + 카카오 로그인 + 카카오페이 결제 요청.
-             RLS 전체 테이블 적용.
-             crews · members · dues · attendance 테이블.
-             모임 CRUD → 카카오페이 회비 요청 → webhook 납부 확인 → 출석 기록.
-완료 조건:  ① 크루장 모임 생성 → 멤버 초대 이메일 발송
-            ② 회비 요청 → 카카오페이 결제 → webhook → 납부 상태 자동 업데이트
-            ③ 출석 체크 → 대시보드에 멤버별 참여율 표시
-제외 범위:  실시간 채팅, GPS 경로, 이미지 업로드, Apple Watch 연동
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[DOC COMPLETE] docs/2026-05-02-v2.0.49-running-crew-app/ 생성 완료
-  ✔ 00-requirements.md       (모임 라이프사이클 + 카카오페이 webhook + 출석 집계)
-  ✔ 01-architecture.md       (카카오 OAuth → Supabase RLS + 카카오페이 webhook 플로)
-  ✔ 02-task-breakdown.md     P0: 인증+RLS+카카오페이  P1: 모임·회비 CRUD  P2: 출석+대시보드
-  ✔ 03-test-strategy.md      (카카오페이 테스트 모드 E2E + webhook 서명 검증)
-  ✔ 04-completion-criteria.md  (3-플로 체크리스트 + 롤백 기준)
-
-━━━━━━━━━━━━━━━ PHASE 1: 기획 ━━━━━━━━━━━━━━━
-[DC-KNW GUARD] 지식 레지스트리 스캔 중...
-  └── KNW-002 [CRITICAL] 소스코드 시크릿 하드코딩 금지 — 카카오 API 키 env 처리 필수
-  └── KNW-001 [HIGH]     파일 300줄 초과 주의 — 카카오페이 핸들러 파일 분리 권고
-  → advisory only, 계속 진행
-
-DC-BIZ  ✔  동네 소모임 회비 정산 Pain Point 명확. 카카오페이 국내 결제 1위 — 사용자 마찰 최소화.
-            크루장 확보 시 바이럴 가능성 있음. 빌드.
-DC-RES  ✔  카카오페이 단건 결제 API v1 — Ready Payment → Approve 2단계 플로.
-            카카오 REST API 직접 호출이 공식 SDK 대비 안정적.
-            Supabase Realtime으로 납부 상태 즉시 반영 가능.
-DC-OSS  ✔  axios (105k★, REST 호출) · @supabase/ssr (SSR 안전 auth) · date-fns (날짜 처리).
-            모두 활성 유지보수, MIT 라이선스.
-DC-KNW  ✔  GUARD 스캔 완료. 2개 advisory 전달. 레지스트리 최신 상태.
-
-━━━━━━━━━━━━━━━ PHASE 2: 빌드 ━━━━━━━━━━━━━━━
-DC-DEV-DB   ✔  5개 마이그레이션: users (카카오 OAuth, UUID PK) · crews (크루 정보, 크루장 FK) ·
-                members (crew_id × user_id, 역할: leader/member, RLS) ·
-                dues (금액·상태: pending/paid, 카카오 tid) · attendance (crew_id × user_id × 날짜)
-DC-DEV-BE   ✔  /api/crews (CRUD) · /api/dues/[id]/request (카카오페이 Ready 호출)
-                /api/kakao/webhook (Approve 확인 → 상태 flip) · /api/attendance (출석 토글)
-                — 4개 라우트, 카카오페이 서명 검증 포함, webhook 멱등성 처리
-DC-DEV-FE   ✔  CrewDashboard · MemberList · DuesCard · AttendanceToggle · PaymentBadge
-                5개 컴포넌트 · Supabase Realtime 구독으로 납부 상태 즉시 반영
-DC-DEV-OPS  ✔  .env.example (KAKAO_CLIENT_ID · KAKAO_PAY_CID · KAKAO_SECRET ·
-                NEXT_PUBLIC_SUPABASE_URL) · Vercel 환경 변수 · 카카오 redirect URI 등록 가이드
-DC-DOC      ✔  카카오페이 API 연동 가이드 (Ready→Approve 플로 다이어그램) ·
-                env 설명 주석 · 카카오 개발자 콘솔 설정 3단계 가이드
-
-━━━━━━━━━━━━━━━ PHASE 3: 평가 ━━━━━━━━━━━━━━━
-DC-QA   ✔  19개 단위 테스트 (CRUD + webhook 핸들러) · 3 E2E 플로 카카오페이 테스트 모드 통과
-            엣지 케이스: 중복 webhook 이벤트, 결제 취소 처리
-DC-SEC  ✔  카카오페이 webhook 서명 검증 · RLS 5개 테이블 전체 · 카카오 키 env 격리 ·
-            NEXT_PUBLIC 접두사 감사 통과 · 0 취약점
-DC-REV  ✔  91/100 · 카카오페이 Approve 멱등성 확인 · 타입 안전 · 중복 로직 없음
-
-━━━━━━━━━━━━━━━━━━ 게이트 1–5 ━━━━━━━━━━━━━━━━━━
-① 스캔       ✅  error-registry 0 히트 · 전체 파일 ≤ 300줄
-② 기준       ✅  3개 E2E 플로 카카오페이 테스트 모드 통과
-③ 버전       ✅  v2.0.49 전체 파일 일치
-④ 분리       ✅  빌더 ≠ 리뷰어 확인
-⑤ 파괴적    ✅  그린필드 — 파괴적 변경 없음
-
-DC-TOK  ✔  컨텍스트 31% 사용 (40k / 128k 토큰)
-
-[CEO 리포트] ✅ 28분 완료.
-  파일: 17개 신규  ·  테스트: 19개 통과  ·  보안: 카카오 서명 + RLS  ·  배포: Vercel 준비 완료
-```
-
-**카카오페이로 회비 정산하는 앱. 코드 한 줄 안 썼다.**
-
----
-
-### 🐛 버그 수정 현장
-
-> `/ceo "크루장이 회비 납부 확인했다는데 앱에서는 계속 미납으로 뜬다고 제보가 왔어"`
-
-```
-[INTENT PARSED]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-입력:   카카오페이 결제 완료인데 앱에서 미납으로 표시됨 — 카카오 콘솔에서는 결제 성공 확인
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-정제:   카카오페이 webhook은 정상 수신되지만 dues 테이블 status가
-        "pending" → "paid"로 flip되지 않는 버그
-목표:   webhook 핸들러 결함 파악 → 수정 → 납부 상태 실시간 반영 확인
-범위:   포함 — webhook 핸들러 단일 수정
-        제외 — UI 변경, 신규 기능, 무관 리팩터링
-맥락:   Next.js 14 + Supabase · 기존 코드 · 카카오페이 테스트 모드 · 1-2 파일 예상
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[TASKROUTER]
-업무:   카카오페이 webhook 상태 업데이트 버그 수정
-라우트: LOOP  (1-2 파일, 반복 수정 + 회귀 검증)
-
-[LOOP — 1회차]
-🔧 수정 대상:  app/api/kakao/webhook/route.ts  (tid 매칭 + 상태 업데이트 로직)
-🌊 파급 범위:  app/api/dues/[id]/route.ts      (PATCH 호출부 — 수정 불필요 확인)
-               components/DuesCard.tsx          (status 읽기 전용 — 수정 불필요)
-⚡ 근본 원인:  webhook payload의 tid(결제 고유번호) 비교 시 undefined 가드가 없음
-               → 첫 번째 webhook은 tid 매칭 성공 후 DB 업데이트
-               → 카카오페이 재시도 webhook은 tid가 undefined → 조건문 skip →
-                  status 업데이트 없이 200 반환 → 결제 확인이 간헐적으로 누락됨
-
-[DOC] docs/2026-05-02-v2.0.51-kakao-tid-fix/00-summary.md  ✔ 생성 완료
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-// BEFORE — tid undefined 체크 없음 → 재시도 webhook 때 update 통째로 skip
-const { tid, pg_token } = payload.payment_action_response
-if (tid === existingDue.kakao_tid) {            // ❌ tid가 undefined면 false → skip
-  await supabase.from('dues').update({ status: 'paid' }).eq('id', dueId)
-}
-
-// AFTER — undefined 먼저 잡고 비교
-const { tid, pg_token } = payload.payment_action_response
-if (!tid) {                                     // ✅ 방어: undefined/null 즉시 거부
-  return NextResponse.json({ error: 'tid missing' }, { status: 400 })
-}
-if (tid === existingDue.kakao_tid) {
-  await supabase.from('dues').update({ status: 'paid' }).eq('id', dueId)
-}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-DC-REV  ✔  수정 정확. undefined 방어 패턴은 카카오페이 공식 문서 권장 방식.
-            다른 호출부 영향 없음. 멱등성 키 로직 보존됨. APPROVED.
-            개선 제안(논블로킹): 카카오 webhook 재시도 케이스를 단위 테스트로 추가 —
-            개선 티켓으로 등록됨.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 게이트 1–5 ━━━━━━━━━━━━━━━━━━━━━━━━
-
-① 스캔       ✅  error-registry 0 히트 · webhook/route.ts 42줄 (≤ 300줄)
-② 기준       ✅  카카오페이 재시도 webhook 발화 → dues.status "paid" 자동 전환 확인
-③ 버전       ✅  v2.0.51 전체 파일 일치
-④ 분리       ✅  CEO 수정 · DC-REV 리뷰 — 역할 분리 확인
-⑤ 파괴적    ✅  내부 핸들러만 수정 — API 계약 변경 없음
-
-[CEO LOOP 리포트] ⚡ 5분 완료.
-  수정 1개 파일 (3줄) · 카카오 재시도 webhook 정상 처리 · 납부 상태 즉시 반영
-```
-
-**버그 하나, 파일 하나, 5분. 나머지 코드는 손대지 않았다.**
 
 ---
 
@@ -1068,6 +677,7 @@ DC-REV  ✔  수정 정확. undefined 방어 패턴은 카카오페이 공식 �
 
 | 버전 | 바뀐 것 |
 |---|---|
+| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 기본 기능으로, DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 호환성 변경: 에이전트 10개·명령 14개 제거 |
 | **v3.0.5** | 터미널 출력에서 영어는 또렷하게, 한글은 흐리게 — 한쪽만 읽어도 되게 |
 | **v3.0.4** | 슬래시 커맨드 불필요 — 루프가 하네스 라우터에 직접 질의, README 사용법 한 곳으로 압축 |
 | **v3.0.3** | 설치 시점 출력 전부 이중언어, 영어 우선 |
@@ -1095,83 +705,73 @@ DC-REV  ✔  수정 정확. undefined 방어 패턴은 카카오페이 공식 �
 의도 정규화 → 결정론적 TaskRouter
       ├── DIRECT  설명·요약·조회·국소 수정
       ├── LOOP    PLAN → EXECUTE → VALIDATE → ACT
-      └── GRAPH   타입 상태 → 가드 엣지 → 분기/조인
-                                  → 체크포인트 → 승인 게이트
+      └── GRAPH   네이티브 Workflow 툴 (pipeline / parallel / phase)
+                                  → resumeFromRunId → AskUserQuestion 승인
       │
       ▼
-업무에 필요한 검증만 수행
+업무에 필요한 검증 + 증거 확인만 수행
       │
       └── COMPLETE / PAUSED / FAILED
 ```
 
 - **DIRECT**는 플래너 그래프, 재귀 루프, 불필요한 문서와 다중 에이전트를 만들지 않습니다.
-- **LOOP**는 기존 Ralph를 발전시켜 최대 반복, 재시도 예산, 무진행·동일 오류 감지, 검증 피드백과 종료 근거를 관리합니다.
-- **GRAPH**는 보안, 파괴적 변경, DB+API+UI, 병렬 작업, 중단·재개가 필요한 업무에만 사용합니다.
+- **LOOP**는 네이티브 `/loop` 스킬과 ScheduleWakeup으로 돌고, 테스트·검증기·독립 리뷰·증거 확인이 있어야 끝납니다.
+- **GRAPH**는 보안, 파괴적 변경, DB+API+UI, 병렬 작업, 중단·재개가 필요한 업무에만 쓰며 네이티브 Workflow 툴로 실행합니다.
 - LLM은 경계가 모호할 때 구조화된 라우트를 제안할 수 있지만, 안전 불변식과 최종 전이는 코드가 결정합니다.
 - DIRECT → LOOP → GRAPH 승격 시 기존 작업 상태를 보존합니다.
 - Claude Code는 `CLAUDE.md`, Codex는 `AGENTS.md`를 사용하지만 공유 정책·엔진·체크포인트·검증 규칙은 같습니다.
+
+#### 증거: 주장이 아닌 증명
+
+사용자 화면이 있는 기능은 증거 실행이 통과해야 완료입니다 (`domangcha/policies/evidence.md`).
+`engine.py evidence {init,start,record,state,trace,check,close,diff}` 가 로딩·빈 상태·오류·권한 없음을 강제로 띄워 그 창 안에서 캡처하고,
+고유 마커 하나를 브라우저 요청 → 서버 로그 → 저장된 DB 행까지 추적하고, 모든 주장을 observation·derivation·inference·unknown 으로 태그해 이전 실행과 비교합니다.
+열린 실행이 `check` 를 통과하지 못하면 Stop 훅이 막습니다.
+
+다른 제품의 기능을 가져오거나 벤치마킹할 때는 [REA](https://github.com/morluto/rea)(MIT)를 `rea` MCP 서버로 연결해 씁니다 (`npx rea-agents setup`).
+REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거가 우리 제품에서 동작함을 증명합니다.
 
 ---
 
 ### 📣 진행 상황 보고 (기본 활성)
 
-조용히 도는 엔진은 멈춘 엔진처럼 보입니다. CLI·Claude 훅·Codex 컨트롤 플레인이 모두
-`orchestration/status.py`의 같은 카드를 사용하므로, 라우트와 루프와 병렬 브랜치를 **진행 중에** 볼 수 있습니다.
+조용히 도는 엔진은 멈춘 엔진처럼 보입니다. 라우트 카드는 `orchestration/status.py` 가 그리고,
+그 뒤 진행은 네이티브 표면 — TodoWrite, Workflow phase, `/loop` 회차 — 으로 보입니다.
 
 ```text
-🚂 DOMANGCHA · GRAPH 🧭 (score 10)        🔁 LOOP 5/30  ▓▓░░░░░░░░ 17%
-├ 이유: hard graph invariant: parallel     ├ 재시도 여유 5 · 정체 0/3
-├ 계획: 타입 노드 그래프 · 병렬 · join      ├ 예산: model 7/12 · tool 31/80
-└ 다음: 노드·브랜치별 진행 보고             └ 상태: RUNNING ⏳
-
-🧭 GRAPH full_pipeline@1  ▓▓▓▓▓░░░░░ 50% 3/6 노드
-├ 완료: intake ✅ · plan ✅ · build ✅
-├ 진행: review ⏳ (시도 1)
-├ 병렬(build): dc-dev-be ✅ | dc-dev-fe ✅ | dc-sec ❌ · join=ALL
-└ 승인 대기: gate 🙋
+🚂 DOMANGCHA · GRAPH 🧭 (score 11)
+├ 이유: database + API + frontend invariant
+├ 계획: Workflow 툴 · 병렬 브랜치 · join · 승인 게이트
+└ 다음: 노드별·브랜치별 진행 상태를 보고합니다
 ```
 
-`engine.py route|status`는 기본으로 카드를 출력합니다. 원시 상태는 `--format json`,
-언어는 `--lang ko|en`(기본값은 `DOMANGCHA_STATUS_LANG`)으로 바꿉니다. 보고 규칙 자체는 훅이 주입합니다 —
-라우트와 그 이유를 먼저 알리고, 매 반복마다 회차·예산·실제 변화를 보고하고, 조인 시점에 브랜치 결과와
-join 전략을 보여주고, 승인 게이트 앞에서 무엇을 왜 승인받는지 사람의 말로 설명하고,
-긴 단계에서 침묵하거나 정체된 루프를 감추지 않습니다.
+`engine.py route|status`는 기본으로 카드(라우트·체크포인트·드리프트)를 출력합니다. 원시 상태는 `--format json`,
+언어는 `--lang ko|en`(기본값은 `DOMANGCHA_STATUS_LANG`)으로 바꿉니다. 라우트와 그 이유를 먼저 알리고,
+승인 앞에서 무엇을 왜 승인받는지 사람의 말로 설명하고, 긴 단계에서 침묵하거나 정체를 감추지 않습니다.
 
 ---
 
-### 👥 18명의 에이전트
+### 👥 8개의 에이전트 역할
 
 <table>
 <thead>
 <tr><th>단계</th><th>에이전트</th><th>역할</th><th>모델 정책</th></tr>
 </thead>
 <tbody>
-<tr><td rowspan="5"><b>🧠 기획자</b></td>
-  <td><code>DC-BIZ</code></td><td>사업 타당성 판단</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><code>DC-RES</code></td><td>기술 리서치</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-OSS</code></td><td>오픈소스 도구 탐색</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><code>DC-ANA</code></td><td>코드베이스 분석가</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-KNW</code></td><td>지식 레지스트리 큐레이터</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td rowspan="9"><b>🔨 빌더</b></td>
-  <td><code>DC-DEV-DB</code></td><td>데이터베이스 엔지니어</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-BE</code></td><td>백엔드 개발자</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-FE</code></td><td>프론트엔드 개발자</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-OPS</code></td><td>DevOps 엔지니어</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-MOB</code></td><td>모바일 개발자</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DEV-INT</code></td><td>통합(Integration) 엔지니어</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-DOC</code></td><td>문서 작성자</td><td>FAST_CHEAP</td></tr>
+<tr><td><b>🧠 기획자</b></td>
+  <td><code>DC-BIZ</code></td><td>사업 타당성 판단</td><td>HIGH_REASONING</td></tr>
+<tr><td rowspan="7"><b>🔨 빌더</b></td>
+  <td><code>DC-DEV-DB</code></td><td>데이터베이스 엔지니어</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-BE</code></td><td>백엔드 개발자</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-FE</code></td><td>프론트엔드 개발자</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-OPS</code></td><td>DevOps 엔지니어</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-MOB</code></td><td>모바일 개발자</td><td>HIGH_REASONING</td></tr>
+<tr><td><code>DC-DEV-INT</code></td><td>통합(Integration) 엔지니어</td><td>HIGH_REASONING</td></tr>
 <tr><td><code>DC-WRT</code></td><td>카피라이터</td><td>FAST_CHEAP</td></tr>
-<tr><td><code>DC-SEO</code></td><td>SEO / AEO / GEO</td><td>FAST_CHEAP</td></tr>
-<tr><td rowspan="3"><b>🔍 평가자</b></td>
-  <td><code>DC-QA</code></td><td>QA 엔지니어</td><td>BALANCED / HIGH_REASONING</td></tr>
-<tr><td><code>DC-SEC</code></td><td>보안 리뷰어</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><code>DC-REV</code></td><td>코드 리뷰어</td><td>HIGH_REASONING / REVIEW</td></tr>
-<tr><td><b>⚙️ 지원</b></td>
-  <td><code>DC-TOK</code></td><td>토큰 예산 관리</td><td>FAST_CHEAP</td></tr>
 </tbody>
 </table>
 
-> 역할은 라우트와 업무에 따라 선택됩니다. DIRECT는 보통 역할을 호출하지 않고, LOOP는 반복에 필요한 역할만, GRAPH는 독립 작업에 필요한 역할을 병렬 호출합니다. 권위 원본은 `domangcha/manifests/agents.json`입니다.
+> 평가와 지원은 Claude Code 네이티브 에이전트가 맡습니다: code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose. DIRECT는 보통 역할을 호출하지 않습니다. 권위 원본은 `domangcha/manifests/agents.json`입니다.
 
 ---
 
@@ -1198,9 +798,9 @@ join 전략을 보여주고, 승인 게이트 앞에서 무엇을 왜 승인받�
 `help` 로 전체 하위 명령, `resume` 으로 다음에 할 일, `status --all` 로 등록된 모든 프로젝트를
 볼 수 있습니다.
 
-하네스가 있으면 `/ceo "업무"` 로 명시 라우팅을 하고, 18개 `/ceo-*` 인텐트
-(`-ralph -debug -test -review -security -ship -plan -design -feature -doc -clarify -init
--quality -status -update -version -knowledge -learn`) 가 워크플로를 지정합니다. 전부 같은
+하네스가 있으면 `/ceo "업무"` 로 명시 라우팅을 하고, 4개 `/ceo-*` 인텐트
+(`-ralph -debug -security -ship`) 가 최소 라우트를 지정합니다. `/ceo-ralph` 는 네이티브 `/loop` 로 돌고,
+`/ceo-ship` 은 배포 전에 `evidence check` 를 실행합니다. 전부 같은
 TaskRouter 로 들어가는 어댑터이고, 그 라우터는 이미 평범한 프롬프트를 읽습니다 —
 그래서 어느 것도 필수가 아닙니다.
 

@@ -59,6 +59,41 @@ class StopHookTests(unittest.TestCase):
         self.assertIn("DOMANGCHA STOP VALIDATION FAILED", result.stderr)
 
 
+class EvidenceStopGateTests(unittest.TestCase):
+    def open_run(self, app, claims=()):
+        run = app / ".domangcha/evidence/current.json"
+        run.parent.mkdir(parents=True)
+        run.write_text(json.dumps({"run_id": "r1", "claims": list(claims), "active_states": []}))
+        (app / ".domangcha/evidence.json").write_text(json.dumps({"states": {}, "required_states": []}))
+
+    def test_open_incomplete_run_blocks_the_stop(self):
+        with tempfile.TemporaryDirectory() as folder:
+            home = fake_home(folder)
+            app = Path(folder) / "app"
+            self.open_run(app)
+            result = run_hook("domangcha-stop.sh", home, project_root=app)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("DOMANGCHA EVIDENCE INCOMPLETE", result.stderr)
+        self.assertIn("trace", result.stderr)
+
+    def test_complete_run_lets_the_stop_through(self):
+        trace = {"id": "c1", "key": "trace:m1", "kind": "derivation", "statement": "ok", "from": []}
+        with tempfile.TemporaryDirectory() as folder:
+            home = fake_home(folder)
+            app = Path(folder) / "app"
+            self.open_run(app, [trace])
+            result = run_hook("domangcha-stop.sh", home, project_root=app)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_no_open_run_never_blocks(self):
+        with tempfile.TemporaryDirectory() as folder:
+            home = fake_home(folder)
+            app = Path(folder) / "app"
+            app.mkdir()
+            result = run_hook("domangcha-stop.sh", home, project_root=app)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+
 class PostEditHookTests(unittest.TestCase):
     def test_project_root_search_stops_at_home(self):
         with tempfile.TemporaryDirectory() as folder:
