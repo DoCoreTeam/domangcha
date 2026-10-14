@@ -19,6 +19,17 @@ This file contains Claude-specific integration only. Shared execution policy liv
 - Evidence adapters: `engine.py evidence {init,start,record,state,trace,check,close,diff}` force and capture the four states, trace a marker browser → server log → stored row, and tag every claim by provenance. The Stop hook blocks while an open run fails `check`.
 - REA (`rea` MCP server, `npx rea-agents setup`) extracts features from other products; DOMANGCHA evidence proves the result in ours.
 
+## Reporting contract
+
+The prompt hook sends only the route — one line for DIRECT, the card for LOOP and GRAPH — so these rules live here, once per session, not in every prompt.
+
+1. Open the reply with the route line or card the hook printed, so the user sees what and why first.
+2. Report progress natively: steps in TodoWrite, LOOP as `/loop` iterations, GRAPH as Workflow phases.
+3. Never go silent through a step over 30 seconds; say start, middle, end.
+4. Before destructive or irreversible work, say what approval is for and why, then stop on AskUserQuestion.
+5. A user-facing feature is done only when an evidence run passes: `python3 ~/.domangcha/domangcha/engine.py evidence start` → state enter/exit (four states) → trace <marker> → check; quote run_id and the check result.
+6. The user's language, brief and plain; never hide a failure — state it with the next action.
+
 Do not reconstruct the legacy mandatory CEO/FULL PIPELINE from prompts. Follow DIRECT, LOOP, or GRAPH returned by `engine.py`.
 
 Official version source: `VERSION` = 4.0.0.

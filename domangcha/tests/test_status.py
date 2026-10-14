@@ -147,7 +147,7 @@ class DefaultSurfaceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("changed", json.loads(result.stdout))
 
-    def test_claude_hook_injects_the_card_and_the_reporting_contract(self):
+    def test_claude_hook_injects_the_card_without_resending_the_contract(self):
         result = subprocess.run(
             ["python3", str(ROOT / "domangcha/hooks/domangcha-ceo-enforcer.py")],
             input=json.dumps({"prompt": "병렬로 로그인 API와 화면을 구현해줘"}),
@@ -158,8 +158,25 @@ class DefaultSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("\U0001f682 DOMANGCHA · GRAPH", result.stdout)
-        self.assertIn("진행 상황 보고 규칙", result.stdout)
+        self.assertNotIn("진행 상황 보고 규칙", result.stdout)
         self.assertIn("route=GRAPH", result.stdout)
+        self.assertIn("Workflow", result.stdout)
+
+    def test_a_direct_prompt_costs_one_line(self):
+        """DIRECT is most prompts; the static contract lives in CLAUDE.md, not in each prompt."""
+        result = subprocess.run(
+            ["python3", str(ROOT / "domangcha/hooks/domangcha-ceo-enforcer.py")],
+            input=json.dumps({"prompt": "fix typo in README"}),
+            text=True, capture_output=True, cwd=ROOT, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(result.stdout.strip().splitlines()), 1, result.stdout)
+        self.assertIn("DIRECT", result.stdout)
+
+    def test_the_installed_rulebook_carries_the_reporting_contract(self):
+        text = (ROOT / "domangcha/CLAUDE.md").read_text()
+        self.assertIn("## Reporting contract", text)
+        self.assertIn("evidence start", text)
 
 
 if __name__ == "__main__":

@@ -156,3 +156,18 @@ class GlobalHookDeferralTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TokenBudgetTests(unittest.TestCase):
+    """The always-loaded surface stays small; the full rulebook is read by section."""
+
+    ALWAYS_LOADED_LIMIT = 2500  # bytes of CLAUDE.md a loop project loads every session
+
+    def test_the_project_claude_md_does_not_import_the_whole_rulebook(self):
+        for rel in ("CLAUDE.md", "CLAUDE.en.md"):
+            text = (TEMPLATES / rel).read_text()
+            self.assertNotRegex(text, r"(?m)^@LOOP", rel)
+            self.assertLess(len(text.encode()), self.ALWAYS_LOADED_LIMIT, rel)
+            for section in ("1", "2", "4", "8", "9"):
+                marker = "section %s" if rel.endswith("en.md") else "%s절"
+                self.assertIn(marker % section, text, (rel, section))

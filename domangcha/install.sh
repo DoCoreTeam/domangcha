@@ -106,7 +106,29 @@ echo -e "${DIM}  ─────────────────────
 echo -e "  ${WHITE}Starting installation...${NC}${DIM} / 설치를 시작합니다${NC}"
 echo ""
 # Let the explicit check below do the reporting rather than aborting on set -e here.
-( git clone --depth 1 "$DOMANGCHA_REPO" "$TMP_DIR/domangcha-repo" --quiet ) & spin "Downloading DOMANGCHA... / DOMANGCHA 다운로드 중" || true
+# Run from a checkout (`bash domangcha/install.sh`), install that checkout: cloning main
+# instead would install a different version than the one the caller is looking at.
+# Piped from curl there is no script path, so the download below is used.
+LOCAL_SRC=""
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    LOCAL_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    [ -f "${LOCAL_SRC}/engine.py" ] && [ -d "${LOCAL_SRC}/evidence" ] || LOCAL_SRC=""
+fi
+if [ -n "$LOCAL_SRC" ]; then
+    # Only the package directory and the Codex plugin files — never the rest of the working tree.
+    REPO_ROOT="$(dirname "$LOCAL_SRC")"
+    mkdir -p "$TMP_DIR/domangcha-repo/domangcha"
+    tar -C "$LOCAL_SRC" -cf - . | tar -C "$TMP_DIR/domangcha-repo/domangcha" -xf -
+    for extra in plugins/domangcha .agents/plugins; do
+        if [ -d "${REPO_ROOT}/${extra}" ]; then
+            mkdir -p "$TMP_DIR/domangcha-repo/${extra}"
+            tar -C "${REPO_ROOT}/${extra}" -cf - . | tar -C "$TMP_DIR/domangcha-repo/${extra}" -xf -
+        fi
+    done
+    echo -e "  ${GREEN}✔${NC}  using this checkout: ${REPO_ROOT}${DIM} / 현재 체크아웃으로 설치${NC}"
+else
+    ( git clone --depth 1 "$DOMANGCHA_REPO" "$TMP_DIR/domangcha-repo" --quiet ) & spin "Downloading DOMANGCHA... / DOMANGCHA 다운로드 중" || true
+fi
 SRC="${TMP_DIR}/domangcha-repo/domangcha"
 if [ ! -d "$SRC" ]; then
     echo -e "  ${RED}✖${NC}  Download failed — nothing to install from ${DOMANGCHA_REPO}${DIM} / 다운로드 실패, 설치할 원본 없음${NC}"

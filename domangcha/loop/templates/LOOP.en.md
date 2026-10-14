@@ -1,6 +1,6 @@
 # DOMANGCHA v4.0.0 — LOOP project autonomous dev protocol
 
-This file is the only working rulebook, loaded every session
+This file is the only full rulebook and is not loaded every session; read the section CLAUDE.md points to when it applies
 In this project these rules take precedence over any global rules (~/.claude/CLAUDE.md)
 Add project conventions to the appendix at the bottom only; leave the body alone
 The heavy rules (the DOMANGCHA harness) live in .claude/heavy/CEO.md and are read only for items marked heavy

@@ -926,3 +926,5 @@
 | 2026-10-14 17:32 | `../../.claude/projects/-Users-dohyeonkim-dev-domangcha/memory/project_native_delegation.md` | Write |
 | 2026-10-14 17:36 | `domangcha/evals/live/live.py` | Write |
 | 2026-10-14 17:43 | `domangcha/evals/live/RESULTS.md` | Write |
+| 2026-10-14 17:58 | `domangcha/loop/templates/CLAUDE.md` | Write |
+| 2026-10-14 17:59 | `domangcha/loop/templates/CLAUDE.en.md` | Write |

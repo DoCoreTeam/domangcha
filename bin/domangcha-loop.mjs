@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PKG_ROOT = path.join(__dirname, '..');
@@ -94,10 +95,27 @@ if (!fs.existsSync(path.join(ROOT, '.git'))) {
 // 기존 CLAUDE.md 자동 이관 (기본 동작, --no-migrate 로 끔)
 const claudeMd = path.join(ROOT, 'CLAUDE.md');
 let migrated = null;
+let slimmed = false;
+let importKept = false;
+// 설치기가 놓은 그대로의 옛 CLAUDE.md 본문(첫 줄 버전 헤더 제외) 해시. 한 글자라도 고친 파일은 건드리지 않는다.
+// Hashes of every stock old CLAUDE.md body (version header excluded); an edited file is never touched.
+const STOCK_IMPORT_BODIES = new Set(['3f346074468c42f7', '48f3934a6991913a', 'c3467f51e6077f81', 'e78daa44f83f1388', 'ef5cb0d544de17a8']);
+function isStockImport(text) {
+  const body = text.split('\n').slice(1).join('\n');
+  return STOCK_IMPORT_BODIES.has(createHash('sha256').update(body).digest('hex').slice(0, 16));
+}
 if (!has('--no-migrate') && fs.existsSync(claudeMd)) {
   const existing = fs.readFileSync(claudeMd, 'utf8');
-  const isLoopKit = existing.includes('@LOOP.md') || /^# DOMANGCHA v3\./m.test(existing);
-  if (!isLoopKit) {
+  const isLoopKit = existing.includes('@LOOP.md') || /^# DOMANGCHA v3\./m.test(existing)
+    || (/^# DOMANGCHA v\d/m.test(existing) && existing.includes('LOOP.md'));
+  if (isLoopKit && isStockImport(existing)) {
+    // 예전 판은 @LOOP.md 로 31KB 규정 전체를 매 세션 불러왔다. 손대지 않은 그 파일만 핵심판으로 바꾼다.
+    // The old edition imported the whole 31KB rulebook every session; only an untouched copy is replaced.
+    fs.rmSync(claudeMd);
+    slimmed = true;
+  } else if (isLoopKit && /^@LOOP\.md$/m.test(existing)) {
+    importKept = true;
+  } else if (!isLoopKit) {
     const heavyDir = path.join(ROOT, '.claude', 'heavy');
     fs.mkdirSync(heavyDir, { recursive: true });
     const dest = path.join(heavyDir, 'CEO.md');
@@ -137,7 +155,7 @@ if (has('--agents')) {
   for (const link of ['AGENTS.md', 'GEMINI.md']) {
     const dest = path.join(ROOT, link);
     if (fs.lstatSync(dest, { throwIfNoEntry: false })) fs.rmSync(dest, { force: true });
-    fs.symlinkSync('LOOP.md', dest);
+    fs.symlinkSync('CLAUDE.md', dest); // the core, not the whole rulebook
   }
   say('symlinked AGENTS.md and GEMINI.md for Codex and Gemini CLI',
     'Codex·Gemini CLI 용으로 AGENTS.md, GEMINI.md 심볼릭 링크를 만들었습니다');
@@ -154,6 +172,10 @@ if (previous && previous !== VERSION) {
 }
 if (placed.length) say(`added ${placed.join(', ')}`, `신규 ${placed.join(', ')}`);
 else if (!previous) say('kept your existing rule files', '기존 규정 파일을 그대로 두었습니다');
+if (slimmed) say('replaced the old CLAUDE.md that loaded all of LOOP.md every session with the core edition; LOOP.md is now read by section',
+  'LOOP.md 전체를 매 세션 불러오던 옛 CLAUDE.md 를 핵심판으로 바꿨습니다 — 이제 LOOP.md 는 필요한 절만 읽습니다');
+if (importKept) say('your CLAUDE.md is edited and still imports all of LOOP.md every session; to cut that, replace the @LOOP.md line with the core from the template',
+  '수정된 CLAUDE.md 가 아직 LOOP.md 전체를 매 세션 불러옵니다 — 줄이려면 @LOOP.md 줄을 템플릿의 핵심판으로 바꾸세요');
 if (migrated) say(`moved your CLAUDE.md to ${migrated}, read back for heavy items (LOOP.md section 5)`,
   `기존 CLAUDE.md 를 ${migrated} 로 옮겼습니다 — 중량 항목에서 다시 읽습니다 (LOOP.md 5절)`);
 

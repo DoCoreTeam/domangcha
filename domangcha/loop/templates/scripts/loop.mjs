@@ -600,6 +600,8 @@ function policyLines(prefix) {
 }
 
 // ---------- 보고 계약 / reporting contract ----------
+// 보고 계약은 세션 시작과 압축 직후(resume)에만 싣고 매 프롬프트에는 반복하지 않는다 — 같은 규칙을 매번 다시 읽히는 것은 토큰 낭비다.
+// The contract rides on session start and post-compaction resume only, never on every prompt.
 // 저장소 불변식: 진행 상황은 기본으로 보고한다. 하네스는 전역 훅이 이 계약을 주입하지만
 // 루프 프로젝트에서는 전역 훅이 물러나므로 루프가 직접 같은 계약을 준다.
 // Repository invariant: progress is reported by default. The harness injects this from the global
@@ -827,7 +829,6 @@ cmds.hook = (a) => {
         '[DOMANGCHA] on a stop instruction, hold or plan abort at once; for a feature unrelated to this plan, propose a separate plan after this one'));
       if (routedIv && routedIv.route === 'GRAPH') msg.push(...harnessHintLines(routedIv));
       msg.push(...policyLines('[DOMANGCHA]'));
-      msg.push('', ...reportingContract());
       out(msg.join('\n'));
     } else {
       const id = nextId('instructions', 'ins');
@@ -844,7 +845,6 @@ cmds.hook = (a) => {
         '[DOMANGCHA] a question, lookup or explanation is answered directly, with no plan (LOOP.md section 1 exception)'));
       if (routedNew && routedNew.route === 'GRAPH') msg.push(...harnessHintLines(routedNew));
       msg.push(...policyLines('[DOMANGCHA]'));
-      msg.push('', ...reportingContract());
       out(msg.join('\n'));
     }
     return;

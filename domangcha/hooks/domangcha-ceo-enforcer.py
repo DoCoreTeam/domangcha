@@ -30,18 +30,6 @@ def _load_engine():
     return route_request, StatusReporter
 
 
-REPORTING_CONTRACT = """진행 상황 보고 규칙 (기본 활성 · 끄려면 사용자가 명시적으로 요청):
-1. 응답 시작에 위 라우트 카드를 그대로 보여준다. 사용자가 "지금 무엇을 왜 하는지"를 먼저 알게 한다.
-2. 진행은 네이티브로 보고한다 — 단계는 TodoWrite, LOOP는 /loop 회차, GRAPH는 Workflow phase.
-   DOMANGCHA는 루프·그래프·체크포인트를 따로 돌리지 않는다.
-3. 30초 이상 걸리는 단계는 침묵하지 않는다. 시작·중간·끝을 짧게 알린다.
-4. 파괴적·되돌릴 수 없는 작업 앞에서는 무엇을·왜 승인받는지 말하고 AskUserQuestion으로 멈춘다.
-5. 사용자 화면이 바뀌는 기능은 증거 런이 통과해야 완료다: `{engine} evidence start` →
-   state enter/exit(4상태 캡처) → trace <marker> → check. 완료 보고에 run_id와 check 결과를 인용한다.
-6. 톤: 사용자의 언어로, 친절하고 간결하게. 실패는 감추지 말고 있는 그대로 + 다음 조치를 함께 말한다."""
-
-ENGINE_HINT = "python3 ~/.domangcha/domangcha/engine.py"
-
 CEO_COMMAND = re.compile(r"^\s*/ceo\b", re.IGNORECASE)
 
 YIELD_MESSAGE = """[DOMANGCHA] 이 프로젝트는 프로젝트 루프로 운영됩니다 (.loop/ 감지).
@@ -55,25 +43,25 @@ ESCALATION_NOTICE = """[DOMANGCHA] /ceo 로 프로젝트 루프에서 하네스�
 
 
 
+# The reporting contract is static, so it lives once in the installed CLAUDE.md
+# (loaded and prompt-cached per session) instead of being re-sent with every prompt.
+# DIRECT — most prompts — gets one line; LOOP and GRAPH get the card plus one line.
+NATIVE_RUNTIME = {
+    "LOOP": "run on the native /loop skill (bounded PLAN→EXECUTE→VALIDATE→ACT)",
+    "GRAPH": "run on the native Workflow tool; destructive effects need AskUserQuestion approval",
+}
+
+
 def _message(result: dict, card: str) -> str:
-    return """[DOMANGCHA ADAPTIVE ROUTER]
-{card}
-
-route={route} score={score} approval_required={approval}
-
-{contract}
-
-Use the canonical route. DIRECT has no planner graph, recursive loop, mandatory DOC, or agent fan-out.
-LOOP runs on the native /loop skill (bounded PLAN→EXECUTE→VALIDATE→ACT).
-GRAPH runs on the native Workflow tool; destructive effects require approval via AskUserQuestion.
-Do not use legacy SMALL/MEDIUM/FULL-PIPELINE prose to override this decision.
-""".format(
-        card=card,
-        route=result["route"],
-        score=result["score"],
-        approval=str(result["approval_required"]).lower(),
-        contract=REPORTING_CONTRACT.format(engine=ENGINE_HINT),
-    )
+    route = result["route"]
+    if route == "DIRECT":
+        reasons = "; ".join(r for r in result.get("reasons") or []
+                            if not r.startswith("deterministic complexity"))
+        return "[DOMANGCHA ADAPTIVE ROUTER] ⚡ DIRECT score=%s%s" % (
+            result["score"], " · " + reasons if reasons else "")
+    return "[DOMANGCHA ADAPTIVE ROUTER]\n%s\nroute=%s score=%s approval_required=%s · %s" % (
+        card, route, result["score"], str(result["approval_required"]).lower(),
+        NATIVE_RUNTIME.get(route, ""))
 
 
 def _project_loop_root() -> Path | None:
