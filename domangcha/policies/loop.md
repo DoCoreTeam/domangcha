@@ -23,6 +23,15 @@ contract; `domangcha/loop/templates/LOOP.md` is the copy that ships into a proje
 - A half-installed project (`.loop/` without the CLI) is not treated as a loop project;
   the global router stays in charge.
 
+## Context budget
+
+- The project `CLAUDE.md` is a core of about 1.4 KB that points at `LOOP.md` sections; the
+  full rulebook is read by section, never imported every session.
+- The prompt hook prints the record id, the next action and the active policies only. The
+  reporting contract rides on session start and post-compaction resume.
+- An untouched old `CLAUDE.md` that imported `@LOOP.md` is replaced on update; an edited one
+  is kept and the user is told how to slim it.
+
 ## Language
 
 - The loop ships Korean and English editions of every message, the plan template and the

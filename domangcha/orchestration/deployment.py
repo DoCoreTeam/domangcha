@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 DEFAULT_INSTALL = Path.home() / ".domangcha" / "domangcha"
-DEPLOYED_PARTS = ("engine.py", "VERSION", "orchestration", "adapters", "manifests", "graphs", "policies")
+DEPLOYED_PARTS = ("engine.py", "VERSION", "orchestration", "adapters", "manifests", "evidence", "policies")
 IGNORED_NAMES = {"__pycache__", ".DS_Store"}
 
 

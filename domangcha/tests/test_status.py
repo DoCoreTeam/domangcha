@@ -6,7 +6,6 @@ from pathlib import Path
 from unittest import mock
 
 from domangcha.orchestration.contracts import GraphState, Route, RunStatus
-from domangcha.orchestration.loop import LoopState
 from domangcha.orchestration.status import StatusReporter, bar, tree
 
 
@@ -70,31 +69,6 @@ class RouteCardTests(unittest.TestCase):
         self.assertIn("[REDACTED]", card)
 
 
-class LoopCardTests(unittest.TestCase):
-    def test_reports_iteration_budget_and_health_counters(self):
-        state = LoopState(
-            status=RunStatus.RUNNING,
-            iteration=3,
-            retry_budget=5,
-            no_progress_count=1,
-            usage={"model_calls": 5, "tool_calls": 22},
-        )
-        card = StatusReporter("ko").loop_card(state)
-        self.assertIn("LOOP 3/12", card)
-        self.assertIn("정체 1/3", card)
-        self.assertIn("model 5/12", card)
-        self.assertIn("RUNNING", card)
-
-    def test_surfaces_the_latest_verdict_as_a_readable_line(self):
-        state = LoopState(decisions=[{"iteration": 1, "verdict": {"ok": False, "progress": "2 tests failing"}}])
-        self.assertIn("2 tests failing", StatusReporter().loop_card(state))
-
-    def test_extra_lines_appear_before_the_state_line(self):
-        card = StatusReporter().loop_card(LoopState(), extra=["게이트: 검증 FAIL"]).splitlines()
-        self.assertIn("├ 게이트: 검증 FAIL", card)
-        self.assertTrue(card[-1].startswith("└ 상태"))
-
-
 class GraphCardTests(unittest.TestCase):
     def test_reports_completed_running_and_waiting_nodes(self):
         card = StatusReporter("ko").graph_card(graph_state())
@@ -102,19 +76,6 @@ class GraphCardTests(unittest.TestCase):
         self.assertIn("build ⏳", card)
         self.assertIn("ship ⏸", card)
         self.assertIn("2/5", card)
-
-    def test_reports_parallel_branches_recorded_by_a_wave_node(self):
-        state = graph_state(node_results={"build": {
-            "strategy": "QUORUM",
-            "results": {"dc-dev-be": {}, "dc-dev-fe": {}},
-            "errors": {"dc-sec": "timeout"},
-            "ok": True,
-        }})
-        card = StatusReporter("ko").graph_card(state)
-        self.assertIn("병렬(build)", card)
-        self.assertIn("dc-dev-be ✅", card)
-        self.assertIn("dc-sec ❌", card)
-        self.assertIn("join=QUORUM", card)
 
     def test_reports_pending_human_gate(self):
         state = graph_state(status=RunStatus.WAITING_FOR_APPROVAL, approvals={"gate": {"status": "PENDING"}})
@@ -128,20 +89,6 @@ class GraphCardTests(unittest.TestCase):
     def test_uses_the_route_of_the_checkpoint_in_the_header(self):
         card = StatusReporter().graph_card(graph_state(route=Route.LOOP, graph_id="", pending_nodes=[]))
         self.assertTrue(card.startswith("\U0001f501 LOOP"))
-
-
-class WaveCardTests(unittest.TestCase):
-    def test_reports_each_branch_and_a_partial_verdict(self):
-        card = StatusReporter("ko").wave_card(
-            {"strategy": "ALL", "results": {"a": 1, "b": 2}, "errors": {"c": "timeout_or_cancelled"}, "ok": False}
-        )
-        self.assertIn("✅ a", card)
-        self.assertIn("❌ c — timeout_or_cancelled", card)
-        self.assertIn("부분 성공 (2/3)", card)
-
-    def test_reports_full_success(self):
-        card = StatusReporter("en").wave_card({"strategy": "ANY", "results": {"a": 1}, "errors": {}})
-        self.assertIn("all succeeded (1/1)", card)
 
 
 class LanguageTests(unittest.TestCase):
@@ -200,7 +147,7 @@ class DefaultSurfaceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("changed", json.loads(result.stdout))
 
-    def test_claude_hook_injects_the_card_and_the_reporting_contract(self):
+    def test_claude_hook_injects_the_card_without_resending_the_contract(self):
         result = subprocess.run(
             ["python3", str(ROOT / "domangcha/hooks/domangcha-ceo-enforcer.py")],
             input=json.dumps({"prompt": "병렬로 로그인 API와 화면을 구현해줘"}),
@@ -211,8 +158,25 @@ class DefaultSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("\U0001f682 DOMANGCHA · GRAPH", result.stdout)
-        self.assertIn("진행 상황 보고 규칙", result.stdout)
+        self.assertNotIn("진행 상황 보고 규칙", result.stdout)
         self.assertIn("route=GRAPH", result.stdout)
+        self.assertIn("Workflow", result.stdout)
+
+    def test_a_direct_prompt_costs_one_line(self):
+        """DIRECT is most prompts; the static contract lives in CLAUDE.md, not in each prompt."""
+        result = subprocess.run(
+            ["python3", str(ROOT / "domangcha/hooks/domangcha-ceo-enforcer.py")],
+            input=json.dumps({"prompt": "fix typo in README"}),
+            text=True, capture_output=True, cwd=ROOT, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(result.stdout.strip().splitlines()), 1, result.stdout)
+        self.assertIn("DIRECT", result.stdout)
+
+    def test_the_installed_rulebook_carries_the_reporting_contract(self):
+        text = (ROOT / "domangcha/CLAUDE.md").read_text()
+        self.assertIn("## Reporting contract", text)
+        self.assertIn("evidence start", text)
 
 
 if __name__ == "__main__":

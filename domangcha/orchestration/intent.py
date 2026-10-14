@@ -25,7 +25,7 @@ class IntentNormalizer:
     def _read_only(text: str) -> bool:
         mutating = (
             "implement", "fix", "create", "add", "remove", "delete", "update",
-            "refactor", "migrate", "deploy", "구현", "수정", "고쳐", "추가",
+            "refactor", "migrate", "deploy", "구현", "수정", "고쳐", "고치", "추가",
             "삭제", "변경", "만들", "배포", "마이그레이션", "리팩터",
         )
         readonly = (
@@ -37,17 +37,20 @@ class IntentNormalizer:
     @staticmethod
     def _signals(text: str) -> set:
         groups = {
-            "mutation": ("implement", "fix", "create", "update", "구현", "수정", "추가", "변경"),
+            "mutation": ("implement", "fix", "create", "update", "구현", "수정", "고쳐", "고치", "추가", "변경", "만들"),
             "database": ("database", "schema", "migration", "db ", "데이터베이스", "스키마", "마이그레이션"),
             "api": (" api", "endpoint", "public contract", "엔드포인트"),
-            "frontend": ("frontend", "ui", "page", "component", "프론트", "화면", "컴포넌트"),
+            "frontend": ("frontend", "ui", "page", "component", "dashboard", "프론트", "화면", "컴포넌트", "페이지", "대시보드"),
             "security": ("security", "auth", "permission", "secret", "보안", "인증", "인가", "권한"),
-            "destructive": ("drop ", "truncate", "destroy", "destructive", "irreversible", "삭제", "파괴", "되돌릴 수 없"),
+            "destructive": ("drop ", "truncate", "destroy", "destructive", "irreversible", "delete all",
+                            "delete every", "wipe", "erase", "purge", "rm -rf", "삭제", "싹 지워", "전부 지워",
+                            "모두 지워", "다 지워", "날려", "파괴", "되돌릴 수 없"),
             "architecture": ("architecture", "cross-cutting", "refactor all", "아키텍처", "전체 리팩터"),
             "parallel": ("parallel", "multi-agent", "fan-out", "병렬", "멀티에이전트"),
             "resume": ("checkpoint", "resume", "long-running", "체크포인트", "재개", "장기 실행"),
             "external": ("webhook", "external api", "payment", "deploy", "외부 api", "결제", "배포"),
-            "iterative": ("iterate", "debug", "refactor", "loop", "반복", "디버그", "리팩터", "루프"),
+            "iterative": ("iterate", "debug", "refactor", "loop", "bug", "반복", "디버그", "리팩터", "루프", "버그", "테스트 돌려"),
+            "trivial": ("typo", "오타", "오탈자", "rename", "변수명", "이름 바꿔"),
         }
         return {name for name, words in groups.items() if any(word in text for word in words)}
 

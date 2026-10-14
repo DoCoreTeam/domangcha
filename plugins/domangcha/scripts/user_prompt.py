@@ -9,15 +9,16 @@ from runtime import active_session, checkpoint, coordinator, hook_payload, repor
 
 REPORTING_CONTRACT = """Status reporting is on by default. Report progress to the user, in the user's language:
 - Open the reply with the route card above so the user knows what is running and why.
-- LOOP: report `iteration n/N`, remaining retry budget, and the one thing that actually changed this pass.
-- GRAPH: report node progress (done / running / waiting) and, for parallel branches, the branch list at
-  fan-out and the success/failure plus join strategy at join.
+- LOOP: report the pass number and the one thing that actually changed this pass.
+- GRAPH: report phase progress and, for parallel branches, which succeeded and which failed.
+- A user-facing feature is complete only when `engine.py evidence check` passes for the open run
+  (four forced states captured, one marker traced browser → server → database).
 - Do not go silent through long steps; announce start, midpoint, and end briefly.
 - Explain in plain language what needs approval and why before pausing at a gate.
 - Say failures plainly, together with the next action. Never hide a stalled loop."""
 
 
-def control_context(state, control: Path, card: str = "") -> str:
+def control_context(state, control: Path, card: str = "", with_contract: bool = True) -> str:
     reasons = "; ".join(
         reason
         for item in state.get("route_history", [])
@@ -29,16 +30,15 @@ task_id={task_id} route={route}
 reasons={reasons}
 control=python3 \"{control}\"
 
-{contract}
-
-The lifecycle hook already selected the canonical route. Use the DOMANGCHA skill workflow, record progress, run relevant validation, and call the exact control command with `complete` before claiming completion. Do not create another router. Destructive or irreversible work still requires explicit user approval.
+{contract}The lifecycle hook already selected the canonical route. Use the DOMANGCHA skill workflow, record progress, run relevant validation, and call the exact control command with `complete` before claiming completion. Do not create another router. Destructive or irreversible work still requires explicit user approval.
 """.format(
         card=(card + "\n") if card else "",
         task_id=state["task_id"],
         route=state["route"],
         reasons=reasons,
         control=control,
-        contract=REPORTING_CONTRACT,
+        # The contract is static: send it on a session's first prompt, not on every prompt.
+        contract=(REPORTING_CONTRACT + "\n\n") if with_contract else "",
     )
 
 
@@ -67,7 +67,7 @@ def main() -> int:
             print(json.dumps({
                 "hookSpecificOutput": {
                     "hookEventName": "UserPromptSubmit",
-                    "additionalContext": control_context(persisted, control, status_card(root, persisted)),
+                    "additionalContext": control_context(persisted, control, status_card(root, persisted), False),
                 }
             }, ensure_ascii=False))
             return 0
@@ -89,7 +89,7 @@ def main() -> int:
     card = renderer.route_card({"route": state.route.value, "reasons": [
         reason for item in state.route_history for reason in item.get("reasons", [])
     ]}) if renderer else ""
-    context = control_context(state.to_dict(), control, card)
+    context = control_context(state.to_dict(), control, card, with_contract=not existing)
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "UserPromptSubmit",

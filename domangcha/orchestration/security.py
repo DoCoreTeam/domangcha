@@ -5,7 +5,13 @@ from typing import Any, Dict
 
 SECRET_KEY = re.compile(r"(token|secret|password|api[_-]?key|authorization)", re.I)
 SECRET_VALUE = re.compile(
-    r"(?i)(bearer\s+)[A-Za-z0-9._-]+|\bsk-[A-Za-z0-9_-]{8,}|((?:password|secret|api[_-]?key)\s*[=:]\s*)\S+"
+    r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]+"
+    r"|((?:password|passwd|secret|token|api[_-]?key|access[_-]?key|session(?:id)?)[\"']?\s*[=:]\s*[\"']?)[^\s\"',;&]+"
+    r"|\bsk-[A-Za-z0-9_-]{8,}"
+    r"|\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"
+    r"|\bgh[pousr]_[A-Za-z0-9]{20,}"
+    r"|\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+"
+    r"|(?<=://)[^/\s:@]+:[^/\s@]+(?=@)"
 )
 
 

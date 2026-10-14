@@ -12,9 +12,6 @@ class ValidationTests(unittest.TestCase):
     def test_manifests_match_files(self):
         self.assertEqual(RepositoryValidator(ROOT).validate_manifests(), [])
 
-    def test_graph_definitions_are_valid(self):
-        self.assertEqual(RepositoryValidator(ROOT).validate_graphs(), [])
-
     def test_hand_maintained_source_line_limits(self):
         paths = [path for path in (ROOT / "domangcha").rglob("*") if path.is_file()]
         self.assertEqual(RepositoryValidator(ROOT).validate_line_limits(paths), [])

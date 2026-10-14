@@ -1,10 +1,10 @@
 # /ceo-ship — 배포 오케스트레이터 / Ship Orchestrator
 
-Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는 explicit authority와 HUMAN_GATE 후에만 실행한다.
+Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는 explicit authority와 AskUserQuestion 승인 후에만 실행한다.
 
-**EN** — Full ship pipeline: quality gate → review → build → deploy. Combines gstack, ECC, and DC-DEV-OPS agent for a safe, verified release.
+**EN** — Full ship pipeline: evidence check → quality gate → review → build → deploy. Combines gstack, ECC, and DC-DEV-OPS agent for a safe, verified release.
 
-**KO** — 품질 게이트 → 리뷰 → 빌드 → 배포 전체 파이프라인. gstack, ECC, DC-DEV-OPS 에이전트를 결합하여 안전하고 검증된 릴리즈를 보장합니다.
+**KO** — 증거 확인 → 품질 게이트 → 리뷰 → 빌드 → 배포 전체 파이프라인. gstack, ECC, DC-DEV-OPS 에이전트를 결합하여 안전하고 검증된 릴리즈를 보장합니다.
 
 ## 사용법 / Usage
 
@@ -17,6 +17,10 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 
 ## 실행 파이프라인 / Execution Pipeline
 
+### STEP 0: 증거 확인 (Evidence Check)
+- `python3 ~/.domangcha/domangcha/engine.py evidence check` → 사용자 화면이 있는 변경은 통과 전 배포 금지 (`policies/evidence.md`)
+- 열린 evidence run이 실패하면 중단하고 빠진 상태·trace·claim을 보고
+
 ### STEP 1: 품질 검증 (Quality Validation)
 - ECC `/quality-gate` → 5개 게이트 통과 확인
 - ECC `/test-coverage` → 80% 커버리지 확인
@@ -24,7 +28,7 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 
 ### STEP 2: 코드 리뷰 (Code Review)
 - gstack `/review` → 배포 전 최종 코드 검토
-- DC-REV 에이전트 → PASS 판정 확인
+- 네이티브 code-reviewer 에이전트 → PASS 판정 확인
 
 ### STEP 3: 빌드 검증 (Build Verification)
 - ECC `/build-fix` → 빌드 오류 사전 감지 및 수정
@@ -37,15 +41,15 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 - ECC `/pipeline` → CI/CD 파이프라인 트리거
 
 ### STEP 5: 배포 후 검증 (Post-Deploy Verification)
-- **Claude-in-Chrome 확장 (기본)** → `mcp__claude-in-chrome__*`로 배포된 서비스 실화면 스모크 (핵심 플로우·콘솔 에러)
-  - 폴백: Chrome 확장 미가용/무인 CI 카나리 시 Playwright(`/e2e`). 정책: `skills/ceo-standards/SKILL.md` "브라우저 검증 정책"
-- DC-QA 에이전트 → 프로덕션 기능 검증
+- **Claude-in-Chrome 확장** → `mcp__claude-in-chrome__*`로 배포된 서비스 실화면 스모크 (핵심 플로우·콘솔 에러)
+- 네이티브 e2e-runner 에이전트 → 프로덕션 기능 검증
 
 ## 결과 보고 / Output
 
 ```
 [CEO-SHIP REPORT]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 증거 (Evidence):          PASS — <run id>
 ✅ 품질 게이트 (Quality Gate): PASS
 ✅ 코드 리뷰 (Code Review):   PASS
 ✅ 빌드 (Build):              PASS
@@ -71,8 +75,8 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 | `/canary` | gstack | 카나리 배포 |
 | `/land-and-deploy` | gstack | 랜딩 + 배포 |
 | `/review` | gstack | 배포 전 리뷰 |
-| `mcp__claude-in-chrome__*` | Claude-in-Chrome | **배포 후 실화면 스모크 (기본)** |
-| `/e2e` | ECC | Playwright 스모크 (폴백 — CI/무인 카나리) |
+| `engine.py evidence check` | DOMANGCHA | 배포 전 증거 확인 |
+| `mcp__claude-in-chrome__*` | Claude-in-Chrome | **배포 후 실화면 스모크** |
 | DC-DEV-OPS | DOMANGCHA | DevOps 전문 에이전트 |
-| DC-REV | DOMANGCHA | 최종 리뷰 에이전트 |
-| DC-QA | DOMANGCHA | QA 전문 에이전트 |
+| code-reviewer | Claude Code | 최종 리뷰 에이전트 |
+| e2e-runner | Claude Code | QA 에이전트 |

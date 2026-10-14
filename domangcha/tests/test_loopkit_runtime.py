@@ -34,6 +34,11 @@ def node_available():
     return (major, minor) >= (22, 13)
 
 
+def isolated_env():
+    """Hooks export CLAUDE_PROJECT_DIR; inheriting it would point loop.mjs at the real repo."""
+    return {k: v for k, v in os.environ.items() if k not in {"CLAUDE_PROJECT_DIR", "LOOP_ROOT"}}
+
+
 @unittest.skipUnless(node_available(), "Node 22.13+ required for node:sqlite")
 class LoopRuntimeTests(unittest.TestCase):
     def setUp(self):
@@ -50,6 +55,7 @@ class LoopRuntimeTests(unittest.TestCase):
         result = subprocess.run(
             ["node", "scripts/loop.mjs", *args],
             cwd=self.project,
+            env=isolated_env(),
             input=stdin,
             text=True,
             capture_output=True,
@@ -93,11 +99,11 @@ class LoopRuntimeTests(unittest.TestCase):
         (self.project / "package.json").write_text('{"name": "sample", "version": "1.0.0"}\n')
         self.assertIn('"loop": "node scripts/loop.mjs"', self.loop("init", "--project", "sample"))
 
-    def test_every_prompt_carries_the_reporting_contract(self):
-        """The global hook yields inside a loop project, so the loop must carry the contract."""
+    def test_a_prompt_does_not_resend_the_reporting_contract(self):
+        """The contract is static: session start and CLAUDE.md carry it, every prompt would only burn tokens."""
         output = self.loop("hook", "prompt", stdin=json.dumps({"prompt": "로그인 만들어줘"}))
-        self.assertIn("진행 상황 보고 규칙", output)
-        self.assertIn("30초 이상", output)
+        self.assertNotIn("진행 상황 보고 규칙", output)
+        self.assertIn("plan new", output)
 
     def test_session_start_carries_the_contract_and_the_card(self):
         output = self.loop("hook", "session", stdin=json.dumps({"source": "startup"}))
@@ -126,7 +132,7 @@ class BilingualTests(unittest.TestCase):
     def loop(self, *args, stdin="", expect=0):
         result = subprocess.run(
             ["node", "scripts/loop.mjs", *args],
-            cwd=self.project, input=stdin, text=True, capture_output=True, check=False,
+            cwd=self.project, env=isolated_env(), input=stdin, text=True, capture_output=True, check=False,
         )
         self.assertEqual(result.returncode, expect, result.stderr or result.stdout)
         return result.stdout
@@ -171,8 +177,10 @@ class BilingualTests(unittest.TestCase):
         self.assertIn("retries left", card[0])
 
     def test_the_english_contract_carries_no_korean(self):
-        text = self.loop("hook", "prompt", stdin=json.dumps({"prompt": "add a login screen"}))
+        text = self.loop("hook", "session", stdin=json.dumps({"source": "startup"}))
         self.assertIn("DOMANGCHA reporting rules", text)
+        self.assertFalse(re.search(r"[가-힣]", text), text)
+        text = self.loop("hook", "prompt", stdin=json.dumps({"prompt": "add a login screen"}))
         self.assertFalse(re.search(r"[가-힣]", text), text)
 
     def test_a_korean_plan_still_parses_after_switching_to_english(self):

@@ -1,4 +1,4 @@
-"""Human-facing status rendering for DIRECT, LOOP, GRAPH, and parallel waves.
+"""Human-facing status rendering for the route, checkpointed task state, and deploy drift.
 
 The engine already records everything it does in typed state, checkpoints, and
 events. This module is the only place that turns that state into something a
@@ -54,9 +54,6 @@ def tree(lines: List[str]) -> str:
     )
 
 
-def is_wave(value: Any) -> bool:
-    return isinstance(value, dict) and "strategy" in value and "results" in value
-
 
 class StatusReporter:
     """Renders friendly progress cards. Pure formatting, no side effects."""
@@ -83,39 +80,6 @@ class StatusReporter:
         lines.append("%s: %s" % (self._t("next"), self._pick(NEXT, route)))
         return header + "\n" + tree(lines)
 
-    def loop_card(
-        self,
-        state: Any,
-        max_no_progress: int = 3,
-        max_same_error: int = 3,
-        extra: Optional[List[str]] = None,
-    ) -> str:
-        data = redact(as_dict(state))
-        iteration = int(data.get("iteration", 0) or 0)
-        maximum = int(data.get("max_iterations", 0) or 0)
-        header = "%s LOOP %d/%d  %s" % (
-            ROUTE_ICON["LOOP"],
-            iteration,
-            maximum,
-            bar(iteration, maximum),
-        )
-        health = "%s %s · %s %s/%s · %s %s/%s" % (
-            self._t("retry_left"), data.get("retry_budget", 0),
-            self._t("stalled"), data.get("no_progress_count", 0), max_no_progress,
-            self._t("repeat_error"), data.get("repeated_error_count", 0), max_same_error,
-        )
-        lines = [health, self._budget_line(data.get("usage", {}), {
-            "model": data.get("max_model_calls"),
-            "agent": data.get("max_agent_calls"),
-            "tool": data.get("max_tool_calls"),
-        })]
-        lines.extend(extra or [])
-        recent = self._recent(data.get("decisions", []))
-        if recent:
-            lines.append("%s: %s" % (self._t("recent"), recent))
-        lines.append(self._state_line(data.get("status")))
-        return header.rstrip() + "\n" + tree(lines)
-
     def graph_card(self, state: Any, total_nodes: Optional[int] = None) -> str:
         data = redact(as_dict(state))
         completed = [str(x) for x in data.get("completed_nodes", [])]
@@ -135,7 +99,6 @@ class StatusReporter:
                 self._t("running"), current, self._t("attempt"), attempts.get(current, 1)))
         if pending:
             lines.append("%s: %s" % (self._t("waiting"), " · ".join(x + " ⏸" for x in pending)))
-        lines.extend(self._wave_lines(data.get("node_results", {})))
         lines.append(self._budget_line(data.get("usage", {}), self._graph_limits(data.get("budget", {}))))
         lines.extend(self._approval_lines(data.get("approvals", {})))
         lines.append(self._state_line(data.get("status")))
@@ -155,30 +118,6 @@ class StatusReporter:
         else:
             lines.append(self._t("in_sync"))
         return header + "\n" + tree(lines)
-
-    def wave_card(self, wave: Dict[str, Any]) -> str:
-        data = redact(dict(wave or {}))
-        results, errors = data.get("results", {}), data.get("errors", {})
-        total = len(results) + len(errors)
-        header = "\U0001f33f %s %d %s · join=%s" % (
-            self._t("parallel"), total, self._t("branches"), data.get("strategy", "ALL"))
-        lines = ["✅ " + name for name in sorted(results)]
-        lines += ["❌ %s — %s" % (name, errors[name]) for name in sorted(errors)]
-        verdict = self._t("all_ok") if not errors else self._t("partial")
-        lines.append("%s: %s (%d/%d)" % (self._t("result"), verdict, len(results), total))
-        return header + "\n" + tree(lines)
-
-    def _wave_lines(self, node_results: Dict[str, Any]) -> List[str]:
-        lines = []
-        for node_id in sorted(node_results):
-            wave = node_results[node_id]
-            if not is_wave(wave):
-                continue
-            marks = ["%s ✅" % name for name in sorted(wave.get("results", {}))]
-            marks += ["%s ❌" % name for name in sorted(wave.get("errors", {}))]
-            lines.append("%s(%s): %s · join=%s" % (
-                self._t("parallel"), node_id, " | ".join(marks), wave.get("strategy", "ALL")))
-        return lines
 
     def _approval_lines(self, approvals: Dict[str, Any]) -> List[str]:
         waiting = [node for node, item in sorted(approvals.items())
@@ -202,17 +141,6 @@ class StatusReporter:
             "tool": data.get("tool_calls"),
             "retries": data.get("retries"),
         }
-
-    def _recent(self, decisions: List[Any]) -> str:
-        if not decisions:
-            return ""
-        last = decisions[-1]
-        if not isinstance(last, dict):
-            return str(last)[:120]
-        summary = last.get("error") or last.get("message") or last.get("verdict") or last
-        if isinstance(summary, dict):
-            summary = summary.get("progress") or summary.get("reason") or summary
-        return str(summary)[:120]
 
     def _state_line(self, status: Any) -> str:
         name = getattr(status, "value", status) or "PENDING"

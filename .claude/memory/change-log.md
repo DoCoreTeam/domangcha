@@ -918,3 +918,13 @@
 | 2026-08-17 19:18 | `domangcha/orchestration/status.py` | Edit |
 | 2026-08-17 19:19 | `README.md` | Edit |
 | 2026-08-17 19:19 | `README.md` | Edit |
+| 2026-10-14 17:12 | `domangcha/tests/test_evidence.py` | Write |
+| 2026-10-14 17:12 | `domangcha/evidence/ledger.py` | Write |
+| 2026-10-14 17:21 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/ab541299-65b9-45a7-8a7d-dabe71f45627/scratchpad/agents.py` | Write |
+| 2026-10-14 17:21 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/ab541299-65b9-45a7-8a7d-dabe71f45627/scratchpad/cmds.py` | Write |
+| 2026-10-14 17:23 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/ab541299-65b9-45a7-8a7d-dabe71f45627/scratchpad/readme.py` | Write |
+| 2026-10-14 17:32 | `../../.claude/projects/-Users-dohyeonkim-dev-domangcha/memory/project_native_delegation.md` | Write |
+| 2026-10-14 17:36 | `domangcha/evals/live/live.py` | Write |
+| 2026-10-14 17:43 | `domangcha/evals/live/RESULTS.md` | Write |
+| 2026-10-14 17:58 | `domangcha/loop/templates/CLAUDE.md` | Write |
+| 2026-10-14 17:59 | `domangcha/loop/templates/CLAUDE.en.md` | Write |

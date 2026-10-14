@@ -43,6 +43,13 @@ description: "Backend Developer — API endpoints, business logic, and server-si
 - **성능 로딩 = 서버 페이지네이션 기본**(offset; 대용량 cursor 권장) — 응답에 `total/page/limit` 또는 `nextCursor` 메타
 - 목록 쿼리 LIMIT 필수, N+1 금지(JOIN/배치), API 엔벨로프 일관 유지
 
+## 기능 완결성
+> 완료 판정: `domangcha/policies/evidence.md` — `evidence trace` 로 브라우저 요청 → 서버 로그 → 저장된 DB 행이 한 번에 이어져야 함
+- 서버 로그에서 trace 마커를 찾을 수 있도록 Request ID 와 요청 핵심 필드를 구조화 로그에 기록
+- 프런트엔드의 버튼 숨김은 권한 검증이 아님 — 서버에서 대상 데이터 접근 권한과 작업 권한을 모두 검증
+- 백그라운드 작업은 접수와 완료를 구분하고 진행 상태·실패·재시도 결과가 사용자에게 도달하게 함
+- 동시 수정 중복 요청 부분 실패 외부 응답 지연이 실제로 가능한 작업에만 무결성·복구 장치를 적용 (모든 기능에 동일한 장치 부착 금지)
+
 ## 권한
 읽기: O / 쓰기: O / 코드실행: O(로컬) / 외부API: X / 배포: X
 
