@@ -52,7 +52,7 @@ Refactor payments end to end and ship it
 
 ## ⚡ Why DOMANGCHA?
 
-Claude Code and OpenAI Codex are powerful, but a trivial edit should not pay for a multi-agent pipeline—and a risky cross-cutting change should not rely on one unbounded prompt. **DOMANGCHA selects the minimum reliable execution shape**: DIRECT for simple work, LOOP for iterative correction, and GRAPH for explicit multi-stage topology. One deterministic router owns the decision and evidence adapters own completion; loops, graphs, memory, search, reviewers and the browser are native Claude Code.
+Claude Code and OpenAI Codex are powerful, but a trivial edit should not pay for a multi-agent pipeline—and a risky cross-cutting change should not rely on one unbounded prompt. **DOMANGCHA selects the minimum reliable execution shape**: DIRECT for simple work, LOOP for iterative correction, and GRAPH for explicit multi-stage topology. One deterministic router owns the decision and evidence adapters own completion; loops, graphs, memory, search, subagents and the browser are native Claude Code (named reviewers come from ECC when installed).
 
 <table>
 <tr>
@@ -88,7 +88,7 @@ You press Enter
 |---|:---:|:---:|
 | Complexity-aware execution | ✅ DIRECT / LOOP / GRAPH | ❌ One workflow for everything |
 | Deterministic control flow | ✅ Typed routes and guarded edges | ❌ Prompt-only decisions |
-| Role separation by specialist | ✅ 8 builder roles + native reviewers | ❌ Single writer/reviewer |
+| Role separation by specialist | ✅ 8 builder roles + an independent reviewer subagent | ❌ Single writer/reviewer |
 | Builder ≠ Reviewer (enforced) | ✅ Always | ❌ None |
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
 | Completion proven, not claimed | ✅ forced states + browser → DB trace | ❌ "build passed" |
@@ -234,7 +234,7 @@ DOMANGCHA keeps routing and evidence. Everything Claude Code already does native
 | LOOP iteration | bounded passes in the session (TodoWrite); native `/loop` + ScheduleWakeup to wait on CI or a deploy, and for `/ceo-ralph` |
 | GRAPH topology | native Workflow tool — pipeline / parallel / phase, `resumeFromRunId` |
 | human approval | native AskUserQuestion |
-| review, security, QA, research, docs, SEO | native code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose |
+| review, security, QA, research, docs, SEO | an independent subagent: `code-reviewer`, `security-reviewer`, `e2e-runner`, `doc-updater` when installed (also `ecc:<name>`), otherwise native `general-purpose`; `Explore` for research |
 | memory | native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`) |
 | web search | native WebSearch / WebFetch |
 | browser | Claude-in-Chrome |
@@ -359,7 +359,7 @@ The hooks are code control, not another prompt-only router: they call the same `
                     COMPLETE / PAUSED / FAILED
 ```
 
-Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAPH, with native agents as evaluators. Small read-only requests do not create planning documents or invoke all agents. Meaningful implementation preserves Builder ≠ Reviewer; destructive, security-sensitive, or irreversible steps require an explicit approval edge.
+Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAPH, with an independent subagent as evaluator. Small read-only requests do not create planning documents or invoke all agents. Meaningful implementation preserves Builder ≠ Reviewer; destructive, security-sensitive, or irreversible steps require an explicit approval edge.
 
 ---
 
@@ -383,7 +383,7 @@ Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAP
 </tbody>
 </table>
 
-> Evaluation and support use native Claude Code agents: code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose. DIRECT normally invokes none. `domangcha/manifests/agents.json` is the authoritative manifest.
+> Evaluation and support run on an independent subagent: code-reviewer, security-reviewer, e2e-runner, doc-updater or seo-specialist when installed (ECC ships them, also as `ecc:<name>`), otherwise Claude Code's own general-purpose; Explore for research. DIRECT normally invokes none. `domangcha/manifests/agents.json` is the authoritative manifest.
 
 ---
 
@@ -405,7 +405,7 @@ Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAP
 
 | Version | What changed |
 |---|---|
-| **v4.0.0** | Native delegation: loops, graphs, memory, search, reviewers, and the browser are Claude Code's own; DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session (Codex: once per task), extra skill bundles opt-in. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
+| **v4.0.0** | Native delegation: loops, graphs, memory, search, subagents, and the browser are Claude Code's own (named reviewers come from ECC when installed); DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session (Codex: once per task), extra skill bundles opt-in. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
 | **v3.0.5** | Terminal output paints English bright and Korean dim, so one language carries and the other confirms |
 | **v3.0.4** | No slash command is required: the loop asks the harness router itself; README usage cut to one block |
 | **v3.0.3** | Install-time output is bilingual, English first, everywhere |
@@ -657,7 +657,7 @@ policy add ▸ P001 i18n 키 강제
 
 ### ⚡ 왜 DOMANGCHA인가?
 
-Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에이전트 파이프라인을 돌릴 이유는 없습니다. 반대로 보안·DB·API·UI가 얽힌 변경을 단일 프롬프트에 맡겨서도 안 됩니다. **DOMANGCHA는 신뢰성에 필요한 최소 실행 구조**인 DIRECT, LOOP, GRAPH를 결정론적으로 선택하고, 완료는 증거 어댑터가 판정합니다. 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 네이티브 기능을 씁니다.
+Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에이전트 파이프라인을 돌릴 이유는 없습니다. 반대로 보안·DB·API·UI가 얽힌 변경을 단일 프롬프트에 맡겨서도 안 됩니다. **DOMANGCHA는 신뢰성에 필요한 최소 실행 구조**인 DIRECT, LOOP, GRAPH를 결정론적으로 선택하고, 완료는 증거 어댑터가 판정합니다. 루프·그래프·메모리·검색·서브에이전트·브라우저는 Claude Code 네이티브 기능을 씁니다(이름 붙은 리뷰어는 ECC 가 설치돼 있을 때).
 
 <table>
 <tr>
@@ -693,7 +693,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 |---|:---:|:---:|
 | 복잡도별 실행 | ✅ DIRECT / LOOP / GRAPH | ❌ 모든 일에 같은 워크플로 |
 | 결정론적 제어 흐름 | ✅ 타입 라우트 + 가드 엣지 | ❌ 프롬프트 전용 판단 |
-| 전문가 역할 분리 | ✅ 8개 빌더 역할 + 네이티브 리뷰어 | ❌ 작성자 단독 검토 |
+| 전문가 역할 분리 | ✅ 8개 빌더 역할 + 독립 리뷰어 서브에이전트 | ❌ 작성자 단독 검토 |
 | 빌더 ≠ 리뷰어 강제 | ✅ 항상 분리 | ❌ 없음 |
 | 파괴적 변경 보호 | ✅ Gate 5 차단 | ❌ 없음 |
 | 주장이 아닌 증거로 완료 | ✅ 강제 상태 + 브라우저 → DB 추적 | ❌ "빌드 통과" |
@@ -708,7 +708,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 
 | 버전 | 바뀐 것 |
 |---|---|
-| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 기본 기능으로, DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번(Codex 는 작업당 한 번), 추가 스킬 묶음은 선택 설치. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
+| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·서브에이전트·브라우저는 Claude Code 기본 기능으로(이름 붙은 리뷰어는 ECC 가 있을 때), DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번(Codex 는 작업당 한 번), 추가 스킬 묶음은 선택 설치. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
 | **v3.0.5** | 터미널 출력에서 영어는 또렷하게, 한글은 흐리게 — 한쪽만 읽어도 되게 |
 | **v3.0.4** | 슬래시 커맨드 불필요 — 루프가 하네스 라우터에 직접 질의, README 사용법 한 곳으로 압축 |
 | **v3.0.3** | 설치 시점 출력 전부 이중언어, 영어 우선 |
@@ -828,7 +828,7 @@ REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거�
 </tbody>
 </table>
 
-> 평가와 지원은 Claude Code 네이티브 에이전트가 맡습니다: code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose. DIRECT는 보통 역할을 호출하지 않습니다. 권위 원본은 `domangcha/manifests/agents.json`입니다.
+> 평가와 지원은 독립 서브에이전트가 맡습니다. code-reviewer, security-reviewer, e2e-runner, doc-updater, seo-specialist 가 설치돼 있으면 그것을(ECC 가 제공, `ecc:<이름>` 포함), 없으면 Claude Code 기본 general-purpose 를 쓰고, 조사는 Explore 입니다. DIRECT는 보통 역할을 호출하지 않습니다. 권위 원본은 `domangcha/manifests/agents.json`입니다.
 
 ---
 

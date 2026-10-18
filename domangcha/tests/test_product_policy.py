@@ -39,7 +39,7 @@ class PolicyFileTests(unittest.TestCase):
 
 
 class HarnessAgentTests(unittest.TestCase):
-    """Builders carry the evidence gate; reviewers are native and are not shipped."""
+    """Builders carry the evidence gate; reviewers are delegated, not shipped."""
 
     def test_builders_name_the_evidence_gate(self):
         for agent in ("dc-dev-fe", "dc-dev-be"):
@@ -49,6 +49,21 @@ class HarnessAgentTests(unittest.TestCase):
     def test_native_shadows_are_not_shipped(self):
         for agent in ("dc-rev", "dc-sec", "dc-qa", "dc-res", "dc-knw"):
             self.assertFalse((ROOT / "domangcha" / "agents" / ("%s.md" % agent)).exists(), agent)
+
+    def test_review_never_depends_on_an_optional_agent_name(self):
+        """code-reviewer and friends come from ECC, not Claude Code; review must still run without them."""
+        for rel in ("domangcha/skills/ceo-agents/SKILL.md", "domangcha/CLAUDE.md", "CLAUDE.md"):
+            self.assertIn("general-purpose", (ROOT / rel).read_text(), rel)
+        false_claims = re.compile(
+            r"native (code-reviewer|security-reviewer|e2e-runner|doc-updater|reviewers)"
+            r"|네이티브 (code-reviewer|security-reviewer|e2e-runner|리뷰어)"
+            r"|reviewers,? and the browser are"
+            r"|리뷰어·브라우저는")
+        docs = [ROOT / "README.md", ROOT / "CLAUDE.md", ROOT / "domangcha" / "CLAUDE.md"]
+        for folder in ("agents", "commands", "skills", "policies"):
+            docs += sorted((ROOT / "domangcha" / folder).rglob("*.md"))
+        for path in docs:
+            self.assertIsNone(false_claims.search(path.read_text()), path)
 
 
 class LoopProtocolTests(unittest.TestCase):

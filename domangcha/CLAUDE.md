@@ -13,7 +13,7 @@ This file contains Claude-specific integration only. Shared execution policy liv
 - `hooks/domangcha-ceo-enforcer.py` calls the canonical TaskRouter.
 - LOOP runs as bounded passes in the session, tracked in TodoWrite; the native `/loop` skill and ScheduleWakeup are for waiting on external state and for `/ceo-ralph`. GRAPH runs through the native Workflow tool (pipeline/parallel/phase, `resumeFromRunId`). Memory is native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`); search is native WebSearch/WebFetch.
 - `orchestration/status.py` renders the route, checkpoint, and drift cards. Status reporting is on by default.
-- `agents/dc-*.md` hold the 8 logical roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt), resolved through `manifests/agents.json`. Review, security, and QA use native code-reviewer, security-reviewer, and e2e-runner.
+- `agents/dc-*.md` hold the 8 logical roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt), resolved through `manifests/agents.json`. Review, security, and QA run on an independent reviewer subagent — `code-reviewer`, `security-reviewer`, `e2e-runner`, `doc-updater` or `seo-specialist` when installed (ECC ships them, also as `ecc:<name>`), otherwise native `general-purpose` in a context separate from the writer; `Explore` for research.
 - Browser verification uses Claude-in-Chrome.
 - Approvals go through AskUserQuestion. A rejected approval aborts the relevant branch.
 - Evidence adapters: `engine.py evidence {init,start,record,state,trace,check,close,diff}` force and capture the four states, trace a marker browser → server log → stored row, and tag every claim by provenance. The Stop hook blocks while an open run fails `check`.

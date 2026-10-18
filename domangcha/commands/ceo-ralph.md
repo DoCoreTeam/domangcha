@@ -24,7 +24,7 @@ LOOP는 네이티브 `/loop` 스킬로 돈다. 회차 간격은 ScheduleWakeup�
 - repeated-error fingerprint
 - tests/validator evidence
 - 사용자 화면이 있는 기능은 `evidence check` 통과 (`policies/evidence.md`)
-- independent reviewer evidence when code was meaningfully changed (네이티브 code-reviewer)
+- independent reviewer evidence when code was meaningfully changed (설치된 code-reviewer, 없으면 general-purpose)
 
 ## 중단과 승인
 

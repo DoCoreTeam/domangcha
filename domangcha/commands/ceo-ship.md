@@ -6,8 +6,8 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 
 **KO** — 증거 확인 → 품질 게이트 → 리뷰 → 빌드 → 배포 전체 파이프라인. gstack, ECC, DC-DEV-OPS 에이전트를 결합하여 안전하고 검증된 릴리즈를 보장합니다.
 
-> ECC·gstack 항목은 그 스킬이 설치된 경우에만 쓴다 (`DOMANGCHA_WITH_EXTRAS=1`). 없으면 같은 단계를 프로젝트의 테스트·빌드 명령과 네이티브 code-reviewer, security-reviewer, dc-dev-ops 로 수행한다.
-> ECC and gstack steps apply only when those skills are installed (`DOMANGCHA_WITH_EXTRAS=1`); otherwise run the same step with the project's own test and build commands and the native code-reviewer, security-reviewer and dc-dev-ops.
+> ECC·gstack 항목은 그 스킬이 설치된 경우에만 쓴다 (`DOMANGCHA_WITH_EXTRAS=1`). 없으면 같은 단계를 프로젝트의 테스트·빌드 명령과 독립 리뷰어(설치된 code-reviewer·security-reviewer, 없으면 general-purpose)와 dc-dev-ops 로 수행한다.
+> ECC and gstack steps apply only when those skills are installed (`DOMANGCHA_WITH_EXTRAS=1`); otherwise run the same step with the project's own test and build commands and an independent reviewer (code-reviewer / security-reviewer when installed, otherwise general-purpose) and dc-dev-ops.
 
 ## 사용법 / Usage
 
@@ -31,7 +31,7 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 
 ### STEP 2: 코드 리뷰 (Code Review)
 - gstack `/review` → 배포 전 최종 코드 검토
-- 네이티브 code-reviewer 에이전트 → PASS 판정 확인
+- 독립 리뷰어(code-reviewer, 없으면 general-purpose) → PASS 판정 확인
 
 ### STEP 3: 빌드 검증 (Build Verification)
 - ECC `/build-fix` → 빌드 오류 사전 감지 및 수정
@@ -45,7 +45,7 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 
 ### STEP 5: 배포 후 검증 (Post-Deploy Verification)
 - **Claude-in-Chrome 확장** → `mcp__claude-in-chrome__*`로 배포된 서비스 실화면 스모크 (핵심 플로우·콘솔 에러)
-- 네이티브 e2e-runner 에이전트 → 프로덕션 기능 검증
+- 독립 QA(e2e-runner, 없으면 general-purpose + Claude-in-Chrome) → 프로덕션 기능 검증
 
 ## 결과 보고 / Output
 
@@ -81,5 +81,5 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 | `engine.py evidence check` | DOMANGCHA | 배포 전 증거 확인 |
 | `mcp__claude-in-chrome__*` | Claude-in-Chrome | **배포 후 실화면 스모크** |
 | DC-DEV-OPS | DOMANGCHA | DevOps 전문 에이전트 |
-| code-reviewer | Claude Code | 최종 리뷰 에이전트 |
-| e2e-runner | Claude Code | QA 에이전트 |
+| code-reviewer (없으면 general-purpose) | ECC, 없으면 general-purpose | 최종 리뷰 에이전트 |
+| e2e-runner (없으면 general-purpose) | ECC, 없으면 general-purpose | QA 에이전트 |
