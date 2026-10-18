@@ -51,7 +51,7 @@ PLAN: Dict[str, Phrase] = {
         "handled directly — no planner, loop, or agent fan-out",
     ),
     "LOOP": (
-        "PLAN → EXECUTE → VALIDATE → ACT 반복 (네이티브 /loop)",
+        "PLAN → EXECUTE → VALIDATE → ACT 반복 (세션 안 회차)",
         "bounded PLAN → EXECUTE → VALIDATE → ACT passes in the session",
     ),
     "GRAPH": (

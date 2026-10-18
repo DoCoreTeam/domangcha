@@ -89,4 +89,4 @@ description: "Frontend Developer — UI components, pages, and client-side logic
 
 ## 완료 시
 - evidence run id 와 `evidence check` 결과를 보고 (사실만)
-- 네이티브 code-reviewer / e2e-runner 검토 요청 — 커밋과 태그는 명시적 권한이 있을 때만
+- 독립 리뷰어(설치된 code-reviewer·e2e-runner, 없으면 general-purpose) 검토 요청 — 커밋과 태그는 명시적 권한이 있을 때만

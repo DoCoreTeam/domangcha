@@ -10,6 +10,6 @@ description: Logical DOMANGCHA role catalog backed by the canonical agent manife
 - PLANNER: DC-BIZ
 - GENERATOR: DC-DEV-BE, DC-DEV-DB, DC-DEV-FE, DC-DEV-INT, DC-DEV-MOB, DC-DEV-OPS, DC-WRT
 
-Review, security, QA, research, docs, and SEO use native agents: code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose.
+Review, security, QA, docs and SEO run on an independent reviewer subagent — `code-reviewer`, `security-reviewer`, `e2e-runner`, `doc-updater` or `seo-specialist` when installed (ECC ships them, also as `ecc:<name>`), otherwise native `general-purpose` in a context separate from the writer, briefed with the diff and the acceptance criteria; `Explore` for research. Only `general-purpose`, `Explore` and `Plan` ship with Claude Code; the named reviewers are optional, so resolve the first one present and never skip the review because a name is missing.
 
 Agent roles are optional Workflow or `/loop` steps selected by task need. Do not fan out in DIRECT. A writer cannot be the sole reviewer of meaningful implementation. Runtime adapters map roles to native capabilities; never assume Claude `Agent(...)` syntax exists elsewhere.

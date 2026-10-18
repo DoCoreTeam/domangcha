@@ -2,12 +2,12 @@
 
 Canonical TaskRouter에 minimum GRAPH security intent를 전달한다. Security invariant는 model proposal로 낮출 수 없다.
 
-**EN** — Full security audit pipeline: OWASP scan → secrets → auth → rate limiting → penetration. Combines ECC's security suite with gstack and the native security-reviewer agent.
+**EN** — Full security audit pipeline: OWASP scan → secrets → auth → rate limiting → penetration. Combines ECC's security suite with gstack and an independent security reviewer (security-reviewer when installed, otherwise general-purpose).
 
-**KO** — OWASP 스캔 → 시크릿 → 인증 → 레이트 리미팅 → 침투 테스트 전체 보안 파이프라인. ECC 보안 스위트 + gstack + 네이티브 security-reviewer 에이전트를 결합합니다.
+**KO** — OWASP 스캔 → 시크릿 → 인증 → 레이트 리미팅 → 침투 테스트 전체 보안 파이프라인. ECC 보안 스위트 + gstack + 독립 보안 리뷰어(security-reviewer, 없으면 general-purpose)를 결합합니다.
 
-> ECC·gstack 항목은 그 스킬이 설치된 경우에만 쓴다 (`DOMANGCHA_WITH_EXTRAS=1`). 없으면 같은 단계를 네이티브 security-reviewer 와 code-reviewer 로 수행한다.
-> ECC and gstack steps apply only when those skills are installed (`DOMANGCHA_WITH_EXTRAS=1`); otherwise run the same step with the native security-reviewer and code-reviewer.
+> ECC·gstack 항목은 그 스킬이 설치된 경우에만 쓴다 (`DOMANGCHA_WITH_EXTRAS=1`). 없으면 같은 단계를 general-purpose 독립 리뷰어로 수행한다.
+> ECC and gstack steps apply only when those skills are installed (`DOMANGCHA_WITH_EXTRAS=1`); otherwise run the same step with an independent general-purpose reviewer.
 
 ## 사용법 / Usage
 
@@ -22,7 +22,7 @@ Canonical TaskRouter에 minimum GRAPH security intent를 전달한다. Security 
 ## 실행 파이프라인 / Execution Pipeline
 
 ### STEP 1: 시크릿 스캔 (Secrets Scan)
-- security-reviewer 에이전트 → API 키, 비밀번호, 토큰 하드코딩 탐지
+- 보안 리뷰어(security-reviewer, 없으면 general-purpose) → API 키, 비밀번호, 토큰 하드코딩 탐지
 - ECC `security-scan` 스킬 → 자동화 스캔
 
 ### STEP 2: OWASP Top 10 (OWASP Audit)
@@ -39,7 +39,7 @@ Canonical TaskRouter에 minimum GRAPH security intent를 전달한다. Security 
   - A10: SSRF
 
 ### STEP 3: 인증/인가 검토 (Auth Review)
-- security-reviewer 에이전트 → JWT 설정, RLS 구현, 권한 체계 검토
+- 보안 리뷰어(security-reviewer, 없으면 general-purpose) → JWT 설정, RLS 구현, 권한 체계 검토
 
 ### STEP 4: API 보안 (API Security)
 - ECC `/security-review` → 레이트 리미팅, 입력 검증, CORS 설정 확인
@@ -76,6 +76,6 @@ Canonical TaskRouter에 minimum GRAPH security intent를 전달한다. Security 
 | `/security-review` | ECC | OWASP + API 보안 |
 | `security-scan` | ECC skill | 자동 스캔 |
 | `security-bounty-hunter` | ECC skill | 버그 바운티 스타일 탐색 |
-| security-reviewer | Claude Code | 보안 전문 에이전트 |
+| security-reviewer (없으면 general-purpose) | ECC, 없으면 general-purpose | 보안 전문 에이전트 |
 | DC-DEV-BE | DOMANGCHA | 백엔드 취약점 수정 |
 | DC-DEV-FE | DOMANGCHA | 프론트엔드 취약점 수정 |

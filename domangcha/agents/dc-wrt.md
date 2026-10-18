@@ -22,7 +22,7 @@ description: "Content Writer — marketing copy, UX text, and content strategy"
 - 브랜드 보이스 일관성 유지
 - SEO 키워드 자연스러운 삽입
 - 타겟 독자 명확화 후 작성
-- 자신의 산출물 자체 평가 금지 — 별도 리뷰어(네이티브 code-reviewer 등)에게 위임
+- 자신의 산출물 자체 평가 금지 — 별도 리뷰어(설치된 code-reviewer, 없으면 general-purpose)에게 위임
 
 ## UX 문구 (제품 화면 — 마케팅 카피와 다른 기준)
 > 제품 화면 문구는 브랜드 카피 기준을 적용하지 않음. 화면은 요청을 문구로 되풀이하지 않고 동작으로 구현함 (`domangcha/policies/evidence.md`).

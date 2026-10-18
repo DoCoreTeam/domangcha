@@ -57,7 +57,7 @@ Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit h
   through native surfaces (TodoWrite, Workflow phases, LOOP passes). `domangcha/orchestration/status.py`
   renders the route, checkpoint, and drift cards.
 
-Shared policy is under `domangcha/policies/`; `evidence.md` governs whether a user-facing feature works. Claude-specific agents and hooks are adapters; Codex uses `AGENTS.md`. The 8 agent roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt) are defined by `domangcha/manifests/agents.json`; review, security, QA, research, and docs use native agents (code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater). Model selection is capability/policy based rather than a permanent model ID.
+Shared policy is under `domangcha/policies/`; `evidence.md` governs whether a user-facing feature works. Claude-specific agents and hooks are adapters; Codex uses `AGENTS.md`. The 8 agent roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt) are defined by `domangcha/manifests/agents.json`; review, security, QA, research, and docs use an independent reviewer subagent — `code-reviewer`, `security-reviewer`, `e2e-runner`, `doc-updater` or `seo-specialist` when installed (ECC ships them, also as `ecc:<name>`), otherwise native `general-purpose` in a context separate from the writer; `Explore` for research. Model selection is capability/policy based rather than a permanent model ID.
 
 ## Commands
 
