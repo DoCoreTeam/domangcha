@@ -52,7 +52,7 @@ PLAN: Dict[str, Phrase] = {
     ),
     "LOOP": (
         "PLAN → EXECUTE → VALIDATE → ACT 반복 (네이티브 /loop)",
-        "bounded PLAN → EXECUTE → VALIDATE → ACT on native /loop",
+        "bounded PLAN → EXECUTE → VALIDATE → ACT passes in the session",
     ),
     "GRAPH": (
         "Workflow 툴 · 병렬 브랜치 · join · 승인 게이트",

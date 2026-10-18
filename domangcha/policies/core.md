@@ -9,7 +9,7 @@ DOMANGCHA uses one adaptive execution authority: `domangcha/engine.py`.
 - Never claim completion without relevant executable validation.
 - External, destructive, or irreversible effects require explicit authority.
 - Report progress by default, in the user's language: the selected route and why, then progress
-  through native surfaces — TodoWrite, Workflow phases, `/loop` iterations. Ask approval through
+  through native surfaces — TodoWrite, Workflow phases, LOOP passes. Ask approval through
   AskUserQuestion before destructive or irreversible work. Never hide a stall or a failure.
 - Do not re-implement what the runtime already provides: loops, graphs, checkpoints, memory,
   search, reviewers, and the browser are native. DOMANGCHA owns routing and evidence.

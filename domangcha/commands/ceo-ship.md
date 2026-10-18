@@ -6,6 +6,9 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 
 **KO** — 증거 확인 → 품질 게이트 → 리뷰 → 빌드 → 배포 전체 파이프라인. gstack, ECC, DC-DEV-OPS 에이전트를 결합하여 안전하고 검증된 릴리즈를 보장합니다.
 
+> ECC·gstack 항목은 그 스킬이 설치된 경우에만 쓴다 (`DOMANGCHA_WITH_EXTRAS=1`). 없으면 같은 단계를 프로젝트의 테스트·빌드 명령과 네이티브 code-reviewer, security-reviewer, dc-dev-ops 로 수행한다.
+> ECC and gstack steps apply only when those skills are installed (`DOMANGCHA_WITH_EXTRAS=1`); otherwise run the same step with the project's own test and build commands and the native code-reviewer, security-reviewer and dc-dev-ops.
+
 ## 사용법 / Usage
 
 ```

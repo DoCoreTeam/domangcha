@@ -231,7 +231,7 @@ DOMANGCHA keeps routing and evidence. Everything Claude Code already does native
 | Concern | Where it runs |
 |---|---|
 | route selection | DOMANGCHA `TaskRouter` (deterministic) |
-| LOOP iteration | native `/loop` skill + ScheduleWakeup |
+| LOOP iteration | bounded passes in the session (TodoWrite); native `/loop` + ScheduleWakeup to wait on CI or a deploy, and for `/ceo-ralph` |
 | GRAPH topology | native Workflow tool — pipeline / parallel / phase, `resumeFromRunId` |
 | human approval | native AskUserQuestion |
 | review, security, QA, research, docs, SEO | native code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater, seo-specialist, general-purpose |
@@ -250,7 +250,7 @@ PLAN → EXECUTE → VALIDATE → ACT
                          └── topology discovered → escalate to GRAPH
 ```
 
-LOOP runs through the native `/loop` skill. Termination needs completion evidence — tests, validators, an independent reviewer for meaningful code, and a passing evidence check for user-facing work. A model-written “done” is not sufficient.
+LOOP runs as bounded passes inside the session; native `/loop` is used only to wait on external state, or when you ask for `/ceo-ralph`. Termination needs completion evidence — tests, validators, an independent reviewer for meaningful code, and a passing evidence check for user-facing work. A model-written “done” is not sufficient.
 
 ### GRAPH: explicit topology
 
@@ -264,21 +264,33 @@ To copy or benchmark a feature from another product, [REA](https://github.com/mo
 
 ### Token budget: small by default
 
-What reaches the model on every turn is kept to what it needs right then. Measured on this release against v4.0.0's first cut:
+What reaches the model on every turn is kept to what it needs right then. Hook output, measured in bytes against v4.0.0's first cut:
 
 | Surface | Before | Now |
 |---|---|---|
-| loop project, loaded every session | 31.8 KB (`@LOOP.md`, the whole rulebook) | 1.4 KB core; `LOOP.md` is read by section when it applies |
+| loop project, loaded every session | 31.8 KB (`CLAUDE.md` + `@LOOP.md`, the whole rulebook) | 1.4 KB core; `LOOP.md` is read by section when it applies |
 | loop project, per prompt | 1.7 KB (next action + full reporting contract) | 0.4 KB (next action + active policies) |
 | harness, per DIRECT prompt | 1.8 KB (card + contract) | one line, under 0.1 KB |
 | harness, per LOOP / GRAPH prompt | 1.8 KB | 0.4 KB (card + one line) |
-| Codex plugin, per follow-up prompt | card + full contract | card + control line; contract on the session's first prompt only |
+| Codex plugin, per follow-up prompt | card + full contract | card + control line; contract on each new task and always in `~/.codex/AGENTS.md` |
+| `install.sh`, skills listed every session | ECC + gstack + Superpowers forced | DOMANGCHA's own only; extras with `DOMANGCHA_WITH_EXTRAS=1` |
+
+Real sessions, `claude -p` input tokens (2026-10-18, one machine):
+
+| Case | v4.0.0 first cut | Now |
+|---|---|---|
+| loop project, a question (first turn) | 90,690 | 75,780 (−14,910) |
+| loop project, "add a button" to its approval gate | 583,789 · $0.437 | 642,077 · $0.445 — no saving |
+| `rea` MCP server, every turn | — | +2,750 |
+| Claude Code with no user settings, empty folder | — | 17,560 |
+
+Re-run the measurement on your machine with `scripts/measure-tokens.sh [project-dir]`. Read the second row honestly: when the work needs the rulebook, the model greps `LOOP.md`'s headings and reads sections 0–2 and 8–9 (seen in the tool log), which costs extra turns. The core wins on questions and small edits. Most per-turn tokens on a busy machine come from user-level setup outside DOMANGCHA — rules, skills, agents and MCP servers — so keep that lean too.
 
 The reporting contract did not go away: it lives once in the installed `CLAUDE.md` and rides on session start and post-compaction resume. Running `npx domangcha` again replaces an untouched old `CLAUDE.md` that imported the whole rulebook; an edited one is left alone and you are told how to slim it.
 
 ### Status reporting is on by default
 
-An engine that works silently feels like an engine that is stuck. The route card comes from `orchestration/status.py`; progress after that shows on native surfaces — TodoWrite, Workflow phases, `/loop` iterations.
+An engine that works silently feels like an engine that is stuck. The route card comes from `orchestration/status.py`; progress after that shows on native surfaces — TodoWrite, Workflow phases, LOOP passes.
 
 ```text
 🚂 DOMANGCHA · GRAPH 🧭 (score 11)
@@ -338,7 +350,7 @@ The hooks are code control, not another prompt-only router: they call the same `
 │ answer / small edit     PLAN → EXECUTE             Workflow tool     │
 │ focused validation     → VALIDATE → ACT            pipeline/parallel │
 │                        bounded retry                resumeFromRunId   │
-│                        native /loop                 AskUserQuestion   │
+│                        passes in TodoWrite          AskUserQuestion   │
 └───────────┬──────────────────┬──────────────────────────┬─────────────┘
             └──────────────────┴──────────────────────────┘
                                ▼
@@ -393,7 +405,7 @@ Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAP
 
 | Version | What changed |
 |---|---|
-| **v4.0.0** | Native delegation: loops, graphs, memory, search, reviewers, and the browser are Claude Code's own; DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
+| **v4.0.0** | Native delegation: loops, graphs, memory, search, reviewers, and the browser are Claude Code's own; DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session (Codex: once per task), extra skill bundles opt-in. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
 | **v3.0.5** | Terminal output paints English bright and Korean dim, so one language carries and the other confirms |
 | **v3.0.4** | No slash command is required: the loop asks the harness router itself; README usage cut to one block |
 | **v3.0.3** | Install-time output is bilingual, English first, everywhere |
@@ -696,7 +708,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 
 | 버전 | 바뀐 것 |
 |---|---|
-| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 기본 기능으로, DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
+| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·리뷰어·브라우저는 Claude Code 기본 기능으로, DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번(Codex 는 작업당 한 번), 추가 스킬 묶음은 선택 설치. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
 | **v3.0.5** | 터미널 출력에서 영어는 또렷하게, 한글은 흐리게 — 한쪽만 읽어도 되게 |
 | **v3.0.4** | 슬래시 커맨드 불필요 — 루프가 하네스 라우터에 직접 질의, README 사용법 한 곳으로 압축 |
 | **v3.0.3** | 설치 시점 출력 전부 이중언어, 영어 우선 |
@@ -734,7 +746,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 ```
 
 - **DIRECT**는 플래너 그래프, 재귀 루프, 불필요한 문서와 다중 에이전트를 만들지 않습니다.
-- **LOOP**는 네이티브 `/loop` 스킬과 ScheduleWakeup으로 돌고, 테스트·검증기·독립 리뷰·증거 확인이 있어야 끝납니다.
+- **LOOP**는 세션 안에서 한정된 회차로 돌고(TodoWrite), CI·배포처럼 바깥 상태를 기다릴 때와 `/ceo-ralph` 에서만 네이티브 `/loop`·ScheduleWakeup 을 씁니다. 테스트·검증기·독립 리뷰·증거 확인이 있어야 끝납니다.
 - **GRAPH**는 보안, 파괴적 변경, DB+API+UI, 병렬 작업, 중단·재개가 필요한 업무에만 쓰며 네이티브 Workflow 툴로 실행합니다.
 - LLM은 경계가 모호할 때 구조화된 라우트를 제안할 수 있지만, 안전 불변식과 최종 전이는 코드가 결정합니다.
 - DIRECT → LOOP → GRAPH 승격 시 기존 작업 상태를 보존합니다.
@@ -752,15 +764,27 @@ REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거�
 
 ### 🪶 토큰 예산 — 기본이 가볍게
 
-매 턴 모델에 들어가는 것은 그 순간 필요한 것만 남겼습니다. 이번 릴리스에서 v4.0.0 첫 판과 같은 입력으로 잰 값입니다.
+매 턴 모델에 들어가는 것은 그 순간 필요한 것만 남겼습니다. 훅 출력은 v4.0.0 첫 판과 같은 입력으로 바이트를 잰 값입니다.
 
 | 지점 | 전 | 지금 |
 |---|---|---|
-| 루프 프로젝트, 매 세션 상시 로드 | 31.8 KB (`@LOOP.md` 규정 전체) | 1.4 KB 핵심판, `LOOP.md` 는 필요한 절만 그때 읽음 |
+| 루프 프로젝트, 매 세션 상시 로드 | 31.8 KB (`CLAUDE.md` + `@LOOP.md` 규정 전체) | 1.4 KB 핵심판, `LOOP.md` 는 필요한 절만 그때 읽음 |
 | 루프 프로젝트, 프롬프트마다 | 1.7 KB (다음 행동 + 보고 계약 전체) | 0.4 KB (다음 행동 + 활성 정책) |
 | 하네스, DIRECT 프롬프트마다 | 1.8 KB (카드 + 계약) | 한 줄, 0.1 KB 미만 |
 | 하네스, LOOP / GRAPH 프롬프트마다 | 1.8 KB | 0.4 KB (카드 + 한 줄) |
-| Codex 플러그인, 후속 프롬프트마다 | 카드 + 계약 전체 | 카드 + 제어 줄, 계약은 세션 첫 프롬프트에만 |
+| Codex 플러그인, 후속 프롬프트마다 | 카드 + 계약 전체 | 카드 + 제어 줄, 계약은 새 작업마다 그리고 `~/.codex/AGENTS.md` 에 상시 |
+| `install.sh`, 매 세션 목록에 오르는 스킬 | ECC + gstack + Superpowers 강제 설치 | DOMANGCHA 것만, 추가 묶음은 `DOMANGCHA_WITH_EXTRAS=1` |
+
+실제 세션, `claude -p` 입력 토큰 (2026-10-18, 한 대의 PC):
+
+| 경우 | v4.0.0 첫 판 | 지금 |
+|---|---|---|
+| 루프 프로젝트, 질문 하나 (첫 턴) | 90,690 | 75,780 (−14,910) |
+| 루프 프로젝트, "버튼 추가" 를 승인 직전까지 | 583,789 · $0.437 | 642,077 · $0.445 — 절감 없음 |
+| `rea` MCP 서버, 매 턴 | — | +2,750 |
+| 사용자 설정 없는 Claude Code, 빈 폴더 | — | 17,560 |
+
+내 PC 에서 다시 재려면 `scripts/measure-tokens.sh [프로젝트 폴더]` 를 실행하세요. 두 번째 줄을 그대로 읽어 주세요. 규정이 필요한 작업이면 모델이 `LOOP.md` 의 제목을 찾아 0~2절과 8~9절을 읽고(도구 로그로 확인), 그만큼 턴이 늘어납니다. 핵심판이 이기는 건 질문과 작은 수정입니다. 바쁜 PC 의 턴당 토큰 대부분은 DOMANGCHA 밖의 사용자 설정 — 규칙·스킬·에이전트·MCP 서버 — 에서 나오므로 그쪽도 가볍게 유지하세요.
 
 보고 계약은 없어지지 않았습니다. 설치된 `CLAUDE.md` 에 한 번만 있고 세션 시작과 컨텍스트 압축 뒤 재개 때 함께 나갑니다. `npx domangcha` 를 다시 실행하면 규정 전체를 불러오던 손대지 않은 옛 `CLAUDE.md` 는 핵심판으로 바뀌고, 직접 고친 파일은 그대로 두고 줄이는 방법만 알려줍니다.
 
@@ -769,7 +793,7 @@ REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거�
 ### 📣 진행 상황 보고 (기본 활성)
 
 조용히 도는 엔진은 멈춘 엔진처럼 보입니다. 라우트 카드는 `orchestration/status.py` 가 그리고,
-그 뒤 진행은 네이티브 표면 — TodoWrite, Workflow phase, `/loop` 회차 — 으로 보입니다.
+그 뒤 진행은 네이티브 표면 — TodoWrite, Workflow phase, LOOP 회차 — 으로 보입니다.
 
 ```text
 🚂 DOMANGCHA · GRAPH 🧭 (score 11)

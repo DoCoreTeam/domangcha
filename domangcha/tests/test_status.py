@@ -173,6 +173,18 @@ class DefaultSurfaceTests(unittest.TestCase):
         self.assertEqual(len(result.stdout.strip().splitlines()), 1, result.stdout)
         self.assertIn("DIRECT", result.stdout)
 
+    def test_a_background_notice_is_not_routed(self):
+        """A task notification mentioning 'destructive' or 'security' is not a GRAPH request."""
+        for notice in ("<task-notification>\n<status>completed</status> destructive resume security review",
+                       "[SYSTEM NOTIFICATION - NOT USER INPUT] security refactor"):
+            result = subprocess.run(
+                ["python3", str(ROOT / "domangcha/hooks/domangcha-ceo-enforcer.py")],
+                input=json.dumps({"prompt": notice}),
+                text=True, capture_output=True, cwd=ROOT, check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "", notice)
+
     def test_the_installed_rulebook_carries_the_reporting_contract(self):
         text = (ROOT / "domangcha/CLAUDE.md").read_text()
         self.assertIn("## Reporting contract", text)

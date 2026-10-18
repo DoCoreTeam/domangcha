@@ -928,3 +928,6 @@
 | 2026-10-14 17:43 | `domangcha/evals/live/RESULTS.md` | Write |
 | 2026-10-14 17:58 | `domangcha/loop/templates/CLAUDE.md` | Write |
 | 2026-10-14 17:59 | `domangcha/loop/templates/CLAUDE.en.md` | Write |
+| 2026-10-18 12:48 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/50a47cf1-0af4-4460-b155-ab4f232e91e6/scratchpad/cleanup.sh` | Write |
+| 2026-10-18 12:48 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/50a47cf1-0af4-4460-b155-ab4f232e91e6/scratchpad/restore.sh` | Write |
+| 2026-10-18 13:03 | `scripts/measure-tokens.sh` | Write |

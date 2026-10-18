@@ -28,7 +28,7 @@ Request → IntentNormalizer → TaskRouter → DIRECT | LOOP | GRAPH → valida
 ```
 
 - DIRECT: explanations, formatting, lookup, and trivial isolated changes. No mandatory planner, recursive loop, agent fan-out, DOC folder, version bump, or publish.
-- LOOP: bounded PLAN → EXECUTE → VALIDATE → ACT, run through the native `/loop` skill and ScheduleWakeup.
+- LOOP: bounded PLAN → EXECUTE → VALIDATE → ACT passes in the session, tracked in TodoWrite; the native `/loop` skill and ScheduleWakeup only when a pass must wait on external state (CI, deploy) or the user asks for `/ceo-ralph`.
 - GRAPH: multi-phase or parallel work, run through the native Workflow tool (pipeline/parallel/phase, `resumeFromRunId`); approvals go through AskUserQuestion.
 
 Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit hook calls the same router automatically. Model output may propose an ambiguous classification but cannot override deterministic safety invariants.
@@ -42,8 +42,10 @@ Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit h
 - Never commit, push, publish, deploy, or perform irreversible work without task-specific authority.
 - Persist no secrets in checkpoints or structured logs.
 - Keep the always-loaded and per-prompt surface small: a loop project loads a core `CLAUDE.md`
-  and reads `LOOP.md` by section; the prompt hooks never resend the static reporting contract,
-  which lives once in the installed `CLAUDE.md` and in session-start output. Tests pin the budget.
+  and reads `LOOP.md` by section; the prompt hooks never resend the static reporting contract
+  on follow-ups (Codex sends it once per new task), because it lives in the always-loaded
+  `CLAUDE.md` / `~/.codex/AGENTS.md`. `install.sh` adds no third-party skill bundle unless
+  `DOMANGCHA_WITH_EXTRAS=1`, since every listed skill costs every session. Tests pin the budget.
 - A user-facing feature is complete only when `domangcha/policies/evidence.md` passes: the four
   states (loading, empty, error, no-permission) forced and captured, one marker traced browser →
   server log → stored row, and every claim tagged observation/derivation/inference/unknown.
@@ -52,7 +54,7 @@ Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit h
 - To copy or benchmark a feature from another product, extract it with REA (`rea` MCP server,
   `npx rea-agents setup`); its findings are input, never proof about our product.
 - Report progress by default, in the user's language: route and reason up front, then progress
-  through native surfaces (TodoWrite, Workflow phases, `/loop` iterations). `domangcha/orchestration/status.py`
+  through native surfaces (TodoWrite, Workflow phases, LOOP passes). `domangcha/orchestration/status.py`
   renders the route, checkpoint, and drift cards.
 
 Shared policy is under `domangcha/policies/`; `evidence.md` governs whether a user-facing feature works. Claude-specific agents and hooks are adapters; Codex uses `AGENTS.md`. The 8 agent roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt) are defined by `domangcha/manifests/agents.json`; review, security, QA, research, and docs use native agents (code-reviewer, security-reviewer, e2e-runner, Explore, doc-updater). Model selection is capability/policy based rather than a permanent model ID.

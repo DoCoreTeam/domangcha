@@ -37,7 +37,8 @@ control=python3 \"{control}\"
         route=state["route"],
         reasons=reasons,
         control=control,
-        # The contract is static: send it on a session's first prompt, not on every prompt.
+        # The contract is static: it rides on each new task, not on follow-ups. The
+        # always-loaded copy lives in ~/.codex/AGENTS.md, so compaction cannot lose it.
         contract=(REPORTING_CONTRACT + "\n\n") if with_contract else "",
     )
 
@@ -89,7 +90,7 @@ def main() -> int:
     card = renderer.route_card({"route": state.route.value, "reasons": [
         reason for item in state.route_history for reason in item.get("reasons", [])
     ]}) if renderer else ""
-    context = control_context(state.to_dict(), control, card, with_contract=not existing)
+    context = control_context(state.to_dict(), control, card)
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "UserPromptSubmit",
