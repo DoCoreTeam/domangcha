@@ -284,7 +284,7 @@ Real sessions, `claude -p` input tokens (2026-10-18, one machine):
 | `rea` MCP server, every turn | — | +2,750 |
 | Claude Code with no user settings, empty folder | — | 17,560 |
 
-Read the second row honestly: when the work needs the rulebook, the model greps `LOOP.md`'s headings and reads sections 0–2 and 8–9 (seen in the tool log), which costs extra turns. The core wins on questions and small edits. Most per-turn tokens on a busy machine come from user-level setup outside DOMANGCHA — rules, skills, agents and MCP servers — so keep that lean too.
+Re-run the measurement on your machine with `scripts/measure-tokens.sh [project-dir]`. Read the second row honestly: when the work needs the rulebook, the model greps `LOOP.md`'s headings and reads sections 0–2 and 8–9 (seen in the tool log), which costs extra turns. The core wins on questions and small edits. Most per-turn tokens on a busy machine come from user-level setup outside DOMANGCHA — rules, skills, agents and MCP servers — so keep that lean too.
 
 The reporting contract did not go away: it lives once in the installed `CLAUDE.md` and rides on session start and post-compaction resume. Running `npx domangcha` again replaces an untouched old `CLAUDE.md` that imported the whole rulebook; an edited one is left alone and you are told how to slim it.
 
@@ -784,7 +784,7 @@ REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거�
 | `rea` MCP 서버, 매 턴 | — | +2,750 |
 | 사용자 설정 없는 Claude Code, 빈 폴더 | — | 17,560 |
 
-두 번째 줄을 그대로 읽어 주세요. 규정이 필요한 작업이면 모델이 `LOOP.md` 의 제목을 찾아 0~2절과 8~9절을 읽고(도구 로그로 확인), 그만큼 턴이 늘어납니다. 핵심판이 이기는 건 질문과 작은 수정입니다. 바쁜 PC 의 턴당 토큰 대부분은 DOMANGCHA 밖의 사용자 설정 — 규칙·스킬·에이전트·MCP 서버 — 에서 나오므로 그쪽도 가볍게 유지하세요.
+내 PC 에서 다시 재려면 `scripts/measure-tokens.sh [프로젝트 폴더]` 를 실행하세요. 두 번째 줄을 그대로 읽어 주세요. 규정이 필요한 작업이면 모델이 `LOOP.md` 의 제목을 찾아 0~2절과 8~9절을 읽고(도구 로그로 확인), 그만큼 턴이 늘어납니다. 핵심판이 이기는 건 질문과 작은 수정입니다. 바쁜 PC 의 턴당 토큰 대부분은 DOMANGCHA 밖의 사용자 설정 — 규칙·스킬·에이전트·MCP 서버 — 에서 나오므로 그쪽도 가볍게 유지하세요.
 
 보고 계약은 없어지지 않았습니다. 설치된 `CLAUDE.md` 에 한 번만 있고 세션 시작과 컨텍스트 압축 뒤 재개 때 함께 나갑니다. `npx domangcha` 를 다시 실행하면 규정 전체를 불러오던 손대지 않은 옛 `CLAUDE.md` 는 핵심판으로 바뀌고, 직접 고친 파일은 그대로 두고 줄이는 방법만 알려줍니다.
 
