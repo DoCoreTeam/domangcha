@@ -163,8 +163,8 @@ if (has('--agents')) {
 
 if (previous && previous !== VERSION) {
   say(`updated: scripts/loop.mjs ${previous} → ${VERSION}`, `업데이트: scripts/loop.mjs ${previous} → ${VERSION}`);
-  say('your rule files (LOOP.md, CLAUDE.md) and .loop/ state are left alone — delete a rule file and re-run to take the new edition',
-    '규정 파일(LOOP.md, CLAUDE.md)과 .loop/ 상태는 그대로 둡니다 — 새 규정을 받으려면 그 파일을 지우고 다시 실행하세요');
+  say('your edited rule files and .loop/ state are left alone (an untouched stock CLAUDE.md is replaced by the slim core) — delete a rule file and re-run to take the new edition',
+    '수정한 규정 파일과 .loop/ 상태는 그대로 둡니다 (손대지 않은 원본 CLAUDE.md 는 핵심판으로 바뀜) — 새 규정을 받으려면 그 파일을 지우고 다시 실행하세요');
 } else if (previous === VERSION) {
   say(`already current (${VERSION}), nothing changed`, `이미 최신입니다 (${VERSION}), 바뀐 것 없음`);
 } else {

@@ -29,8 +29,8 @@ class CodexPluginTests(unittest.TestCase):
         self.assertIn("UserPromptSubmit", hooks["hooks"])
         self.assertIn("Stop", hooks["hooks"])
 
-    def test_the_reporting_contract_is_sent_once_per_session(self):
-        """Static rules re-sent with every prompt only burn context."""
+    def test_the_reporting_contract_rides_on_each_new_task_only(self):
+        """Static rules re-sent with every prompt only burn context; a new task still gets them."""
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             base = {"cwd": folder, "session_id": "session-c"}
@@ -42,6 +42,25 @@ class CodexPluginTests(unittest.TestCase):
             follow = context("also check the edge case")
             self.assertNotIn("Status reporting is on by default", follow)
             self.assertIn("route=", follow)
+            session = root / ".domangcha" / "codex" / "sessions" / "session-c.json"
+            done = json.loads(session.read_text())
+            session.write_text(json.dumps({**done, "completed": True}))
+            self.assertIn("Status reporting is on by default", context("Now add a settings page and test it"))
+
+    def test_a_graph_task_context_fits_the_codex_limit(self):
+        """Codex truncates additionalContext past its limit; the contract must not be cut off."""
+        limit = json.loads((PLUGIN / "hooks/hooks.json").read_text())["hooks"]["UserPromptSubmit"][0]["hooks"][0]["additionalContextLimit"]
+        with tempfile.TemporaryDirectory() as folder:
+            out = invoke("user_prompt.py", {"cwd": folder, "session_id": "s-g",
+                "prompt": "Refactor the auth module across services, run a security review, and make it resumable"}, Path(folder))
+            context = json.loads(out.stdout)["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("route=GRAPH", context)
+            self.assertLessEqual(len(context.encode()), limit)
+
+    def test_codex_always_loads_the_reporting_rules(self):
+        """Compaction can drop hook output; ~/.codex/AGENTS.md is reloaded every session."""
+        block = (ROOT / "domangcha" / "install.sh").read_text().split("<!-- DOMANGCHA:START -->", 2)[2]
+        self.assertIn("evidence check", block.split("<!-- DOMANGCHA:END -->")[0])
 
     def test_hook_driven_loop_completion(self):
         with tempfile.TemporaryDirectory() as folder:

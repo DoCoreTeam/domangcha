@@ -11,7 +11,7 @@ This file contains Claude-specific integration only. Shared execution policy liv
 ## Claude integration
 
 - `hooks/domangcha-ceo-enforcer.py` calls the canonical TaskRouter.
-- LOOP runs through the native `/loop` skill and ScheduleWakeup; GRAPH runs through the native Workflow tool (pipeline/parallel/phase, `resumeFromRunId`). Memory is native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`); search is native WebSearch/WebFetch.
+- LOOP runs as bounded passes in the session, tracked in TodoWrite; the native `/loop` skill and ScheduleWakeup are for waiting on external state and for `/ceo-ralph`. GRAPH runs through the native Workflow tool (pipeline/parallel/phase, `resumeFromRunId`). Memory is native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`); search is native WebSearch/WebFetch.
 - `orchestration/status.py` renders the route, checkpoint, and drift cards. Status reporting is on by default.
 - `agents/dc-*.md` hold the 8 logical roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt), resolved through `manifests/agents.json`. Review, security, and QA use native code-reviewer, security-reviewer, and e2e-runner.
 - Browser verification uses Claude-in-Chrome.
@@ -24,7 +24,7 @@ This file contains Claude-specific integration only. Shared execution policy liv
 The prompt hook sends only the route — one line for DIRECT, the card for LOOP and GRAPH — so these rules live here, once per session, not in every prompt.
 
 1. Open the reply with the route line or card the hook printed, so the user sees what and why first.
-2. Report progress natively: steps in TodoWrite, LOOP as `/loop` iterations, GRAPH as Workflow phases.
+2. Report progress natively: steps in TodoWrite, LOOP as numbered passes, GRAPH as Workflow phases.
 3. Never go silent through a step over 30 seconds; say start, middle, end.
 4. Before destructive or irreversible work, say what approval is for and why, then stop on AskUserQuestion.
 5. A user-facing feature is done only when an evidence run passes: `python3 ~/.domangcha/domangcha/engine.py evidence start` → state enter/exit (four states) → trace <marker> → check; quote run_id and the check result.

@@ -125,6 +125,14 @@ class InstalledSurfaceTests(unittest.TestCase):
         self.assertIn("INSTALLED_AGENTS=$((agent_new + agent_up))", source)
         self.assertIn("INSTALLED_ECC=$((NEW_SKILLS + UPDATED_SKILLS))", source)
 
+    def test_extra_skill_bundles_are_opt_in(self):
+        """Every installed skill is listed in each session's system prompt; extras cost every user."""
+        source = self.INSTALLER.read_text()
+        guard = source.index('if [ "${DOMANGCHA_WITH_EXTRAS:-0}" != "1" ]; then')
+        for clone in ('git clone --depth 1 "$ECC_REPO"', '"$GSTACK_REPO"', "superpowers@superpowers-marketplace"):
+            self.assertGreater(source.index(clone), guard, clone)
+        self.assertNotIn("Required for CEO", source)
+
     def test_the_clone_is_announced_after_it_runs(self):
         """Announcing a fresh install before cloning reports a result nobody checked."""
         source = self.INSTALLER.read_text()

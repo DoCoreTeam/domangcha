@@ -82,7 +82,7 @@ git_update_or_clone() {
 }
 
 # ── 1. DOMANGCHA download ─────────────────────────
-clear
+clear 2>/dev/null || true  # no terminal (CI, TERM=dumb) must not abort the install
 echo ""
 echo -e "${CYAN}${BOLD}"
 echo "  ██████╗  ██████╗ ███╗   ███╗ █████╗ ███╗   ██╗ ██████╗  ██████╗ ██╗  ██╗ █████╗ "
@@ -216,6 +216,9 @@ Use `$domangcha` to select the skill explicitly. Review plugin hooks once with `
 Manual fallback: `python3 ~/.domangcha/domangcha/engine.py route \"<request>\"`.
 Shared policy: `~/.domangcha/domangcha/policies/`. Preserve task state on escalation.
 Use Codex-native agents and tools; never emulate Claude-specific `Agent(...)` syntax.
+Reporting: open with the route card; report LOOP passes and GRAPH phases; never go silent
+on long steps; explain an approval before pausing; a user-facing feature is complete only
+when `engine.py evidence check` passes; state failures with the next action.
 <!-- DOMANGCHA:END -->"""
 pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.S)
 updated = pattern.sub(block, existing) if pattern.search(existing) else (existing.rstrip() + "\n\n" + block + "\n")
@@ -310,80 +313,91 @@ done
 # Adaptive documentation is route-dependent. The installer never rewrites a
 # user's .gitignore or untracks their documentation.
 
-# ── 7. ECC ────────────────────────────────────────
-step "ECC 스킬 설치" "Installing ECC skills"
-echo -e "  ${WHITE}commands excluded — use the /ceo-* orchestrators${NC}${DIM} / 명령어 제외 — /ceo-* 오케스트레이터로 접근${NC}"
-
-ECC_TMP="${TMP_DIR}/ecc"
-git clone --depth 1 "$ECC_REPO" "$ECC_TMP" --quiet
-
-UPDATED_SKILLS=0
+# ── 7–9. Third-party skill bundles (opt-in) ──────
+# ECC, gstack and Superpowers are not needed by the router, the loop, evidence or REA,
+# and every installed skill is listed in each session's system prompt. They install only
+# when asked: DOMANGCHA_WITH_EXTRAS=1. Bundles already on the machine are never removed.
 NEW_SKILLS=0
-for skill_dir in "${ECC_TMP}/skills"/*/; do
-    skill_name=$(basename "$skill_dir")
-    dest="${SKILLS_DIR}/${skill_name}"
-    if [ -d "$dest" ]; then
-        rm -rf "$dest"
-        UPDATED_SKILLS=$((UPDATED_SKILLS + 1))
-    else
-        NEW_SKILLS=$((NEW_SKILLS + 1))
-    fi
-    mkdir -p "$dest"
-    cp -r "${skill_dir}"* "$dest/" 2>/dev/null || true
-done
-echo -e "  ${GREEN}✔${NC}  ECC skills done${DIM} / 스킬 완료${NC}: ${GREEN}${NEW_SKILLS} 신규(new)${NC}  ${YELLOW}${UPDATED_SKILLS} 업데이트(updated)${NC}"
+UPDATED_SKILLS=0
+if [ "${DOMANGCHA_WITH_EXTRAS:-0}" != "1" ]; then
+    CURRENT_STEP=$((CURRENT_STEP + 2))
+    step "추가 스킬 묶음 건너뜀" "Skipping extra skill bundles"
+    echo -e "  ${DIM}·${NC}  ECC, gstack, Superpowers not installed — each skill costs context in every session${DIM} / 매 세션 컨텍스트를 차지하므로 설치 안 함${NC}"
+    echo -e "  ${DIM}·${NC}  to add them: DOMANGCHA_WITH_EXTRAS=1 bash install.sh${DIM} / 필요하면 이 명령으로 추가${NC}"
+else
+    # ── 7. ECC
+    step "ECC 스킬 설치" "Installing ECC skills"
+    echo -e "  ${WHITE}commands excluded — use the /ceo-* orchestrators${NC}${DIM} / 명령어 제외 — /ceo-* 오케스트레이터로 접근${NC}"
 
-# ── 8. gstack ─────────────────────────────────────
-step "gstack 업데이트" "Updating gstack"
-( git_update_or_clone "$GSTACK_REPO" "${SKILLS_DIR}/gstack" "gstack" 2>&1 ) & spin "Syncing gstack... / gstack 동기화 중" || \
-    echo -e "  ${YELLOW}⚠${NC}  gstack was not synced — the rest of the install continues without it${DIM} / gstack 미동기화, 나머지 설치는 계속${NC}"
+    ECC_TMP="${TMP_DIR}/ecc"
+    git clone --depth 1 "$ECC_REPO" "$ECC_TMP" --quiet
 
-# ── 9. Superpowers ────────────────────────────────
-step "Superpowers 설치 (필수)" "Installing Superpowers (required)"
-SUPERPOWERS_INSTALLED=false
-
-# Method 1: Claude Code plugin CLI
-if command -v claude &>/dev/null; then
-    if claude plugin marketplace list 2>/dev/null | grep -q "obra/superpowers-marketplace"; then
-        echo -e "  ${YELLOW}⟳${NC}  superpowers-marketplace already registered${DIM} / 이미 등록됨${NC}"
-    else
-        claude plugin marketplace add obra/superpowers-marketplace 2>/dev/null && \
-            echo -e "${GREEN}  ✅ Marketplace registered: obra/superpowers-marketplace${NC}" || true
-    fi
-
-    if claude plugin list 2>/dev/null | grep -q "superpowers"; then
-        if claude plugin update superpowers 2>/dev/null; then
-            echo -e "${GREEN}  ✅ superpowers updated via plugin${NC}"
+    for skill_dir in "${ECC_TMP}/skills"/*/; do
+        skill_name=$(basename "$skill_dir")
+        dest="${SKILLS_DIR}/${skill_name}"
+        if [ -d "$dest" ]; then
+            rm -rf "$dest"
+            UPDATED_SKILLS=$((UPDATED_SKILLS + 1))
         else
-            echo -e "${YELLOW}  ⚠ superpowers update command failed — keeping the version already installed${NC}"
+            NEW_SKILLS=$((NEW_SKILLS + 1))
         fi
-        SUPERPOWERS_INSTALLED=true
-    else
-        claude plugin install superpowers@superpowers-marketplace 2>/dev/null && \
-            SUPERPOWERS_INSTALLED=true && \
-            echo -e "${GREEN}  ✅ superpowers installed via plugin${NC}" || true
+        mkdir -p "$dest"
+        cp -r "${skill_dir}"* "$dest/" 2>/dev/null || true
+    done
+    echo -e "  ${GREEN}✔${NC}  ECC skills done${DIM} / 스킬 완료${NC}: ${GREEN}${NEW_SKILLS} 신규(new)${NC}  ${YELLOW}${UPDATED_SKILLS} 업데이트(updated)${NC}"
+
+    # ── 8. gstack ─────────────────────────────────────
+    step "gstack 업데이트" "Updating gstack"
+    ( git_update_or_clone "$GSTACK_REPO" "${SKILLS_DIR}/gstack" "gstack" 2>&1 ) & spin "Syncing gstack... / gstack 동기화 중" || \
+        echo -e "  ${YELLOW}⚠${NC}  gstack was not synced — the rest of the install continues without it${DIM} / gstack 미동기화, 나머지 설치는 계속${NC}"
+
+    # ── 9. Superpowers ────────────────────────────────
+    step "Superpowers 설치" "Installing Superpowers"
+    SUPERPOWERS_INSTALLED=false
+
+    # Method 1: Claude Code plugin CLI
+    if command -v claude &>/dev/null; then
+        if claude plugin marketplace list 2>/dev/null | grep -q "obra/superpowers-marketplace"; then
+            echo -e "  ${YELLOW}⟳${NC}  superpowers-marketplace already registered${DIM} / 이미 등록됨${NC}"
+        else
+            claude plugin marketplace add obra/superpowers-marketplace 2>/dev/null && \
+                echo -e "${GREEN}  ✅ Marketplace registered: obra/superpowers-marketplace${NC}" || true
+        fi
+
+        if claude plugin list 2>/dev/null | grep -q "superpowers"; then
+            if claude plugin update superpowers 2>/dev/null; then
+                echo -e "${GREEN}  ✅ superpowers updated via plugin${NC}"
+            else
+                echo -e "${YELLOW}  ⚠ superpowers update command failed — keeping the version already installed${NC}"
+            fi
+            SUPERPOWERS_INSTALLED=true
+        else
+            claude plugin install superpowers@superpowers-marketplace 2>/dev/null && \
+                SUPERPOWERS_INSTALLED=true && \
+                echo -e "${GREEN}  ✅ superpowers installed via plugin${NC}" || true
+        fi
     fi
-fi
 
-# Method 2: GitHub fallback
-if [ "$SUPERPOWERS_INSTALLED" = false ]; then
-    SUPERPOWERS_REPO="https://github.com/obra/superpowers.git"
-    git_update_or_clone "$SUPERPOWERS_REPO" "${SKILLS_DIR}/superpowers" "superpowers" 2>/dev/null && \
-        SUPERPOWERS_INSTALLED=true || true
-fi
+    # Method 2: GitHub fallback
+    if [ "$SUPERPOWERS_INSTALLED" = false ]; then
+        SUPERPOWERS_REPO="https://github.com/obra/superpowers.git"
+        git_update_or_clone "$SUPERPOWERS_REPO" "${SKILLS_DIR}/superpowers" "superpowers" 2>/dev/null && \
+            SUPERPOWERS_INSTALLED=true || true
+    fi
 
-# REQUIRED — fail loudly if not installed
-if [ "$SUPERPOWERS_INSTALLED" = false ]; then
-    echo ""
-    echo -e "${RED}  ╔══════════════════════════════════════════╗${NC}"
-    echo -e "${RED}  ║  ❌  SUPERPOWERS INSTALL FAILED${DIM} / 설치 실패 ║${NC}"
-    echo -e "${RED}  ║  Required for CEO${DIM} / CEO 작동에 필수    ║${NC}"
-    echo -e "${RED}  ╚══════════════════════════════════════════╝${NC}"
-    echo ""
-    echo -e "  Install manually inside Claude Code${DIM} / Claude Code 내에서 수동 설치:${NC}"
-    echo -e "    \033[1;33m/plugin marketplace add obra/superpowers-marketplace\033[0m"
-    echo -e "    \033[1;33m/plugin install superpowers@superpowers-marketplace\033[0m"
-    exit 1
+    # Asked for explicitly — fail loudly if not installed
+    if [ "$SUPERPOWERS_INSTALLED" = false ]; then
+        echo ""
+        echo -e "${RED}  ╔══════════════════════════════════════════╗${NC}"
+        echo -e "${RED}  ║  ❌  SUPERPOWERS INSTALL FAILED${DIM} / 설치 실패 ║${NC}"
+        echo -e "${RED}  ║  Requested by DOMANGCHA_WITH_EXTRAS=1    ║${NC}"
+        echo -e "${RED}  ╚══════════════════════════════════════════╝${NC}"
+        echo ""
+        echo -e "  Install manually inside Claude Code${DIM} / Claude Code 내에서 수동 설치:${NC}"
+        echo -e "    \033[1;33m/plugin marketplace add obra/superpowers-marketplace\033[0m"
+        echo -e "    \033[1;33m/plugin install superpowers@superpowers-marketplace\033[0m"
+        exit 1
+    fi
 fi
 
 # ── 10. Hooks ─────────────────────────────────────
@@ -540,7 +554,7 @@ echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 rm -f "${CLAUDE_DIR}/.domangcha-version-cache"
 
 # ── Done — clear + full screen ───────────────────
-clear
+clear 2>/dev/null || true  # no terminal (CI, TERM=dumb) must not abort the install
 INSTALLED_AGENTS=$((agent_new + agent_up))
 INSTALLED_COMMANDS=$((cmd_new + cmd_up))
 INSTALLED_ECC=$((NEW_SKILLS + UPDATED_SKILLS))
@@ -624,7 +638,7 @@ print(f"{DM}{sep}{NC}")
 items = [
     ("~/.claude/agents/dc-*.md",   f"{n_agents} DC-* worker agents"),
     ("~/.claude/commands/ceo*.md", f"{n_commands} /ceo-* commands, all optional"),
-    ("~/.claude/skills/",          f"CEO skills (incl. ceo-standards) + {n_ecc} ECC + gstack + Superpowers"),
+    ("~/.claude/skills/",          (f"CEO skills (incl. ceo-standards) + {n_ecc} ECC + gstack + Superpowers" if n_ecc != "0" else "CEO skills (incl. ceo-standards) — extras opt-in")),
     ("~/.claude/hooks/ + settings.json", "auto-test, router, evidence gate"),
     ("~/.claude/CLAUDE.md",        "auto-loaded by Claude Code"),
     ("~/.domangcha/domangcha/policies/", "execution and evidence policy"),

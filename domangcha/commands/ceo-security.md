@@ -6,6 +6,9 @@ Canonical TaskRouter에 minimum GRAPH security intent를 전달한다. Security 
 
 **KO** — OWASP 스캔 → 시크릿 → 인증 → 레이트 리미팅 → 침투 테스트 전체 보안 파이프라인. ECC 보안 스위트 + gstack + 네이티브 security-reviewer 에이전트를 결합합니다.
 
+> ECC·gstack 항목은 그 스킬이 설치된 경우에만 쓴다 (`DOMANGCHA_WITH_EXTRAS=1`). 없으면 같은 단계를 네이티브 security-reviewer 와 code-reviewer 로 수행한다.
+> ECC and gstack steps apply only when those skills are installed (`DOMANGCHA_WITH_EXTRAS=1`); otherwise run the same step with the native security-reviewer and code-reviewer.
+
 ## 사용법 / Usage
 
 ```

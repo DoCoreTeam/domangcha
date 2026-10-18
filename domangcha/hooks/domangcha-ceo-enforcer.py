@@ -47,7 +47,7 @@ ESCALATION_NOTICE = """[DOMANGCHA] /ceo 로 프로젝트 루프에서 하네스�
 # (loaded and prompt-cached per session) instead of being re-sent with every prompt.
 # DIRECT — most prompts — gets one line; LOOP and GRAPH get the card plus one line.
 NATIVE_RUNTIME = {
-    "LOOP": "run on the native /loop skill (bounded PLAN→EXECUTE→VALIDATE→ACT)",
+    "LOOP": "iterate in this session, bounded PLAN→EXECUTE→VALIDATE→ACT, passes in TodoWrite; /loop only to wait on external state",
     "GRAPH": "run on the native Workflow tool; destructive effects need AskUserQuestion approval",
 }
 
@@ -72,11 +72,20 @@ def _project_loop_root() -> Path | None:
     return None
 
 
+# Background-task notices and agent hand-backs arrive as prompts; they are not requests,
+# and routing their text would print a card the user never asked for.
+MACHINE_EVENT = re.compile(r"^\s*(<task-notification>|<agent-message\b|\[SYSTEM NOTIFICATION)")
+
+
+def _is_machine_event(prompt: str) -> bool:
+    return bool(MACHINE_EVENT.match(prompt))
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
         prompt = payload.get("prompt", "")
-        if not prompt:
+        if not prompt or _is_machine_event(prompt):
             return 0
         loop_root = _project_loop_root()
         escalating = loop_root is not None

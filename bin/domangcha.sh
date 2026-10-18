@@ -53,8 +53,8 @@ OPTIONS${DM} / 옵션:${NC}
                   ${DM}프로토콜 문서와 루프 CLI 의 언어 (기본 ko)${NC}
   --no-migrate    keep an existing CLAUDE.md in place instead of moving it to .claude/heavy/CEO.md
                   ${DM}기존 CLAUDE.md 를 .claude/heavy/CEO.md 로 옮기지 않고 그 자리에 둠${NC}
-  --agents        also create AGENTS.md and GEMINI.md symlinks to LOOP.md
-                  ${DM}AGENTS.md, GEMINI.md 를 LOOP.md 로 심볼릭 링크${NC}
+  --agents        also create AGENTS.md and GEMINI.md symlinks to CLAUDE.md (the core)
+                  ${DM}AGENTS.md, GEMINI.md 를 CLAUDE.md(핵심판)로 심볼릭 링크${NC}
   --version, -v   print version and exit${DM} / 버전 출력 후 종료${NC}
   --help, -h      show this help message and exit${DM} / 이 도움말 출력 후 종료${NC}
 
