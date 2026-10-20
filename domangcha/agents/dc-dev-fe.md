@@ -19,7 +19,7 @@ description: "Frontend Developer — UI components, pages, and client-side logic
 `ecc:nextjs-turbopack`, `ecc:frontend-design`, `ecc:e2e-testing`, `ecc:design-system`
 
 ## 규칙
-- frontend-design skill 참조
+- 디자인 방향은 `design-taste-frontend` 스킬(taste-skill)로 — 설치돼 있으면 화면을 만들거나 다듬기 전에 먼저 호출, 없으면 frontend-design skill 참조
 - 접근성(a11y) + 반응형 필수
 - localStorage/sessionStorage에 토큰 저장 금지 — httpOnly 쿠키만
 - React에서 HTML `<form>` 태그 금지
@@ -89,4 +89,4 @@ description: "Frontend Developer — UI components, pages, and client-side logic
 
 ## 완료 시
 - evidence run id 와 `evidence check` 결과를 보고 (사실만)
-- 독립 리뷰어(설치된 code-reviewer·e2e-runner, 없으면 general-purpose) 검토 요청 — 커밋과 태그는 명시적 권한이 있을 때만
+- 독립 리뷰어(설치된 code-reviewer·e2e-runner·a11y-architect, 없으면 general-purpose) 검토 요청 — 커밋과 태그는 명시적 권한이 있을 때만

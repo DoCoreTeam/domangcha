@@ -19,7 +19,7 @@ SKILLS_DIR="${CLAUDE_DIR}/skills"
 
 DOMANGCHA_REPO="https://github.com/DoCoreTeam/domangcha.git"
 GSTACK_REPO="https://github.com/garrytan/gstack.git"
-ECC_REPO="https://github.com/affaan-m/everything-claude-code.git"
+ECC_MARKETPLACE="affaan-m/ECC"
 
 TMP_DIR=$(mktemp -d)
 trap "rm -rf $TMP_DIR" EXIT
@@ -317,8 +317,7 @@ done
 # ECC, gstack and Superpowers are not needed by the router, the loop, evidence or REA,
 # and every installed skill is listed in each session's system prompt. They install only
 # when asked: DOMANGCHA_WITH_EXTRAS=1. Bundles already on the machine are never removed.
-NEW_SKILLS=0
-UPDATED_SKILLS=0
+ECC_STATE="opt-in"
 if [ "${DOMANGCHA_WITH_EXTRAS:-0}" != "1" ]; then
     CURRENT_STEP=$((CURRENT_STEP + 2))
     step "추가 스킬 묶음 건너뜀" "Skipping extra skill bundles"
@@ -326,25 +325,27 @@ if [ "${DOMANGCHA_WITH_EXTRAS:-0}" != "1" ]; then
     echo -e "  ${DIM}·${NC}  to add them: DOMANGCHA_WITH_EXTRAS=1 bash install.sh${DIM} / 필요하면 이 명령으로 추가${NC}"
 else
     # ── 7. ECC
-    step "ECC 스킬 설치" "Installing ECC skills"
+    step "ECC 플러그인 설치" "Installing the ECC plugin"
     echo -e "  ${WHITE}commands excluded — use the /ceo-* orchestrators${NC}${DIM} / 명령어 제외 — /ceo-* 오케스트레이터로 접근${NC}"
 
-    ECC_TMP="${TMP_DIR}/ecc"
-    git clone --depth 1 "$ECC_REPO" "$ECC_TMP" --quiet
-
-    for skill_dir in "${ECC_TMP}/skills"/*/; do
-        skill_name=$(basename "$skill_dir")
-        dest="${SKILLS_DIR}/${skill_name}"
-        if [ -d "$dest" ]; then
-            rm -rf "$dest"
-            UPDATED_SKILLS=$((UPDATED_SKILLS + 1))
-        else
-            NEW_SKILLS=$((NEW_SKILLS + 1))
-        fi
-        mkdir -p "$dest"
-        cp -r "${skill_dir}"* "$dest/" 2>/dev/null || true
-    done
-    echo -e "  ${GREEN}✔${NC}  ECC skills done${DIM} / 스킬 완료${NC}: ${GREEN}${NEW_SKILLS} 신규(new)${NC}  ${YELLOW}${UPDATED_SKILLS} 업데이트(updated)${NC}"
+    # As a plugin (namespaced ecc:<name>), never copied into ~/.claude/skills — a copy beside
+    # the plugin lists every skill and agent twice in each session.
+    if ! command -v claude >/dev/null 2>&1; then
+        echo -e "  ${YELLOW}⚠${NC}  claude CLI not found — inside Claude Code run: /plugin marketplace add ${ECC_MARKETPLACE} then /plugin install ecc@ecc${DIM} / 나중에 설치${NC}"
+    elif case "$(claude plugin list 2>/dev/null || true)" in *ecc@ecc*) true ;; *) false ;; esac; then
+        claude plugin update ecc@ecc >/dev/null 2>&1 \
+            && echo -e "  ${GREEN}✔${NC}  ECC plugin updated${DIM} / 업데이트${NC}" \
+            || echo -e "  ${YELLOW}⚠${NC}  ECC plugin update failed — keeping the installed version${DIM} / 기존 버전 유지${NC}"
+    else
+        claude plugin marketplace add "$ECC_MARKETPLACE" >/dev/null 2>&1 || true
+        claude plugin install ecc@ecc >/dev/null 2>&1 \
+            && echo -e "  ${GREEN}✔${NC}  ECC plugin installed  ${DIM}→ ecc:<name>${NC}" \
+            || echo -e "  ${YELLOW}⚠${NC}  ECC plugin install failed — inside Claude Code run: /plugin install ecc@ecc${DIM} / 설치 실패${NC}"
+    fi
+    # Captured before matching: grep -q closing a pipe early fails the pipeline under pipefail.
+    case "$( (command -v claude >/dev/null 2>&1 && claude plugin list 2>/dev/null) || true)" in
+        *ecc@ecc*) ECC_STATE="plugin" ;;
+    esac
 
     # ── 8. gstack ─────────────────────────────────────
     step "gstack 업데이트" "Updating gstack"
@@ -506,7 +507,36 @@ else
     echo -e "  ${YELLOW}⚠${NC}  rea MCP registration failed — run: claude mcp add --scope user rea -- npx -y ${REA_PACKAGE} mcp${DIM} / 등록 실패${NC}"
 fi
 
-# ── 13. Git hooks ─────────────────────────────────
+# ── 13. taste-skill (UI/UX art direction) ──
+# One upstream skill, pinned to a commit and linked, not copied; an existing install is kept.
+step "taste-skill 연결" "Linking taste-skill"
+TASTE_REPO="https://github.com/leonxlnx/taste-skill.git"
+TASTE_TAG="v2.1.3"
+TASTE_SHA="63aba5f43b5056758b15bbe7d683da8c86a7a7ad"
+TASTE_DIR="${HOME}/.domangcha/vendor/taste-skill"
+TASTE_LINK="${SKILLS_DIR}/design-taste-frontend"
+TASTE_STATE="not installed"
+if [ "${DOMANGCHA_SKIP_TASTE:-0}" = "1" ]; then
+    echo -e "  ${DIM}·${NC}  skipped by DOMANGCHA_SKIP_TASTE=1${DIM} / 건너뜀${NC}"
+elif [ -e "$TASTE_LINK" ] || [ -L "$TASTE_LINK" ]; then
+    TASTE_STATE="installed"
+    echo -e "  ${DIM}·${NC}  design-taste-frontend already installed — left untouched${DIM} / 기존 설치 유지${NC}"
+else
+    rm -rf "$TASTE_DIR"
+    mkdir -p "$(dirname "$TASTE_DIR")"
+    if git clone -q --depth 1 --branch "$TASTE_TAG" "$TASTE_REPO" "$TASTE_DIR" 2>/dev/null \
+        && [ "$(git -C "$TASTE_DIR" rev-parse HEAD)" = "$TASTE_SHA" ] \
+        && [ -d "$TASTE_DIR/skills/taste-skill" ] \
+        && ln -s "$TASTE_DIR/skills/taste-skill" "$TASTE_LINK" 2>/dev/null; then
+        TASTE_STATE="installed"
+        echo -e "  ${GREEN}✔${NC}  design-taste-frontend linked  ${DIM}→ taste-skill ${TASTE_TAG} (MIT; Node 22+ and Chrome)${NC}"
+    else
+        rm -rf "$TASTE_DIR"
+        echo -e "  ${YELLOW}⚠${NC}  taste-skill ${TASTE_TAG} not fetched, not the pinned commit, or not linkable — skipped${DIM} / 건너뜀${NC}"
+    fi
+fi
+
+# ── 14. Git hooks ─────────────────────────────────
 step "git 훅 설치 (자동 재설치)" "Installing git hooks (auto-reinstall)"
 # Find the git repo root that contains domangcha/ (works from any working dir)
 GIT_REPO=$(git -C "$(dirname "${SRC}")" rev-parse --show-toplevel 2>/dev/null || true)
@@ -549,7 +579,7 @@ else
     echo -e "  ${YELLOW}⚠${NC}  git repo root not found, skipping git hooks${DIM} / git 레포 루트 없음, git 훅 건너뜀${NC}"
 fi
 
-# ── 14. Mark installed version ────────────────────
+# ── 15. Mark installed version ────────────────────
 echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 rm -f "${CLAUDE_DIR}/.domangcha-version-cache"
 
@@ -557,11 +587,10 @@ rm -f "${CLAUDE_DIR}/.domangcha-version-cache"
 clear 2>/dev/null || true  # no terminal (CI, TERM=dumb) must not abort the install
 INSTALLED_AGENTS=$((agent_new + agent_up))
 INSTALLED_COMMANDS=$((cmd_new + cmd_up))
-INSTALLED_ECC=$((NEW_SKILLS + UPDATED_SKILLS))
-python3 - "${DOMANGCHA_VERSION}" "${INSTALLED_AGENTS}" "${INSTALLED_COMMANDS}" "${INSTALLED_ECC}" <<'PYEOF'
+python3 - "${DOMANGCHA_VERSION}" "${INSTALLED_AGENTS}" "${INSTALLED_COMMANDS}" "${ECC_STATE}" "${TASTE_STATE}" <<'PYEOF'
 import sys, unicodedata, shutil
 
-v, n_agents, n_commands, n_ecc = sys.argv[1:5]
+v, n_agents, n_commands, ecc_state, taste_state = sys.argv[1:6]
 cols = shutil.get_terminal_size((80, 24)).columns
 
 def dw(s):
@@ -638,12 +667,13 @@ print(f"{DM}{sep}{NC}")
 items = [
     ("~/.claude/agents/dc-*.md",   f"{n_agents} DC-* worker agents"),
     ("~/.claude/commands/ceo*.md", f"{n_commands} /ceo-* commands, all optional"),
-    ("~/.claude/skills/",          (f"CEO skills (incl. ceo-standards) + {n_ecc} ECC + gstack + Superpowers" if n_ecc != "0" else "CEO skills (incl. ceo-standards) — extras opt-in")),
+    ("~/.claude/skills/",          ("CEO skills (incl. ceo-standards); ECC plugin (ecc:<name>), gstack, Superpowers" if ecc_state == "plugin" else "CEO skills (incl. ceo-standards) — extras opt-in")),
     ("~/.claude/hooks/ + settings.json", "auto-test, router, evidence gate"),
     ("~/.claude/CLAUDE.md",        "auto-loaded by Claude Code"),
     ("~/.domangcha/domangcha/policies/", "execution and evidence policy"),
     ("~/.domangcha/domangcha/evidence/", "state · trace · provenance adapters (engine.py evidence)"),
     ("claude mcp: rea",            "REA — extract features from other products"),
+    *([("~/.claude/skills/design-taste-frontend", "taste-skill — UI/UX art direction, checked in a browser")] if taste_state == "installed" else []),
     ("~/.domangcha/codex-marketplace", "Codex plugin + skill + lifecycle hooks"),
 ]
 for path, desc in items:

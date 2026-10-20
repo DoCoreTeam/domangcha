@@ -45,7 +45,9 @@ Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit h
   and reads `LOOP.md` by section; the prompt hooks never resend the static reporting contract
   on follow-ups (Codex sends it once per new task), because it lives in the always-loaded
   `CLAUDE.md` / `~/.codex/AGENTS.md`. `install.sh` adds no third-party skill bundle unless
-  `DOMANGCHA_WITH_EXTRAS=1`, since every listed skill costs every session. Tests pin the budget.
+  `DOMANGCHA_WITH_EXTRAS=1` (ECC then as the `ecc` plugin, never copied beside it), since every
+  listed skill costs every session; the one default is taste-skill's `design-taste-frontend`,
+  pinned to a commit (`DOMANGCHA_SKIP_TASTE=1` skips it). Tests pin the budget.
 - A user-facing feature is complete only when `domangcha/policies/evidence.md` passes: the four
   states (loading, empty, error, no-permission) forced and captured, one marker traced browser →
   server log → stored row, and every claim tagged observation/derivation/inference/unknown.

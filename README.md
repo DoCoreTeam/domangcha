@@ -93,6 +93,7 @@ You press Enter
 | Breaking-change protection | ✅ Gate 5 blocks | ❌ None |
 | Completion proven, not claimed | ✅ forced states + browser → DB trace | ❌ "build passed" |
 | Feature extraction from other products | ✅ REA (`rea` MCP) in, evidence out | ❌ copy by eye |
+| UI that doesn't look AI-made | ✅ taste-skill art direction, checked in a browser | ❌ template defaults |
 | Lean context | ✅ 1.4 KB core, one line per DIRECT prompt | ❌ whole rulebook every turn |
 | Checkpoint / resume | ✅ LOOP and GRAPH | ❌ Context-window dependent |
 | Claude + Codex policy parity | ✅ Shared policy source | ❌ Runtime-specific drift |
@@ -262,6 +263,10 @@ A user-facing feature is done when its evidence run passes (`domangcha/policies/
 
 To copy or benchmark a feature from another product, [REA](https://github.com/morluto/rea) (MIT) is connected as the `rea` MCP server (`npx rea-agents setup`). REA extracts from the other product, native Claude Code builds, DOMANGCHA evidence proves it works in ours.
 
+For how a screen looks, [taste-skill](https://github.com/leonxlnx/taste-skill) (MIT) is installed as the `design-taste-frontend` skill, pinned to v2.1.3 (`DOMANGCHA_SKIP_TASTE=1` skips it; needs Node 22+ and Chrome). It deals a researched art direction and checks the page in a real browser; evidence still decides whether the feature works.
+
+With `DOMANGCHA_WITH_EXTRAS=1`, [ECC](https://github.com/affaan-m/ECC) installs as the `ecc` plugin, and the agents that fit our roles — language reviewers, `silent-failure-hunter`, `a11y-architect`, `database-reviewer`, `build-error-resolver`, `tdd-guide` — are picked up by name (`domangcha/skills/ceo-agents/SKILL.md`).
+
 ### Token budget: small by default
 
 What reaches the model on every turn is kept to what it needs right then. Hook output, measured in bytes against v4.0.0's first cut:
@@ -273,7 +278,7 @@ What reaches the model on every turn is kept to what it needs right then. Hook o
 | harness, per DIRECT prompt | 1.8 KB (card + contract) | one line, under 0.1 KB |
 | harness, per LOOP / GRAPH prompt | 1.8 KB | 0.4 KB (card + one line) |
 | Codex plugin, per follow-up prompt | card + full contract | card + control line; contract on each new task and always in `~/.codex/AGENTS.md` |
-| `install.sh`, skills listed every session | ECC + gstack + Superpowers forced | DOMANGCHA's own only; extras with `DOMANGCHA_WITH_EXTRAS=1` |
+| `install.sh`, skills listed every session | ECC + gstack + Superpowers forced | DOMANGCHA's own + taste-skill; extras with `DOMANGCHA_WITH_EXTRAS=1` |
 
 Real sessions, `claude -p` input tokens (2026-10-18, one machine):
 
@@ -698,6 +703,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 | 파괴적 변경 보호 | ✅ Gate 5 차단 | ❌ 없음 |
 | 주장이 아닌 증거로 완료 | ✅ 강제 상태 + 브라우저 → DB 추적 | ❌ "빌드 통과" |
 | 다른 제품 기능 추출 | ✅ REA(`rea` MCP)로 추출, 증거로 검증 | ❌ 눈대중 복제 |
+| AI 티 안 나는 UI | ✅ taste-skill 디자인 방향, 브라우저로 확인 | ❌ 템플릿 기본값 |
 | 가벼운 컨텍스트 | ✅ 1.4 KB 핵심판, DIRECT 는 프롬프트당 한 줄 | ❌ 매 턴 규정 전체 |
 | 체크포인트 / 재개 | ✅ LOOP와 GRAPH | ❌ 컨텍스트 창에 종속 |
 | Claude + Codex 정책 동등성 | ✅ 공통 정책 원본 | ❌ 런타임별 드리프트 |
@@ -762,6 +768,11 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 다른 제품의 기능을 가져오거나 벤치마킹할 때는 [REA](https://github.com/morluto/rea)(MIT)를 `rea` MCP 서버로 연결해 씁니다 (`npx rea-agents setup`).
 REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거가 우리 제품에서 동작함을 증명합니다.
 
+화면이 어떻게 보일지는 [taste-skill](https://github.com/leonxlnx/taste-skill)(MIT)을 `design-taste-frontend` 스킬로 v2.1.3 에 고정해 기본 설치합니다 (`DOMANGCHA_SKIP_TASTE=1` 로 건너뜀, Node 22+ 와 Chrome 필요).
+조사된 디자인 방향을 고르고 실제 브라우저로 페이지를 검사하며, 기능이 동작하는지는 여전히 증거가 판정합니다.
+
+`DOMANGCHA_WITH_EXTRAS=1` 이면 [ECC](https://github.com/affaan-m/ECC) 를 `ecc` 플러그인으로 설치하고, 우리 역할에 맞는 에이전트(언어별 리뷰어, `silent-failure-hunter`, `a11y-architect`, `database-reviewer`, `build-error-resolver`, `tdd-guide`)를 이름으로 골라 씁니다 (`domangcha/skills/ceo-agents/SKILL.md`).
+
 ### 🪶 토큰 예산 — 기본이 가볍게
 
 매 턴 모델에 들어가는 것은 그 순간 필요한 것만 남겼습니다. 훅 출력은 v4.0.0 첫 판과 같은 입력으로 바이트를 잰 값입니다.
@@ -773,7 +784,7 @@ REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거�
 | 하네스, DIRECT 프롬프트마다 | 1.8 KB (카드 + 계약) | 한 줄, 0.1 KB 미만 |
 | 하네스, LOOP / GRAPH 프롬프트마다 | 1.8 KB | 0.4 KB (카드 + 한 줄) |
 | Codex 플러그인, 후속 프롬프트마다 | 카드 + 계약 전체 | 카드 + 제어 줄, 계약은 새 작업마다 그리고 `~/.codex/AGENTS.md` 에 상시 |
-| `install.sh`, 매 세션 목록에 오르는 스킬 | ECC + gstack + Superpowers 강제 설치 | DOMANGCHA 것만, 추가 묶음은 `DOMANGCHA_WITH_EXTRAS=1` |
+| `install.sh`, 매 세션 목록에 오르는 스킬 | ECC + gstack + Superpowers 강제 설치 | DOMANGCHA 것 + taste-skill, 추가 묶음은 `DOMANGCHA_WITH_EXTRAS=1` |
 
 실제 세션, `claude -p` 입력 토큰 (2026-10-18, 한 대의 PC):
 
