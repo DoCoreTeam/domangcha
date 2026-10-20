@@ -291,6 +291,15 @@ Real sessions, `claude -p` input tokens (2026-10-18, one machine):
 
 Re-run the measurement on your machine with `scripts/measure-tokens.sh [project-dir]`. Read the second row honestly: when the work needs the rulebook, the model greps `LOOP.md`'s headings and reads sections 0–2 and 8–9 (seen in the tool log), which costs extra turns. The core wins on questions and small edits. Most per-turn tokens on a busy machine come from user-level setup outside DOMANGCHA — rules, skills, agents and MCP servers — so keep that lean too.
 
+The two other ends of a turn are cut too, both measured:
+
+| Saver | What it cuts | Measured |
+|---|---|---|
+| Output style `DOMANGCHA` (default; your own `outputStyle` is kept; `DOMANGCHA_SKIP_STYLE=1`) | reply length — terse, but the route card, evidence, failures and approvals stay whole | 4 questions × 3 runs, median output tokens: 4,551 → 2,676 (−41%); [caveman](https://github.com/carlosduplar/caveman-output-style-claude-code), which it adapts, −46% |
+| [rtk](https://github.com/rtk-ai/rtk) 1.0.1, Apache-2.0 build, checksum-pinned (`DOMANGCHA_SKIP_RTK=1`) | what shell commands print, via a `PreToolUse(Bash)` hook that only rewrites, never allows | bytes on this repo: `git log` −76%, `git status` −71%, `ls` −73%, `git diff` −11%, `grep` 0%; file reads byte-identical |
+
+rtk's effect on a whole session is not proven: two A/B runs of the same task ranged 77k–200k input tokens with or without it. Its per-command cut is real; how much it adds up depends on how much shell output a session reads.
+
 The reporting contract did not go away: it lives once in the installed `CLAUDE.md` and rides on session start and post-compaction resume. Running `npx domangcha` again replaces an untouched old `CLAUDE.md` that imported the whole rulebook; an edited one is left alone and you are told how to slim it.
 
 ### Status reporting is on by default
@@ -410,7 +419,7 @@ Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAP
 
 | Version | What changed |
 |---|---|
-| **v4.0.0** | Native delegation: loops, graphs, memory, search, subagents, and the browser are Claude Code's own (named reviewers come from ECC when installed); DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session (Codex: once per task), extra skill bundles opt-in. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
+| **v4.0.0** | Native delegation: loops, graphs, memory, search, subagents, and the browser are Claude Code's own (named reviewers come from ECC when installed); DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session (Codex: once per task), extra skill bundles opt-in, a terse output style and rtk command-output compression by default. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
 | **v3.0.5** | Terminal output paints English bright and Korean dim, so one language carries and the other confirms |
 | **v3.0.4** | No slash command is required: the loop asks the harness router itself; README usage cut to one block |
 | **v3.0.3** | Install-time output is bilingual, English first, everywhere |
@@ -714,7 +723,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 
 | 버전 | 바뀐 것 |
 |---|---|
-| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·서브에이전트·브라우저는 Claude Code 기본 기능으로(이름 붙은 리뷰어는 ECC 가 있을 때), DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번(Codex 는 작업당 한 번), 추가 스킬 묶음은 선택 설치. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
+| **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·서브에이전트·브라우저는 Claude Code 기본 기능으로(이름 붙은 리뷰어는 ECC 가 있을 때), DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번(Codex 는 작업당 한 번), 추가 스킬 묶음은 선택 설치, 짧은 출력 스타일과 rtk 명령 출력 압축은 기본. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
 | **v3.0.5** | 터미널 출력에서 영어는 또렷하게, 한글은 흐리게 — 한쪽만 읽어도 되게 |
 | **v3.0.4** | 슬래시 커맨드 불필요 — 루프가 하네스 라우터에 직접 질의, README 사용법 한 곳으로 압축 |
 | **v3.0.3** | 설치 시점 출력 전부 이중언어, 영어 우선 |
@@ -796,6 +805,15 @@ REA 가 추출하고, 네이티브 Claude Code 가 만들고, DOMANGCHA 증거�
 | 사용자 설정 없는 Claude Code, 빈 폴더 | — | 17,560 |
 
 내 PC 에서 다시 재려면 `scripts/measure-tokens.sh [프로젝트 폴더]` 를 실행하세요. 두 번째 줄을 그대로 읽어 주세요. 규정이 필요한 작업이면 모델이 `LOOP.md` 의 제목을 찾아 0~2절과 8~9절을 읽고(도구 로그로 확인), 그만큼 턴이 늘어납니다. 핵심판이 이기는 건 질문과 작은 수정입니다. 바쁜 PC 의 턴당 토큰 대부분은 DOMANGCHA 밖의 사용자 설정 — 규칙·스킬·에이전트·MCP 서버 — 에서 나오므로 그쪽도 가볍게 유지하세요.
+
+턴의 나머지 두 끝도 줄였고, 둘 다 실측했습니다.
+
+| 절약기 | 줄이는 것 | 실측 |
+|---|---|---|
+| 출력 스타일 `DOMANGCHA` (기본, 직접 고른 `outputStyle` 은 유지, `DOMANGCHA_SKIP_STYLE=1`) | 답 길이 — 짧게, 단 라우트 카드·증거·실패·승인은 그대로 | 질문 4개 × 3회 출력 토큰 중앙값: 4,551 → 2,676 (−41%), 원형인 [caveman](https://github.com/carlosduplar/caveman-output-style-claude-code) 은 −46% |
+| [rtk](https://github.com/rtk-ai/rtk) 1.0.1, Apache-2.0 빌드, 체크섬 고정 (`DOMANGCHA_SKIP_RTK=1`) | 셸 명령 출력 — `PreToolUse(Bash)` 훅이 명령만 바꾸고 허용은 하지 않음 | 이 저장소 기준 바이트: `git log` −76%, `git status` −71%, `ls` −73%, `git diff` −11%, `grep` 0%, 파일 읽기는 원본과 동일 |
+
+rtk 가 세션 전체에서 얼마나 줄이는지는 증명하지 못했습니다. 같은 작업 A/B 두 번이 rtk 유무와 상관없이 입력 7.7만~20만 토큰으로 흔들렸습니다. 명령별 감소는 실제이고, 합산 효과는 세션이 셸 출력을 얼마나 읽는지에 달렸습니다.
 
 보고 계약은 없어지지 않았습니다. 설치된 `CLAUDE.md` 에 한 번만 있고 세션 시작과 컨텍스트 압축 뒤 재개 때 함께 나갑니다. `npx domangcha` 를 다시 실행하면 규정 전체를 불러오던 손대지 않은 옛 `CLAUDE.md` 는 핵심판으로 바뀌고, 직접 고친 파일은 그대로 두고 줄이는 방법만 알려줍니다.
 

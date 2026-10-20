@@ -933,3 +933,8 @@
 | 2026-10-18 13:03 | `scripts/measure-tokens.sh` | Write |
 | 2026-10-20 15:55 | `domangcha/install.sh` | Edit |
 | 2026-10-20 15:56 | `domangcha/install.sh` | Edit |
+| 2026-10-20 19:17 | `domangcha/hooks/domangcha-rtk.py` | Write |
+| 2026-10-20 19:20 | `domangcha/hooks/domangcha-rtk.py` | Edit |
+| 2026-10-20 19:20 | `domangcha/hooks/domangcha-rtk.py` | Edit |
+| 2026-10-20 19:20 | `domangcha/tests/test_token_savers.py` | Write |
+| 2026-10-20 19:22 | `domangcha/hooks/domangcha-rtk.py` | Edit |
