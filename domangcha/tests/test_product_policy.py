@@ -138,15 +138,27 @@ class InstalledSurfaceTests(unittest.TestCase):
         for claim in ("18 agents", "183 ECC", "18 Agent Roles", "19 Commands", "18 DC-*"):
             self.assertNotIn(claim, source, claim)
         self.assertIn("INSTALLED_AGENTS=$((agent_new + agent_up))", source)
-        self.assertIn("INSTALLED_ECC=$((NEW_SKILLS + UPDATED_SKILLS))", source)
 
     def test_extra_skill_bundles_are_opt_in(self):
         """Every installed skill is listed in each session's system prompt; extras cost every user."""
         source = self.INSTALLER.read_text()
         guard = source.index('if [ "${DOMANGCHA_WITH_EXTRAS:-0}" != "1" ]; then')
-        for clone in ('git clone --depth 1 "$ECC_REPO"', '"$GSTACK_REPO"', "superpowers@superpowers-marketplace"):
+        for clone in ('claude plugin install ecc@ecc', '"$GSTACK_REPO"', "superpowers@superpowers-marketplace"):
             self.assertGreater(source.index(clone), guard, clone)
         self.assertNotIn("Required for CEO", source)
+
+    def test_ecc_installs_as_the_plugin_never_as_copies(self):
+        """Copies beside the plugin list every ECC skill and agent twice in each session."""
+        source = self.INSTALLER.read_text()
+        self.assertIn('ECC_MARKETPLACE="affaan-m/ECC"', source)
+        self.assertNotIn('"${ECC_TMP}/skills"', source)
+
+    def test_taste_skill_is_pinned_and_skippable(self):
+        """A default third-party skill runs on every user's machine: pin the commit, allow opt-out."""
+        source = self.INSTALLER.read_text()
+        for needle in ('TASTE_SHA="63aba5f43b5056758b15bbe7d683da8c86a7a7ad"',
+                       'rev-parse HEAD)" = "$TASTE_SHA"', "DOMANGCHA_SKIP_TASTE", "already installed — left untouched"):
+            self.assertIn(needle, source)
 
     def test_the_clone_is_announced_after_it_runs(self):
         """Announcing a fresh install before cloning reports a result nobody checked."""

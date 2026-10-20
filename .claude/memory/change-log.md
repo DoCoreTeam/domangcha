@@ -931,3 +931,5 @@
 | 2026-10-18 12:48 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/50a47cf1-0af4-4460-b155-ab4f232e91e6/scratchpad/cleanup.sh` | Write |
 | 2026-10-18 12:48 | `../../../../private/tmp/claude-501/-Users-dohyeonkim-dev-domangcha/50a47cf1-0af4-4460-b155-ab4f232e91e6/scratchpad/restore.sh` | Write |
 | 2026-10-18 13:03 | `scripts/measure-tokens.sh` | Write |
+| 2026-10-20 15:55 | `domangcha/install.sh` | Edit |
+| 2026-10-20 15:56 | `domangcha/install.sh` | Edit |
