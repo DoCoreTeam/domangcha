@@ -1,4 +1,4 @@
-# DOMANGCHA v4.0.0 — Adaptive Execution
+# DOMANGCHA v4.1.0 — Adaptive Execution
 
 DOMANGCHA ships two install shapes. The default is a per-project loop; the harness
 (router, evidence adapters, 8 agent roles, 5 commands) installs globally, and neither
@@ -80,4 +80,4 @@ python3 -m unittest discover -s domangcha/tests
 python3 domangcha/engine.py validate
 ```
 
-Official version source: `domangcha/VERSION` = 4.0.0.
+Official version source: `domangcha/VERSION` = 4.1.0.

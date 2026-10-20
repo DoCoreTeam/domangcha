@@ -1,4 +1,4 @@
-# DOMANGCHA v4.0.0
+# DOMANGCHA v4.1.0
 
 This project runs on the DOMANGCHA project autonomous dev loop, and these rules take precedence over any global rules
 The full rulebook is LOOP.md and is not loaded every session; follow the core below and read only the named section when it applies

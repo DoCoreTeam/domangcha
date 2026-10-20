@@ -1,6 +1,6 @@
 {
   "name": "domangcha",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Lightweight per-project autonomous dev loop for Claude Code, Cursor, and Codex, with the DIRECT/LOOP/GRAPH router and evidence adapters one command away.",
   "keywords": [
     "harness",
