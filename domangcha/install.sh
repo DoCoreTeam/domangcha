@@ -24,7 +24,7 @@ ECC_MARKETPLACE="affaan-m/ECC"
 TMP_DIR=$(mktemp -d)
 trap "rm -rf $TMP_DIR" EXIT
 
-TOTAL_STEPS=13
+TOTAL_STEPS=15
 CURRENT_STEP=0
 
 # ── progress bar ─────────────────────────────────
@@ -407,6 +407,7 @@ mkdir -p "${CLAUDE_DIR}/hooks"
 cp "${SRC}/hooks/domangcha-post-edit.sh" "${CLAUDE_DIR}/hooks/domangcha-post-edit.sh"
 cp "${SRC}/hooks/domangcha-stop.sh"      "${CLAUDE_DIR}/hooks/domangcha-stop.sh"
 cp "${SRC}/hooks/domangcha-ceo-enforcer.py" "${CLAUDE_DIR}/hooks/domangcha-ceo-enforcer.py"
+cp "${SRC}/hooks/domangcha-rtk.py"       "${CLAUDE_DIR}/hooks/domangcha-rtk.py"
 chmod +x "${CLAUDE_DIR}/hooks/domangcha-post-edit.sh"
 chmod +x "${CLAUDE_DIR}/hooks/domangcha-stop.sh"
 chmod +x "${CLAUDE_DIR}/hooks/domangcha-ceo-enforcer.py"
@@ -414,12 +415,78 @@ echo -e "  ${GREEN}✔${NC}  domangcha-post-edit.sh  ${DIM}auto-test + auto-fix$
 echo -e "  ${GREEN}✔${NC}  domangcha-stop.sh        ${DIM}validation + evidence gate${DIM} / 검증 + 증거 게이트${NC}"
 echo -e "  ${GREEN}✔${NC}  domangcha-ceo-enforcer.py  ${DIM}CEO pipeline enforcer${DIM} / CEO 파이프라인 강제${NC}"
 
-# ── 11. settings.json ─────────────────────────────
+# ── 11. Output style ──────────────────────────────
+# Shorter replies cut output tokens; selected in settings.json below unless the user chose one.
+step "출력 스타일 설치" "Installing the output style"
+mkdir -p "${CLAUDE_DIR}/output-styles"
+cp "${SRC}/output-styles/domangcha.md" "${CLAUDE_DIR}/output-styles/domangcha.md"
+echo -e "  ${GREEN}✔${NC}  output style DOMANGCHA  ${DIM}terse replies; route, evidence, failures kept whole${DIM} / 짧은 답${NC}"
+
+# ── 12. rtk (compress command output) ─────────────
+# rtk's Apache-2.0 "oss" build, pinned and checksum-checked; a copy already on PATH is used as is.
+step "rtk 설치 (명령 출력 압축)" "Installing rtk (command output compression)"
+RTK_VERSION="1.0.1"
+RTK_BIN="${HOME}/.domangcha/bin/rtk"
+RTK_HOOK=0
+case "$(uname -s)/$(uname -m)" in
+    Darwin/arm64)   RTK_ASSET="rtk-oss-aarch64-apple-darwin.tar.gz"
+                    RTK_SHA="4a4d9d09656ff29423336aa506e680afc3f7b6dafe84f0194a1c9a523a3c80e1" ;;
+    Darwin/x86_64)  RTK_ASSET="rtk-oss-x86_64-apple-darwin.tar.gz"
+                    RTK_SHA="2cf4d6dd2cabccbc74aa6aba2a48e60aad85b1a31e3d740e6ca0b2fa0060b06a" ;;
+    Linux/x86_64)   RTK_ASSET="rtk-oss-x86_64-unknown-linux-musl.tar.gz"
+                    RTK_SHA="a44e8ffc43981100b4ddf1710399a1649a6c874591aa6d0c0727fe6cbd983c41" ;;
+    Linux/aarch64|Linux/arm64)
+                    RTK_ASSET="rtk-oss-aarch64-unknown-linux-gnu.tar.gz"
+                    RTK_SHA="ee24a43dac9162de55fea8460b5efcd56d401ec28b5117c921bffa8a57bc136e" ;;
+    *)              RTK_ASSET="" ; RTK_SHA="" ;;
+esac
+sha256_of() {
+    if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1
+    else shasum -a 256 "$1" | cut -d' ' -f1; fi
+}
+if [ "${DOMANGCHA_SKIP_RTK:-0}" = "1" ]; then
+    echo -e "  ${DIM}·${NC}  skipped by DOMANGCHA_SKIP_RTK=1${DIM} / 건너뜀${NC}"
+elif [ -x "$RTK_BIN" ] && case "$("$RTK_BIN" --version 2>/dev/null || true)" in "rtk ${RTK_VERSION}"*) true ;; *) false ;; esac; then
+    RTK_HOOK=1
+    echo -e "  ${DIM}·${NC}  rtk ${RTK_VERSION} already installed${DIM} / 이미 설치됨${NC}"
+elif command -v rtk >/dev/null 2>&1; then
+    RTK_HOOK=1
+    echo -e "  ${DIM}·${NC}  $(rtk --version 2>/dev/null || echo rtk) already on PATH — kept${DIM} / 기존 rtk 사용${NC}"
+elif [ -z "$RTK_ASSET" ]; then
+    echo -e "  ${YELLOW}⚠${NC}  no rtk build for $(uname -s)/$(uname -m) — skipped${DIM} / 지원 안 되는 플랫폼${NC}"
+else
+    RTK_TGZ="${TMP_DIR}/${RTK_ASSET}"
+    if curl -fsSL --max-time 120 -o "$RTK_TGZ" "https://github.com/rtk-ai/rtk/releases/download/v${RTK_VERSION}/${RTK_ASSET}" 2>/dev/null \
+        && [ "$(sha256_of "$RTK_TGZ")" = "$RTK_SHA" ] \
+        && mkdir -p "${TMP_DIR}/rtk" "$(dirname "$RTK_BIN")" \
+        && tar xzf "$RTK_TGZ" -C "${TMP_DIR}/rtk" rtk 2>/dev/null \
+        && [ -f "${TMP_DIR}/rtk/rtk" ] && [ ! -L "${TMP_DIR}/rtk/rtk" ] \
+        && install -m 755 "${TMP_DIR}/rtk/rtk" "$RTK_BIN" 2>/dev/null; then
+        RTK_HOOK=1
+        echo -e "  ${GREEN}✔${NC}  rtk ${RTK_VERSION} installed  ${DIM}→ ~/.domangcha/bin/rtk (Apache-2.0, checksum verified)${NC}"
+    else
+        echo -e "  ${YELLOW}⚠${NC}  rtk ${RTK_VERSION} not downloaded or checksum mismatch — skipped${DIM} / 건너뜀${NC}"
+    fi
+fi
+
+# ── 13. settings.json ─────────────────────────────
 step "settings.json 훅 주입" "Injecting hooks into settings.json"
-python3 - "${CLAUDE_DIR}" <<'PYEOF'
-import sys, json, os
+python3 - "${CLAUDE_DIR}" "${RTK_HOOK}" "${DOMANGCHA_SKIP_STYLE:-0}" "${HOME}/.domangcha/.output-style-set" <<'PYEOF'
+import sys, json, os, re
 
 claude_dir = sys.argv[1]
+rtk_hook = sys.argv[2] == "1"
+skip_style = sys.argv[3] == "1"
+style_marker = sys.argv[4]
+
+def entries(event):
+    """A settings.json hook list, read defensively: a hand-edited file must not abort the install."""
+    value = hooks.get(event, [])
+    return [h for h in value if isinstance(h, dict)] if isinstance(value, list) else []
+
+def commands(entry):
+    subs = entry.get("hooks", [])
+    return [sub.get("command", "") for sub in subs if isinstance(sub, dict)] if isinstance(subs, list) else []
 hooks_dir  = os.path.join(claude_dir, "hooks")
 settings_path = os.path.join(claude_dir, "settings.json")
 
@@ -430,6 +497,11 @@ DOMANGCHA_POST = {
 # async: true — CEO quality review runs in background so session ends immediately
 DOMANGCHA_STOP = {
     "hooks": [{"type": "command", "command": f'bash "{hooks_dir}/domangcha-stop.sh"', "timeout": 120}]
+}
+# PreToolUse(Bash) — rtk compresses command output before the model reads it
+DOMANGCHA_RTK = {
+    "matcher": "Bash",
+    "hooks": [{"type": "command", "command": f'python3 "{hooks_dir}/domangcha-rtk.py"'}]
 }
 DOMANGCHA_ENFORCER = {
     "matcher": "",
@@ -454,30 +526,43 @@ if os.path.exists(settings_path):
         print(f"  ✖  {settings_path} is not valid JSON ({exc}); fix it and rerun — hooks not injected")
         sys.exit(0)
 
-hooks = settings.get("hooks", {})
+hooks = settings.get("hooks", {}) if isinstance(settings, dict) and isinstance(settings.get("hooks", {}), dict) else {}
+if not isinstance(settings, dict):
+    print(f"  ✖  {settings_path} is not a JSON object; fix it and rerun — hooks not injected")
+    sys.exit(0)
 
 # UserPromptSubmit — CEO pipeline enforcer (idempotent)
-upr = hooks.get("UserPromptSubmit", [])
-upr = [h for h in upr if not any("domangcha-ceo-enforcer" in sub.get("command","") for sub in h.get("hooks",[]))]
+upr = [h for h in entries("UserPromptSubmit") if not any("domangcha-ceo-enforcer" in c for c in commands(h))]
 upr.insert(0, DOMANGCHA_ENFORCER)
 hooks["UserPromptSubmit"] = upr
 
 # PostToolUse — remove old DOMANGCHA hook, append fresh
-post = hooks.get("PostToolUse", [])
-post = [h for h in post if not any("domangcha-post-edit" in sub.get("command","") for sub in h.get("hooks",[]))]
+post = [h for h in entries("PostToolUse") if not any("domangcha-post-edit" in c for c in commands(h))]
 post.append(DOMANGCHA_POST)
 hooks["PostToolUse"] = post
 
 # Stop — remove old DOMANGCHA hooks (including the retired ralph loop), re-inject in order
-stop = hooks.get("Stop", [])
-stop = [h for h in stop if not any(
-    ("domangcha-stop" in sub.get("command","") or "domangcha-ralph-loop" in sub.get("command",""))
-    for sub in h.get("hooks",[])
+stop = [h for h in entries("Stop") if not any(
+    ("domangcha-stop" in c or "domangcha-ralph-loop" in c) for c in commands(h)
 )]
 if DOMANGCHA_STOP_CHECKS:
     stop.insert(0, DOMANGCHA_STOP_CHECKS)
 stop.append(DOMANGCHA_STOP)
 hooks["Stop"] = stop
+
+# PreToolUse — ours only when rtk is present and the user has no rtk hook of their own
+pre = [h for h in entries("PreToolUse") if not any("domangcha-rtk" in c for c in commands(h))]
+users_rtk = any(re.search(r"\brtk\b", c) for h in pre for c in commands(h))
+if rtk_hook and not users_rtk:
+    pre.append(DOMANGCHA_RTK)
+if pre or "PreToolUse" in hooks:
+    hooks["PreToolUse"] = pre
+
+# Output style — once, and only when the user has not chosen one; clearing it later sticks
+if not skip_style and not settings.get("outputStyle") and not os.path.exists(style_marker):
+    settings["outputStyle"] = "DOMANGCHA"
+    os.makedirs(os.path.dirname(style_marker), exist_ok=True)
+    open(style_marker, "w").close()
 
 settings["hooks"] = hooks
 tmp_path = settings_path + ".domangcha-tmp"
@@ -487,7 +572,7 @@ os.replace(tmp_path, settings_path)  # atomic: a crash never leaves a half-writt
 print("  ✔  settings.json hooks injected, merged safely / 훅 주입 완료")
 PYEOF
 
-# ── 12. REA (extract features from other products) ──
+# ── 14. REA (extract features from other products) ──
 # Browser verification is Claude-in-Chrome; no Playwright or Chromium is installed.
 step "REA MCP 연결" "Connecting REA MCP"
 REA_PACKAGE="rea-agents@6.4.0"
@@ -507,7 +592,7 @@ else
     echo -e "  ${YELLOW}⚠${NC}  rea MCP registration failed — run: claude mcp add --scope user rea -- npx -y ${REA_PACKAGE} mcp${DIM} / 등록 실패${NC}"
 fi
 
-# ── 13. taste-skill (UI/UX art direction) ──
+# ── 15. taste-skill (UI/UX art direction) ──
 # One upstream skill, pinned to a commit and linked, not copied; an existing install is kept.
 step "taste-skill 연결" "Linking taste-skill"
 TASTE_REPO="https://github.com/leonxlnx/taste-skill.git"
@@ -536,7 +621,7 @@ else
     fi
 fi
 
-# ── 14. Git hooks ─────────────────────────────────
+# ── 16. Git hooks ─────────────────────────────────
 step "git 훅 설치 (자동 재설치)" "Installing git hooks (auto-reinstall)"
 # Find the git repo root that contains domangcha/ (works from any working dir)
 GIT_REPO=$(git -C "$(dirname "${SRC}")" rev-parse --show-toplevel 2>/dev/null || true)
@@ -579,7 +664,7 @@ else
     echo -e "  ${YELLOW}⚠${NC}  git repo root not found, skipping git hooks${DIM} / git 레포 루트 없음, git 훅 건너뜀${NC}"
 fi
 
-# ── 15. Mark installed version ────────────────────
+# ── 17. Mark installed version ────────────────────
 echo "${DOMANGCHA_VERSION}" > "${CLAUDE_DIR}/domangcha-installed-version"
 rm -f "${CLAUDE_DIR}/.domangcha-version-cache"
 
@@ -587,10 +672,10 @@ rm -f "${CLAUDE_DIR}/.domangcha-version-cache"
 clear 2>/dev/null || true  # no terminal (CI, TERM=dumb) must not abort the install
 INSTALLED_AGENTS=$((agent_new + agent_up))
 INSTALLED_COMMANDS=$((cmd_new + cmd_up))
-python3 - "${DOMANGCHA_VERSION}" "${INSTALLED_AGENTS}" "${INSTALLED_COMMANDS}" "${ECC_STATE}" "${TASTE_STATE}" <<'PYEOF'
+python3 - "${DOMANGCHA_VERSION}" "${INSTALLED_AGENTS}" "${INSTALLED_COMMANDS}" "${ECC_STATE}" "${TASTE_STATE}" "${RTK_HOOK}" <<'PYEOF'
 import sys, unicodedata, shutil
 
-v, n_agents, n_commands, ecc_state, taste_state = sys.argv[1:6]
+v, n_agents, n_commands, ecc_state, taste_state, rtk_hook = sys.argv[1:7]
 cols = shutil.get_terminal_size((80, 24)).columns
 
 def dw(s):
@@ -669,6 +754,8 @@ items = [
     ("~/.claude/commands/ceo*.md", f"{n_commands} /ceo-* commands, all optional"),
     ("~/.claude/skills/",          ("CEO skills (incl. ceo-standards); ECC plugin (ecc:<name>), gstack, Superpowers" if ecc_state == "plugin" else "CEO skills (incl. ceo-standards) — extras opt-in")),
     ("~/.claude/hooks/ + settings.json", "auto-test, router, evidence gate"),
+    ("~/.claude/output-styles/domangcha.md", "output style DOMANGCHA — shorter replies (/config to change)"),
+    *([("rtk + PreToolUse(Bash) hook", "compresses command output before the model reads it")] if rtk_hook == "1" else []),
     ("~/.claude/CLAUDE.md",        "auto-loaded by Claude Code"),
     ("~/.domangcha/domangcha/policies/", "execution and evidence policy"),
     ("~/.domangcha/domangcha/evidence/", "state · trace · provenance adapters (engine.py evidence)"),

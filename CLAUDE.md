@@ -47,7 +47,10 @@ Use `python3 domangcha/engine.py route "<request>"`. Claude's UserPromptSubmit h
   `CLAUDE.md` / `~/.codex/AGENTS.md`. `install.sh` adds no third-party skill bundle unless
   `DOMANGCHA_WITH_EXTRAS=1` (ECC then as the `ecc` plugin, never copied beside it), since every
   listed skill costs every session; the one default is taste-skill's `design-taste-frontend`,
-  pinned to a commit (`DOMANGCHA_SKIP_TASTE=1` skips it). Tests pin the budget.
+  pinned to a commit (`DOMANGCHA_SKIP_TASTE=1` skips it). Replies default to the terse
+  `DOMANGCHA` output style unless the user chose one (`DOMANGCHA_SKIP_STYLE=1`), and rtk's
+  pinned Apache-2.0 build compresses shell output through a hook that rewrites, never allows
+  (`DOMANGCHA_SKIP_RTK=1`). Tests pin the budget.
 - A user-facing feature is complete only when `domangcha/policies/evidence.md` passes: the four
   states (loading, empty, error, no-permission) forced and captured, one marker traced browser →
   server log → stored row, and every claim tagged observation/derivation/inference/unknown.
