@@ -192,5 +192,45 @@ class InstallerLanguageOrderTests(unittest.TestCase):
         self.assertEqual(offenders, [])
 
 
+
+class BrowserPreferenceTests(unittest.TestCase):
+    """ego-browser when installed, else Claude-in-Chrome; never Playwright by default."""
+
+    SURFACES = (
+        "domangcha/CLAUDE.md",
+        "domangcha/skills/ceo-standards/SKILL.md",
+        "domangcha/policies/evidence.md",
+        "domangcha/agents/dc-dev-fe.md",
+        "domangcha/commands/ceo-debug.md",
+        "domangcha/commands/ceo-ship.md",
+        "domangcha/loop/templates/LOOP.md",
+        "domangcha/loop/templates/LOOP.en.md",
+        "README.md",
+    )
+
+    def test_every_browser_surface_names_ego_browser_before_chrome(self):
+        for rel in self.SURFACES:
+            text = (ROOT / rel).read_text(encoding="utf-8")
+            with self.subTest(rel=rel):
+                self.assertIn("ego-browser", text)
+                for line in text.splitlines():
+                    if "Claude-in-Chrome" in line and "ego-browser" not in line:
+                        self.assertLess(text.index("ego-browser"), text.index(line))
+
+    def test_policy_tells_the_agent_to_load_the_ego_browser_guide(self):
+        for rel in ("domangcha/CLAUDE.md", "domangcha/skills/ceo-standards/SKILL.md",
+                    "domangcha/policies/evidence.md", "domangcha/loop/templates/LOOP.en.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("`ego-browser skill`", (ROOT / rel).read_text(encoding="utf-8"))
+
+    def test_playwright_is_never_the_default_browser(self):
+        for rel in self.SURFACES:
+            text = (ROOT / rel).read_text(encoding="utf-8")
+            for line in text.splitlines():
+                if "Playwright" in line or "playwright" in line:
+                    with self.subTest(rel=rel, line=line):
+                        self.assertRegex(line, r"(?i)\bnever\b|\bno\b|금지|말고|쓰지 않")
+
+
 if __name__ == "__main__":
     unittest.main()

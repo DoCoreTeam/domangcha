@@ -573,7 +573,7 @@ print("  ✔  settings.json hooks injected, merged safely / 훅 주입 완료")
 PYEOF
 
 # ── 14. REA (extract features from other products) ──
-# Browser verification is Claude-in-Chrome; no Playwright or Chromium is installed.
+# Browser verification is the ego-browser skill when installed, else Claude-in-Chrome; no Playwright or Chromium is installed.
 step "REA MCP 연결" "Connecting REA MCP"
 REA_PACKAGE="rea-agents@6.4.0"
 if [ "${DOMANGCHA_SKIP_REA:-0}" = "1" ]; then

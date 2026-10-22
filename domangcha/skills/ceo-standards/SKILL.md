@@ -30,7 +30,7 @@ description: Shared coding, validation, security, and browser standards without 
 
 ## Browser verification
 
-- Live-screen checks use Claude-in-Chrome.
+- Live-screen checks use the `ego-browser` skill when installed (run `ego-browser skill` first), otherwise Claude-in-Chrome; never Playwright while either is available.
 - Other runtimes resolve browser capability rather than emulating Claude-specific tool names.
 
 ## Evidence
@@ -38,7 +38,7 @@ description: Shared coding, validation, security, and browser standards without 
 Full rules: `domangcha/policies/evidence.md`, installed at `~/.domangcha/domangcha/policies/evidence.md`. A user-facing feature is done when its evidence run passes — not when code exists, a screen renders, or a build is green.
 
 - Extract with REA (`rea` MCP server) when copying a feature from another product; its findings are input, not proof about ours.
-- Build with native Claude Code: agents, Workflow, `/loop`, Claude-in-Chrome.
+- Build with native Claude Code: agents, Workflow, `/loop`, and the browser above (ego-browser, else Claude-in-Chrome).
 - Prove with `python3 ~/.domangcha/domangcha/engine.py evidence ...`: force loading, empty, error, and no-permission with `evidence state enter|exit` and capture each inside its window; trace one unique marker browser request → server log → stored row with `evidence trace`; tag every other claim observation, derivation, inference, or unknown.
 - `evidence check` must pass; `evidence close` diffs against the previous run and flags observed → unknown as a regression. Completion reports name the run id and quote `check`.
 - Screens implement the request as behaviour; they never restate it as copy.

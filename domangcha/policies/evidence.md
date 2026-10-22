@@ -7,15 +7,16 @@ Three steps, one flow:
 
 1. Extract — to copy or benchmark a feature from another product, use REA (`rea` MCP server,
    `npx rea-agents setup`). Its findings are input, not proof about our product.
-2. Build — native Claude Code: agents, Workflow, `/loop`, Claude-in-Chrome.
+2. Build — native Claude Code: agents, Workflow, `/loop`, and a browser: the `ego-browser` skill when installed (run `ego-browser skill` first), otherwise Claude-in-Chrome; never Playwright while either is available.
 3. Prove — `python3 ~/.domangcha/domangcha/engine.py evidence ...` in the project:
    - `evidence init` writes `.domangcha/evidence.json` once per project. Its commands run on this
      machine, so the person reviews them and runs `evidence trust` in their own terminal; any edit
      revokes trust. `evidence start` opens a run.
    - `evidence state enter <loading|empty|error|no-permission>`, capture the screen with
-     Claude-in-Chrome, `evidence record observation "<what you saw>" --source chrome:<ref> --key state:<name>`,
+     that browser, `evidence record observation "<what you saw>" --source ego:<ref> --key state:<name>`
+     (`chrome:<ref>` when Chrome was the browser),
      then `evidence state exit <name>`. A capture only counts inside the forced window.
-   - Type a unique marker into the UI, save the Chrome network entries to a file, and run
+   - Type a unique marker into the UI, save the browser's network entries to a file, and run
      `evidence trace <marker> --network <file> --label <flow>`: request → server log → stored row in one
      bundle. The marker is 6+ characters with a digit; the network file lives inside the project.
    - Tag every other claim: `observation` (needs `--source`), `derivation` (needs `--from` ids of

@@ -44,8 +44,8 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 - ECC `/pipeline` → CI/CD 파이프라인 트리거
 
 ### STEP 5: 배포 후 검증 (Post-Deploy Verification)
-- **Claude-in-Chrome 확장** → `mcp__claude-in-chrome__*`로 배포된 서비스 실화면 스모크 (핵심 플로우·콘솔 에러)
-- 독립 QA(e2e-runner, 없으면 general-purpose + Claude-in-Chrome) → 프로덕션 기능 검증
+- **브라우저**(`ego-browser` 스킬이 설치돼 있으면 그것(먼저 `ego-browser skill` 실행), 없으면 Claude-in-Chrome — 둘 중 하나라도 있으면 Playwright는 쓰지 않음) → 배포된 서비스 실화면 스모크 (핵심 플로우·콘솔 에러)
+- 독립 QA(e2e-runner, 없으면 general-purpose — 어느 쪽이든 위 브라우저 사용, Playwright 말고) → 프로덕션 기능 검증
 
 ## 결과 보고 / Output
 
@@ -79,7 +79,7 @@ Canonical TaskRouter의 guarded GRAPH side-effect workflow다. Deploy/publish는
 | `/land-and-deploy` | gstack | 랜딩 + 배포 |
 | `/review` | gstack | 배포 전 리뷰 |
 | `engine.py evidence check` | DOMANGCHA | 배포 전 증거 확인 |
-| `mcp__claude-in-chrome__*` | Claude-in-Chrome | **배포 후 실화면 스모크** |
+| `ego-browser` 스킬, 없으면 `mcp__claude-in-chrome__*` | ego-browser / Claude-in-Chrome | **배포 후 실화면 스모크** |
 | DC-DEV-OPS | DOMANGCHA | DevOps 전문 에이전트 |
 | code-reviewer (없으면 general-purpose) | ECC, 없으면 general-purpose | 최종 리뷰 에이전트 |
 | e2e-runner (없으면 general-purpose) | ECC, 없으면 general-purpose | QA 에이전트 |
