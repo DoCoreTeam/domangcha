@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// DOMANGCHA v4.1.0  scripts/loop.mjs
+// DOMANGCHA v4.1.1  scripts/loop.mjs
 // 프로젝트 자율개발 루프의 기록 CLI 겸 훅 핸들러 (Claude Code, Cursor 공용)
 // 이 파일은 npx domangcha 가 프로젝트에 설치하며 재설치 때마다 최신본으로 갱신됨
 // 요구 사항: Node 22.13 이상 (node:sqlite 내장, 추가 npm 의존성 없음)
@@ -18,7 +18,7 @@ let DatabaseSync;
 try { ({ DatabaseSync } = await import('node:sqlite')); }
 catch { console.error('[DOMANGCHA] node:sqlite unavailable / 사용 불가 — Node 22.13+ required'); process.exit(1); }
 
-const KIT_VERSION = "4.1.0";
+const KIT_VERSION = "4.1.1";
 
 // ---------- 경로 ----------
 function findRoot(start) {

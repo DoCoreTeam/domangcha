@@ -1,4 +1,4 @@
-# DOMANGCHA v4.1.0 — LOOP project autonomous dev protocol
+# DOMANGCHA v4.1.1 — LOOP project autonomous dev protocol
 
 This file is the only full rulebook and is not loaded every session; read the section CLAUDE.md points to when it applies
 In this project these rules take precedence over any global rules (~/.claude/CLAUDE.md)

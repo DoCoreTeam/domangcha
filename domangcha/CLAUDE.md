@@ -1,4 +1,4 @@
-# DOMANGCHA v4.1.0 — Claude Code Adapter
+# DOMANGCHA v4.1.1 — Claude Code Adapter
 
 This file contains Claude-specific integration only. Shared execution policy lives in `domangcha/policies/` in the repository, installed at `~/.domangcha/domangcha/policies/`; deterministic control lives in `engine.py`. `evidence.md` decides when a user-facing feature is complete, on every route.
 
@@ -34,4 +34,4 @@ The prompt hook sends only the route — one line for DIRECT, the card for LOOP 
 
 Do not reconstruct the legacy mandatory CEO/FULL PIPELINE from prompts. Follow DIRECT, LOOP, or GRAPH returned by `engine.py`.
 
-Official version source: `VERSION` = 4.1.0.
+Official version source: `VERSION` = 4.1.1.
