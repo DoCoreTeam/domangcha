@@ -334,6 +334,7 @@ Looking for what the request left out
 
 Browser verification
 
+- Use the `ego-browser` skill when installed (run `ego-browser skill` first), otherwise Claude-in-Chrome; never Playwright while either is available
 - Code review, a successful API response and a green build do not substitute for UI verification; open the browser and click, type, navigate, save and re-read on the screen the user sees
 - Run the scenarios that apply to what changed
   1 reach the feature through its normal entry path

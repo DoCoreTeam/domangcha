@@ -238,7 +238,7 @@ DOMANGCHA keeps routing and evidence. Everything Claude Code already does native
 | review, security, QA, research, docs, SEO | an independent subagent: `code-reviewer`, `security-reviewer`, `e2e-runner`, `doc-updater` when installed (also `ecc:<name>`), otherwise native `general-purpose`; `Explore` for research |
 | memory | native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`) |
 | web search | native WebSearch / WebFetch |
-| browser | Claude-in-Chrome |
+| browser | `ego-browser` skill when installed, else Claude-in-Chrome (never Playwright) |
 | completion of user-facing work | DOMANGCHA evidence adapters |
 | checkpoints for Codex | DOMANGCHA `orchestration/checkpoint.py` |
 
@@ -323,7 +323,7 @@ An engine that works silently feels like an engine that is stuck. The route card
 | Native attachment | hooks + commands | plugin skill + lifecycle hooks | plugin skill + checkpoints |
 | Logical agent roles | Claude subagents | runtime-native agents | delegated agents when available |
 | Human approval | interactive | interactive when supported | checkpoint and review |
-| Browser verification | Claude-in-Chrome | capability-resolved | CI/headless capability |
+| Browser verification | ego-browser, else Claude-in-Chrome | capability-resolved | CI/headless capability |
 | Checkpoint format | shared | shared | shared |
 
 Runtime behavior is capability-based—not hard-coded to provider model names. Model policies express `HIGH_REASONING`, `BALANCED`, `FAST_CHEAP`, `LONG_CONTEXT`, or `REVIEW`; each adapter maps them to what is actually available. Unknown runtime or model names do not fail by default.

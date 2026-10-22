@@ -24,7 +24,7 @@ description: "Frontend Developer — UI components, pages, and client-side logic
 - localStorage/sessionStorage에 토큰 저장 금지 — httpOnly 쿠키만
 - React에서 HTML `<form>` 태그 금지
 - 컴포넌트 단위 개발 → 자체 검토 후 CEO 제출
-- **실화면 자체 검증은 Claude-in-Chrome 확장(`mcp__claude-in-chrome__*`)** — 렌더·인터랙션·콘솔·네트워크 확인
+- **실화면 자체 검증 브라우저: `ego-browser` 스킬이 설치돼 있으면 그것(먼저 `ego-browser skill` 실행), 없으면 Claude-in-Chrome — 둘 중 하나라도 있으면 Playwright는 쓰지 않음** — 렌더·인터랙션·콘솔·네트워크 확인
 - CSS custom properties로 모든 디자인 토큰 관리
 - Semantic HTML 우선 — generic div 남발 금지
 - Compositor-friendly animation만 사용 (transform, opacity, clip-path, filter)

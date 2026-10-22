@@ -1,7 +1,7 @@
 """Binds one user action end to end: browser request → stored row, with the server log alongside.
 
 The caller types a unique marker into the UI, captures the network entries with
-Claude-in-Chrome, and passes them here. The adapter finds the marker in the server
+the browser (ego-browser, else Claude-in-Chrome), and passes them here. The adapter finds the marker in the server
 logs and asks the database for the row holding it. Every link becomes a claim; a
 missing link becomes `unknown`, never a silent pass. Claims are keyed by a stable
 label, not the marker, so the next run's trace diffs against this one.
@@ -44,7 +44,7 @@ class Tracer:
         hits = [entry for entry in network if marker in json.dumps(entry, ensure_ascii=False)]
         log_lines = self._logs(marker)
         rows, db_note = self._db(marker)
-        network_id = self._link(key + ":network", hits, "request carrying %s" % marker, "chrome:network")
+        network_id = self._link(key + ":network", hits, "request carrying %s" % marker, "browser:network")
         self._link(key + ":log", log_lines, "server logged %s" % marker, "log:" + ",".join(self.config.logs))
         db_id = self._link(key + ":db", rows, "stored row for %s" % marker,
                            "db:" + " ".join(self.config.db)[:200], db_note)

@@ -14,7 +14,7 @@ This file contains Claude-specific integration only. Shared execution policy liv
 - LOOP runs as bounded passes in the session, tracked in TodoWrite; the native `/loop` skill and ScheduleWakeup are for waiting on external state and for `/ceo-ralph`. GRAPH runs through the native Workflow tool (pipeline/parallel/phase, `resumeFromRunId`). Memory is native file memory (`~/.claude/projects/*/memory`, `MEMORY.md`); search is native WebSearch/WebFetch.
 - `orchestration/status.py` renders the route, checkpoint, and drift cards. Status reporting is on by default.
 - `agents/dc-*.md` hold the 8 logical roles (dc-biz, dc-dev-be, dc-dev-db, dc-dev-fe, dc-dev-int, dc-dev-mob, dc-dev-ops, dc-wrt), resolved through `manifests/agents.json`. Review, security, and QA run on an independent reviewer subagent — `code-reviewer`, `security-reviewer`, `e2e-runner`, `doc-updater` or `seo-specialist` when installed (ECC ships them, also as `ecc:<name>`), otherwise native `general-purpose` in a context separate from the writer; `Explore` for research.
-- Browser verification uses Claude-in-Chrome.
+- Browser verification uses the `ego-browser` skill when installed (run `ego-browser skill` first), otherwise Claude-in-Chrome; never Playwright while either is available.
 - Token savers: the `DOMANGCHA` output style keeps replies terse; rtk (`~/.domangcha/bin/rtk`, `PreToolUse(Bash)` hook) compresses shell output and only rewrites, never allows.
 - UI art direction uses the `design-taste-frontend` skill (taste-skill, pinned) before a screen is built or restyled; evidence still decides completion.
 - Approvals go through AskUserQuestion. A rejected approval aborts the relevant branch.
