@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-VERSION="4.1.0"
+VERSION="4.1.1"
 
 # 영어는 또렷하게, 한국어는 흐리게 / English bright, Korean dim.
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then

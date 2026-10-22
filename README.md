@@ -17,7 +17,7 @@ Then just say what you want — the loop plans, audits and reports, and proves u
 
 *Your AI getaway car from development hell.*
 
-[![Version](https://img.shields.io/badge/version-4.1.0-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-4.1.1-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Runtimes](https://img.shields.io/badge/Runtimes-Claude%20Code%20%7C%20Codex-5865F2?style=for-the-badge)](#runtime-compatibility)
@@ -419,6 +419,7 @@ Complex feature requests still run PLANNER → BUILDER → EVALUATOR inside GRAP
 
 | Version | What changed |
 |---|---|
+| **v4.1.1** | Browser verification uses the `ego-browser` skill when installed, otherwise Claude-in-Chrome, and never Playwright while either exists |
 | **v4.1.0** | Fewer tokens by default: the terse `DOMANGCHA` output style (−41% median output tokens) and rtk's pinned Apache-2.0 build compressing shell output (git log −76%, git status −71%), each with a skip flag. taste-skill's `design-taste-frontend` installs pinned to a commit for UI art direction; ECC connects as the `ecc` plugin with a curated reviewer list. CI pins its runner so Python 3.9 stays tested |
 | **v4.0.0** | Native delegation: loops, graphs, memory, search, subagents, and the browser are Claude Code's own (named reviewers come from ECC when installed); DOMANGCHA keeps the router and adds evidence adapters (state · trace · provenance) and REA. Token budget: a 1.4 KB loop core instead of the 31.8 KB rulebook, one line per DIRECT prompt, contract sent once per session (Codex: once per task), extra skill bundles opt-in. The installer installs from the checkout it runs in. Breaking: 10 agents and 14 commands removed |
 | **v3.0.5** | Terminal output paints English bright and Korean dim, so one language carries and the other confirms |
@@ -542,7 +543,7 @@ Nothing breaks and nothing was removed.
 
 *개발 지옥에서 도망쳐 — 돔황차🚗💨*
 
-[![Version](https://img.shields.io/badge/version-4.1.0-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
+[![Version](https://img.shields.io/badge/version-4.1.1-brightgreen?style=for-the-badge&logo=github)](https://github.com/DoCoreTeam/domangcha/blob/main/domangcha/VERSION)
 [![npm](https://img.shields.io/npm/v/domangcha?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/domangcha)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Runtimes](https://img.shields.io/badge/런타임-Claude%20Code%20%7C%20Codex-5865F2?style=for-the-badge)](#runtime-compatibility)
@@ -724,6 +725,7 @@ Claude Code와 OpenAI Codex는 강력하지만, 간단한 수정에 다중 에�
 
 | 버전 | 바뀐 것 |
 |---|---|
+| **v4.1.1** | 브라우저 검증은 `ego-browser` 스킬이 있으면 그것, 없으면 Claude-in-Chrome — 둘 중 하나라도 있으면 Playwright 는 쓰지 않음 |
 | **v4.1.0** | 기본으로 토큰 절약 — 짧은 `DOMANGCHA` 출력 스타일(출력 토큰 중앙값 −41%), 버전 고정한 rtk Apache-2.0판의 명령 출력 압축(git log −76%, git status −71%), 각각 끄기 옵션. UI 방향용 taste-skill `design-taste-frontend` 를 커밋 고정으로 설치, ECC 는 `ecc` 플러그인으로 골라서 연결. CI 실행기를 고정해 Python 3.9 계속 검증 |
 | **v4.0.0** | 네이티브 위임 — 루프·그래프·메모리·검색·서브에이전트·브라우저는 Claude Code 기본 기능으로(이름 붙은 리뷰어는 ECC 가 있을 때), DOMANGCHA는 라우터를 남기고 증거 어댑터(state · trace · provenance)와 REA를 더함. 토큰 예산 — 31.8 KB 규정 대신 1.4 KB 루프 핵심판, DIRECT 는 프롬프트당 한 줄, 보고 계약은 세션당 한 번(Codex 는 작업당 한 번), 추가 스킬 묶음은 선택 설치. 설치기는 실행한 체크아웃에서 설치. 호환성 변경: 에이전트 10개·명령 14개 제거 |
 | **v3.0.5** | 터미널 출력에서 영어는 또렷하게, 한글은 흐리게 — 한쪽만 읽어도 되게 |
